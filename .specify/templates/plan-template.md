@@ -29,9 +29,39 @@
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+_GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
-[Gates determined based on constitution file]
+**Readability (I)**:
+
+- [ ] Magic numbers replaced with named constants
+- [ ] Complex logic abstracted into dedicated components/HOCs
+- [ ] Conditional rendering paths separated into distinct components
+- [ ] Complex ternaries simplified to if/else or IIFEs
+- [ ] Complex conditions assigned to named variables
+
+**Predictability (II)**:
+
+- [ ] Consistent return types for similar functions/hooks
+- [ ] No hidden side effects; functions follow Single Responsibility Principle
+- [ ] Unique, descriptive names for custom wrappers/functions
+
+**Cohesion (III)**:
+
+- [ ] Code organized by feature/domain (not just by code type)
+- [ ] Constants defined near related logic with clear naming
+- [ ] Form cohesion strategy chosen (field-level vs form-level)
+
+**Coupling (IV)**:
+
+- [ ] No premature abstraction of potentially diverging logic
+- [ ] State management broken into focused hooks/contexts
+- [ ] Component Composition used instead of Props Drilling
+
+**Frontend Standards** (if applicable):
+
+- [ ] Domain-based directory structure (`domains/user/`, `domains/product/`)
+- [ ] Complex interactions abstracted into dedicated components
+- [ ] Focused hooks for specific concerns (not overly broad)
 
 ## Project Structure
 
@@ -48,6 +78,7 @@ specs/[###-feature]/
 ```
 
 ### Source Code (repository root)
+
 <!--
   ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
   for this feature. Delete unused options and expand the chosen structure with
@@ -78,9 +109,17 @@ backend/
 
 frontend/
 ├── src/
-│   ├── components/
-│   ├── pages/
-│   └── services/
+│   ├── components/     # Shared/common components
+│   ├── hooks/          # Shared/common hooks
+│   ├── utils/          # Shared/common utils
+│   ├── domains/        # Feature/domain-based organization
+│   │   ├── user/
+│   │   │   ├── components/
+│   │   │   ├── hooks/
+│   │   │   └── index.ts
+│   │   ├── product/
+│   │   └── order/
+│   └── App.tsx
 └── tests/
 
 # [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
@@ -98,7 +137,7 @@ directories captured above]
 
 > **Fill ONLY if Constitution Check has violations that must be justified**
 
-| Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
-| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
-| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |
+| Violation                  | Why Needed         | Simpler Alternative Rejected Because |
+| -------------------------- | ------------------ | ------------------------------------ |
+| [e.g., 4th project]        | [current need]     | [why 3 projects insufficient]        |
+| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient]  |
