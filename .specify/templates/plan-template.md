@@ -59,7 +59,12 @@ _GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
 **Frontend Standards** (if applicable):
 
-- [ ] Domain-based directory structure (`domains/user/`, `domains/product/`)
+- [ ] Feature-Sliced Design (FSD) architecture used
+- [ ] Layer hierarchy respected: `app` → `pages` → `widgets` → `features` → `entities` → `shared`
+- [ ] Lower layers do not import from higher layers
+- [ ] Each slice has Public API via `index.ts` (no direct internal file imports)
+- [ ] Slices organized by business domain within each layer
+- [ ] Segments properly organized within slices (`ui/`, `model/`, `api/`, etc.)
 - [ ] Complex interactions abstracted into dedicated components
 - [ ] Focused hooks for specific concerns (not overly broad)
 
@@ -109,17 +114,12 @@ backend/
 
 frontend/
 ├── src/
-│   ├── components/     # Shared/common components
-│   ├── hooks/          # Shared/common hooks
-│   ├── utils/          # Shared/common utils
-│   ├── domains/        # Feature/domain-based organization
-│   │   ├── user/
-│   │   │   ├── components/
-│   │   │   ├── hooks/
-│   │   │   └── index.ts
-│   │   ├── product/
-│   │   └── order/
-│   └── App.tsx
+│   ├── app/            # Application initialization, providers, routing
+│   ├── pages/          # Full pages (e.g., home/, profile/)
+│   ├── widgets/        # Independent UI blocks (e.g., header/, sidebar/)
+│   ├── features/       # User interactions (e.g., auth/login/, cart/add-item/)
+│   ├── entities/       # Business entities (e.g., user/, product/)
+│   └── shared/         # Reusable code (ui/, lib/, api/, types/)
 └── tests/
 
 # [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)

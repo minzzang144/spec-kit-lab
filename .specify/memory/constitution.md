@@ -1,13 +1,16 @@
 <!--
 Sync Impact Report:
-Version change: 0.0.0 → 1.0.0 (Initial constitution based on Frontend Design Guideline)
-Modified principles: N/A (initial creation)
+Version change: 1.0.0 → 1.1.0 (Added Feature-Sliced Design architecture)
+Modified principles: 
+  - Code Organization: Domain-based → FSD (Feature-Sliced Design) architecture
 Added sections:
-  - Core Principles (Readability, Predictability, Cohesion, Coupling)
-  - Frontend Development Standards
-  - Code Organization Guidelines
+  - Feature-Sliced Design Architecture Principles
+  - Layer Hierarchy Rules
+  - Slice and Segment Organization
+  - Public API Requirements
+  - Dependency Direction Rules
 Templates requiring updates:
-  - ✅ plan-template.md (Constitution Check section updated with all 4 principles + Frontend Standards)
+  - ✅ plan-template.md (Frontend Standards updated with FSD checklist, project structure updated)
   - ✅ tasks-template.md (No changes needed - task categorization already aligns with principles)
   - ✅ spec-template.md (Verified - no constitution-specific references, no changes needed)
   - ✅ command files (Verified - no outdated references, all use generic guidance)
@@ -52,10 +55,11 @@ Follow-up TODOs: None
 **Rules**:
 
 - Choose field-level or form-level cohesion based on form requirements (field-level for independent validation, form-level for related fields)
-- Organize directories by feature/domain, not just by code type (e.g., `domains/user/`, `domains/product/`)
+- Organize code using Feature-Sliced Design (FSD) architecture with layer hierarchy: `app` → `pages` → `widgets` → `features` → `entities` → `shared`
+- Organize slices by business domain/feature within each layer (e.g., `features/auth/login`, `entities/user`)
 - Define constants near related logic or ensure names link them clearly to prevent silent failures
 
-**Rationale**: Increases cohesion by keeping related files together, simplifies feature understanding and maintenance, and prevents logic-constant mismatches.
+**Rationale**: Increases cohesion by keeping related files together, simplifies feature understanding and maintenance, and prevents logic-constant mismatches. FSD provides clear structure and predictable code organization.
 
 ### IV. Coupling (결합도)
 
@@ -71,26 +75,76 @@ Follow-up TODOs: None
 
 ## Frontend Development Standards
 
-### Code Organization
+### Feature-Sliced Design Architecture
 
-**MUST**: Organize code by feature/domain structure:
+**MUST**: Use Feature-Sliced Design (FSD) architecture for frontend code organization.
+
+**Layer Hierarchy** (from top to bottom):
 
 ```
 src/
-├── components/ # Shared/common components
-├── hooks/      # Shared/common hooks
-├── utils/      # Shared/common utils
-├── domains/
-│   ├── user/
-│   │   ├── components/
-│   │   ├── hooks/
-│   │   └── index.ts
-│   ├── product/
-│   └── order/
-└── App.tsx
+├── app/          # Application initialization, providers, routing
+├── pages/        # Full pages composed of widgets and features
+├── widgets/      # Independent UI blocks composed of features
+├── features/     # User interactions and business features
+├── entities/     # Business entities (models, data structures)
+└── shared/       # Reusable code (UI kit, utils, API, types)
 ```
 
-**Rationale**: Increases cohesion, simplifies feature understanding, development, maintenance, and deletion.
+**Dependency Rules**:
+
+- Higher layers MUST only import from lower layers (e.g., `pages` can import from `widgets`, `features`, `entities`, `shared`)
+- Lower layers MUST NOT import from higher layers (e.g., `entities` cannot import from `features` or `pages`)
+- Same-layer imports are allowed but should be minimized (prefer moving shared code to `shared` layer)
+
+**Slice Organization**:
+
+- Each layer contains business domain slices (e.g., `features/auth/login`, `entities/user`, `widgets/header`)
+- Each slice MUST have a Public API via `index.ts` (or equivalent) that exports only intended interfaces
+- Internal slice files MUST NOT be imported directly from outside the slice
+
+**Segment Organization** (within each slice):
+
+- `ui/` - UI components
+- `model/` - Business logic, state management
+- `api/` - API calls, data fetching
+- `lib/` - Slice-specific utilities
+- `types/` - TypeScript types
+- `config/` - Configuration
+
+**Example Structure**:
+
+```
+src/
+├── app/
+│   ├── providers/
+│   └── index.tsx
+├── pages/
+│   └── home/
+│       ├── ui/
+│       └── index.ts
+├── widgets/
+│   └── header/
+│       ├── ui/
+│       └── index.ts
+├── features/
+│   └── auth/
+│       └── login/
+│           ├── ui/
+│           ├── model/
+│           └── index.ts
+├── entities/
+│   └── user/
+│       ├── model/
+│       ├── api/
+│       └── index.ts
+└── shared/
+    ├── ui/        # Design system, primitives
+    ├── lib/       # Utilities
+    └── api/       # API client
+```
+
+**Rationale**: FSD provides predictable structure, clear dependency boundaries, improved maintainability, and enables team collaboration through slice ownership. It aligns with cohesion and coupling principles by keeping related code together while minimizing dependencies.
 
 ### Component Design
 
@@ -136,4 +190,4 @@ src/
 - Complexity MUST be justified if violating principles
 - Constitution supersedes all other practices
 
-**Version**: 1.0.0 | **Ratified**: 2025-01-27 | **Last Amended**: 2025-01-27
+**Version**: 1.1.0 | **Ratified**: 2025-01-27 | **Last Amended**: 2025-01-27
