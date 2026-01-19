@@ -32,8 +32,8 @@ pnpm install
 
 | 스크립트 | 설명 |
 |----------|------|
-| `pnpm run build` | `apps/chat-fe`, `apps/chat-be` 각각(또는 동시) 빌드. packages 의존 없음. |
-| `pnpm run dev` | FE(5173), BE(3000) 개발 서버 동시 실행. (또는 `turbo run dev --filter=chat-fe` 등 개별.) |
+| `pnpm run build` | `apps/chat-fe-with-cursor`, `apps/chat-be-with-cursor` 각각(또는 동시) 빌드. packages 의존 없음. |
+| `pnpm run dev` | FE(5173), BE(3000) 개발 서버 동시 실행. (또는 `turbo run dev --filter=chat-fe-with-cursor` 등 개별.) |
 | `pnpm run lint` | 전체 lint. |
 | `pnpm run format` | Prettier 포맷. |
 | `pnpm run test` | FE(Vitest), BE(Jest) 테스트. |
@@ -43,14 +43,14 @@ pnpm install
 
 ## 4. 환경 변수
 
-### BE (`apps/chat-be`)
+### BE (`apps/chat-be-with-cursor`)
 
 | 변수 | 기본값 | 설명 |
 |------|--------|------|
 | `PORT` | `3000` | HTTP + WebSocket 서버 포트. |
 | `FE_ORIGIN` | `http://localhost:5173` | CORS origin. Vite 기본. |
 
-### FE (`apps/chat-fe`)
+### FE (`apps/chat-fe-with-cursor`)
 
 | 변수 | 기본값 | 설명 |
 |------|--------|------|
@@ -63,8 +63,8 @@ pnpm install
 
 | 앱 | 기본 포트 |
 |----|-----------|
-| chat-fe (Vite) | 5173 |
-| chat-be (NestJS) | 3000 |
+| chat-fe-with-cursor (Vite) | 5173 |
+| chat-be-with-cursor (NestJS) | 3000 |
 
 ---
 
@@ -72,16 +72,16 @@ pnpm install
 
 1. 터미널 1: `pnpm run dev` (또는 `turbo run dev`) — FE, BE 동시.
 2. 또는 개별:
-   - `pnpm --filter chat-be run start:dev`
-   - `pnpm --filter chat-fe run dev`
+   - `pnpm --filter chat-be-with-cursor run start:dev`
+   - `pnpm --filter chat-fe-with-cursor run dev`
 3. 브라우저: `http://localhost:5173`
 
 ---
 
 ## 7. 배포·프로덕션 (참고)
 
-- **FE**: `pnpm --filter chat-fe run build` → `dist/`를 정적 호스팅.
-- **BE**: `pnpm --filter chat-be run build` → `dist/` 실행: `node dist/main` (또는 `nest start --prod`).
+- **FE**: `pnpm --filter chat-fe-with-cursor run build` → `dist/`를 정적 호스팅.
+- **BE**: `pnpm --filter chat-be-with-cursor run build` → `dist/` 실행: `node dist/main` (또는 `nest start --prod`).
 - 실험용이므로 In-memory 유지. 다중 인스턴스·영속화는 범위 외.
 
 ---

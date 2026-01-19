@@ -96,7 +96,7 @@ package.json                 # root: lint, format, build, dev
 tsconfig.base.json           # (선택) 앱별 tsconfig가 extend
 
 apps/
-├── chat-fe/                 # Vite + React + TypeScript
+├── chat-fe-with-cursor/     # Vite + React + TypeScript
 │   ├── package.json
 │   ├── vite.config.ts
 │   ├── tailwind.config.js
@@ -110,7 +110,7 @@ apps/
 │       └── shared/          # ui (shadcn), lib, api, socket, config
 │           └── config/      # MESSAGE_MAX_LENGTH, 소켓 이벤트명 등 (contracts와 동일 유지)
 │
-└── chat-be/                 # NestJS
+└── chat-be-with-cursor/     # NestJS
     ├── package.json
     ├── nest-cli.json
     └── src/
@@ -127,7 +127,7 @@ apps/
         └── ...
 ```
 
-**Structure Decision**: **packages/ 없이 `apps/chat-fe`, `apps/chat-be`만** 둔다. 공용 코드 패키지를 쓰지 않고, 각 앱이 자체 설정·상수를 가진다.
+**Structure Decision**: **packages/ 없이 `apps/chat-fe-with-cursor`, `apps/chat-be-with-cursor`만** 둔다. 공용 코드 패키지를 쓰지 않고, 각 앱이 자체 설정·상수를 가진다.
 
 ---
 

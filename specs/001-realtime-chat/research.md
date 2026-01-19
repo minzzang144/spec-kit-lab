@@ -29,7 +29,7 @@ Phase 0 산출물. Technical Context의 확정 사항 및 기술 선택 근거�
 
 ## 2. pnpm + Turborepo 모노레포
 
-**Decision**: 루트에 `pnpm-workspace.yaml`(`packages: ["apps/*"]`만), `turbo.json`으로 `build`/`lint`/`dev`/`test` 파이프라인을 정의한다. **packages/는 두지 않고** FE·BE만 `apps/chat-fe`, `apps/chat-be`에 둔다. 상수·이벤트명·타입은 각 앱에 두고, **contracts·data-model을 기준으로 동일하게 유지**한다.
+**Decision**: 루트에 `pnpm-workspace.yaml`(`packages: ["apps/*"]`만), `turbo.json`으로 `build`/`lint`/`dev`/`test` 파이프라인을 정의한다. **packages/는 두지 않고** FE·BE만 `apps/chat-fe-with-cursor`, `apps/chat-be-with-cursor`에 둔다. 상수·이벤트명·타입은 각 앱에 두고, **contracts·data-model을 기준으로 동일하게 유지**한다.
 
 **Rationale**:
 
@@ -123,7 +123,7 @@ Phase 0 산출물. Technical Context의 확정 사항 및 기술 선택 근거�
 
 ## 8. 공통: Prettier, ESLint
 
-**Decision**: 루트에 `.prettierrc`, `.prettierignore`, `eslint.config.js`(또는 `.eslintrc.cjs`)를 두고, `turbo.json`에 `lint`·`format` 태스크를 정의. **`apps/chat-fe`, `apps/chat-be`는 루트 설정을 상속**하고, 앱별로 필요한 규칙만 override. (packages/ 없음.)
+**Decision**: 루트에 `.prettierrc`, `.prettierignore`, `eslint.config.js`(또는 `.eslintrc.cjs`)를 두고, `turbo.json`에 `lint`·`format` 태스크를 정의. **`apps/chat-fe-with-cursor`, `apps/chat-be-with-cursor`는 루트 설정을 상속**하고, 앱별로 필요한 규칙만 override. (packages/ 없음.)
 
 **Rationale**:
 
