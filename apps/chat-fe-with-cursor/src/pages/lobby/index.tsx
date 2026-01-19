@@ -1,33 +1,70 @@
 import { useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { connectSocket } from '@/shared/lib/socket';
-import { SOCKET_EMIT } from '@/shared/config/constants';
-import { NICKNAME_STORAGE_KEY } from '@/shared/config/constants';
-import { getRooms } from '@/shared/api';
+import { useNavigate } from 'react-router-dom';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { connectSocket, getSocket } from '@/shared/lib/socket';
+import { SOCKET_EMIT, NICKNAME_STORAGE_KEY } from '@/shared/config/constants';
+import { getRooms, createRoom } from '@/shared/api';
+
+function getNickname(): string {
+  try {
+    return sessionStorage.getItem(NICKNAME_STORAGE_KEY) || 'User-' + crypto.randomUUID().slice(0, 8);
+  } catch {
+    return 'User-' + crypto.randomUUID().slice(0, 8);
+  }
+}
 
 export function Lobby() {
+  const navigate = useNavigate();
   const { data: rooms = [], isLoading, error } = useQuery({ queryKey: ['rooms'], queryFn: getRooms });
+  const createMutation = useMutation({
+    mutationFn: () => createRoom(getNickname()),
+    onSuccess: ({ room }) => {
+      const sock = getSocket();
+      if (!sock) return;
+      sock.emit(SOCKET_EMIT.JOIN_ROOM, { roomId: room.id, nickname: getNickname() });
+      navigate(`/room/${room.id}`);
+    },
+  });
 
   useEffect(() => {
     const sock = connectSocket();
-    const nickname =
-      (typeof sessionStorage !== 'undefined' && sessionStorage.getItem(NICKNAME_STORAGE_KEY)) ||
-      'User-' + crypto.randomUUID().slice(0, 8);
-    sock.emit(SOCKET_EMIT.SET_NICKNAME, { nickname });
+    sock.emit(SOCKET_EMIT.SET_NICKNAME, { nickname: getNickname() });
   }, []);
+
+  const handleJoin = (roomId: string) => {
+    const sock = getSocket();
+    if (!sock) return;
+    sock.emit(SOCKET_EMIT.JOIN_ROOM, { roomId, nickname: getNickname() });
+    navigate(`/room/${roomId}`);
+  };
 
   return (
     <div className="min-h-screen p-4">
       <h1 className="text-xl font-semibold mb-4">로비</h1>
-      <button type="button" className="border rounded px-3 py-2 mb-4" onClick={() => {}}>
-        방 만들기
+      <button
+        type="button"
+        className="border rounded px-3 py-2 mb-4"
+        onClick={() => createMutation.mutate()}
+        disabled={createMutation.isPending}
+      >
+        {createMutation.isPending ? '생성 중…' : '방 만들기'}
       </button>
+      {createMutation.isError && (
+        <p className="text-destructive mb-2">방 생성에 실패했습니다.</p>
+      )}
       {isLoading && <p>목록 로딩 중…</p>}
       {error && <p className="text-destructive">목록을 불러올 수 없습니다.</p>}
       {!isLoading && !error && (
         <ul className="list-disc list-inside space-y-1">
           {rooms.map((r) => (
-            <li key={r.id}>
+            <li
+              key={r.id}
+              role="button"
+              tabIndex={0}
+              onClick={() => handleJoin(r.id)}
+              onKeyDown={(e) => e.key === 'Enter' && handleJoin(r.id)}
+              className="cursor-pointer hover:underline"
+            >
               {r.name} (참가자 {r.participantCount})
             </li>
           ))}
