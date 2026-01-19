@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+
+# Turborepo
+.turbo/
+
+# Build outputs
+dist/
+build/
+out/
+.next/
+.vercel/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Testing
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+.vitest/
+
+# TypeScript
+*.tsbuildinfo
+
+# Cache
+.cache/
+.parcel-cache/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE (optional: remove if you want to commit .vscode)
+.idea/
+*.swp
+*.swo
+*~
+
+# Debug
+.vscode-test/
