@@ -4,6 +4,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { getSocket } from '@/shared/lib/socket';
 import { SOCKET_EMIT, SOCKET_ON, MESSAGE_MAX_LENGTH } from '@/shared/config/constants';
 import type { Message } from '@/shared/api';
+import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
 
 type JoinLeftEvent = { type: 'joined' | 'left'; nickname: string };
 
@@ -104,9 +106,9 @@ export function Room() {
     <div className="min-h-screen flex flex-col p-4">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-semibold">방: {id}</h1>
-        <button type="button" className="border rounded px-3 py-2" onClick={handleLeave}>
+        <Button type="button" variant="outline" onClick={handleLeave}>
           나가기
-        </button>
+        </Button>
       </div>
       <div className="flex-1 overflow-y-auto space-y-2 mb-4">
         {events.map((ev, i) => (
@@ -123,29 +125,24 @@ export function Room() {
       {errorMsg != null && failedText != null && (
         <div className="mb-2 p-2 bg-destructive/10 rounded text-destructive text-sm flex items-center gap-2">
           <span>전송 실패: {errorMsg}</span>
-          <button type="button" className="underline" onClick={handleRetry}>
+          <Button type="button" variant="link" size="sm" className="h-auto p-0 text-destructive" onClick={handleRetry}>
             재전송
-          </button>
+          </Button>
         </div>
       )}
       <div className="flex gap-2">
-        <input
+        <Input
           type="text"
           value={inputText}
           onChange={(e) => setInputText(e.target.value.slice(0, MESSAGE_MAX_LENGTH))}
           onKeyDown={(e) => e.key === 'Enter' && handleSend()}
           placeholder="메시지 (최대 2000자)"
           maxLength={MESSAGE_MAX_LENGTH}
-          className="flex-1 border rounded px-3 py-2"
+          className="flex-1"
         />
-        <button
-          type="button"
-          className="border rounded px-3 py-2 bg-primary text-primary-foreground disabled:opacity-50"
-          onClick={handleSend}
-          disabled={!inputText.trim()}
-        >
+        <Button type="button" onClick={handleSend} disabled={!inputText.trim()}>
           전송
-        </button>
+        </Button>
       </div>
     </div>
   );
