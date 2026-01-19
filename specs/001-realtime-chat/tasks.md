@@ -83,7 +83,7 @@
 ### Implementation
 
 - [x] T015 [P] [FE] [US2] Extend `apps/chat-fe-with-cursor/src/pages/lobby/`: “방 만들기” → createRoom(nickname) 후 join_room(roomId, nickname), `/room/:id` 이동; 목록 행 클릭 → join_room(roomId, nickname), `/room/:id` 이동 in `apps/chat-fe-with-cursor/`
-- [ ] T016 [FE] [US2] Implement `apps/chat-fe-with-cursor/src/pages/room/` (or Room page): leave 버튼(leave_room), on user_joined/user_left 표시, on room_deleted 시 `/lobby` 리다이렉트, on room_joined(messages)로 메시지 목록 표시, on room_list_updated 시 `queryClient.invalidateQueries(['rooms'])` in `apps/chat-fe-with-cursor/`
+- [x] T016 [FE] [US2] Implement `apps/chat-fe-with-cursor/src/pages/room/` (or Room page): leave 버튼(leave_room), on user_joined/user_left 표시, on room_deleted 시 `/lobby` 리다이렉트, on room_joined(messages)로 메시지 목록 표시, on room_list_updated 시 `queryClient.invalidateQueries(['rooms'])` in `apps/chat-fe-with-cursor/`
 
 **Checkpoint**: US1+US2로 방 생성·입장·나가기·빈 방 삭제가 E2E로 동작.
 
