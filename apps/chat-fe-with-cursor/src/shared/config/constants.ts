@@ -6,6 +6,8 @@ export const MESSAGE_MAX_LENGTH = 2000;
 export const NICKNAME_MAX_LENGTH = 64;
 export const ROOM_ID_LENGTH = 8;
 
+export const NICKNAME_STORAGE_KEY = 'nickname';
+
 /** 클라이언트 → 서버 (emit) */
 export const SOCKET_EMIT = {
   SET_NICKNAME: 'set_nickname',
