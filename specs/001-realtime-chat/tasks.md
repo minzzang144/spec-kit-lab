@@ -27,10 +27,10 @@
 
 **목적**: 프로젝트 루트 및 FE/BE 앱 골격. 루트(T001, T004) 완료 후 [FE](T002)와 [BE](T003)는 **서로 다른 git worktree에서 동시에** 진행 가능.
 
-- [ ] T001 Create monorepo root: `pnpm-workspace.yaml` (`packages: ["apps/*"]`), `turbo.json` (build, dev, lint, format), root `package.json` (scripts)
-- [ ] T002 [P] [FE] Create `apps/chat-fe-with-cursor` skeleton: `package.json` (name: `chat-fe-with-cursor` for pnpm/turbo filter), `vite.config.ts`, `tailwind.config.js`, `tsconfig.json`, `playwright.config.ts`, `src/` FSD folders (app, pages, widgets, features, entities, shared), shadcn/ui init in `apps/chat-fe-with-cursor/`
+- [x] T001 Create monorepo root: `pnpm-workspace.yaml` (`packages: ["apps/*"]`), `turbo.json` (build, dev, lint, format), root `package.json` (scripts)
+- [x] T002 [P] [FE] Create `apps/chat-fe-with-cursor` skeleton: `package.json` (name: `chat-fe-with-cursor` for pnpm/turbo filter), `vite.config.ts`, `tailwind.config.js`, `tsconfig.json`, `playwright.config.ts`, `src/` FSD folders (app, pages, widgets, features, entities, shared), shadcn/ui init in `apps/chat-fe-with-cursor/`
 - [ ] T003 [P] [BE] Create `apps/chat-be-with-cursor` skeleton: `package.json` (name: `chat-be-with-cursor` for pnpm/turbo filter), `nest-cli.json`, `tsconfig.json`, `src/` (app.module.ts, main.ts, chat/, rooms/, common/) in `apps/chat-be-with-cursor/`
-- [ ] T004 [P] Create root `.prettierrc`, `.prettierignore`, `eslint.config.js` (or `.eslintrc.cjs`); apps는 루트 설정 상속
+- [x] T004 [P] Create root `.prettierrc`, `.prettierignore`, `eslint.config.js` (or `.eslintrc.cjs`); apps는 루트 설정 상속
 
 ---
 
@@ -51,7 +51,7 @@
 
 ### [FE] 트랙
 
-- [ ] T006 [P] [FE] Define `apps/chat-fe-with-cursor/src/shared/config/constants.ts` (and event names): MESSAGE_MAX_LENGTH, NICKNAME_MAX_LENGTH, socket event strings per `contracts/socket-events.md`, `data-model.md` §4
+- [x] T006 [P] [FE] Define `apps/chat-fe-with-cursor/src/shared/config/constants.ts` (and event names): MESSAGE_MAX_LENGTH, NICKNAME_MAX_LENGTH, socket event strings per `contracts/socket-events.md`, `data-model.md` §4
 - [ ] T011 [P] [FE] Implement `apps/chat-fe-with-cursor/src/shared/api/` (getRooms, createRoom with VITE_API_URL) and `apps/chat-fe-with-cursor/src/shared/lib/socket.ts` (or similar): Socket.IO connect(VITE_WS_URL), generic emit/on; event names from shared/config
 - [ ] T012 [FE] Implement `apps/chat-fe-with-cursor/src/app/`: QueryClient, Router; `pages/` placeholder for Main, Lobby, Room; routes `/`, `/lobby`, `/room/:id` in `apps/chat-fe-with-cursor/src/`
 
