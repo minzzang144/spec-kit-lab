@@ -96,7 +96,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage(SOCKET_EVENTS.SET_NICKNAME)
   handleSetNickname(
     @MessageBody() payload: { nickname: string },
-    client: Socket,
+    client: Socket
   ): { success: boolean } | { error: { code: string; reason?: string } } {
     const trimmedNickname = payload.nickname?.trim() || '';
 
@@ -119,8 +119,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage(SOCKET_EVENTS.JOIN_ROOM)
   handleJoinRoom(
     @MessageBody() payload: { roomId: string; nickname: string },
-    client: Socket,
-  ): { room: Room; messages: Message[] } | { error: { code: string; roomId?: string } } {
+    client: Socket
+  ):
+    | { room: Room & { participantCount: number }; messages: Message[] }
+    | { error: { code: string; roomId?: string } } {
     const { roomId, nickname } = payload;
     const trimmedNickname = nickname?.trim() || '';
 
@@ -208,7 +210,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage(SOCKET_EVENTS.SEND_MESSAGE)
   handleSendMessage(
     @MessageBody() payload: { text: string },
-    client: Socket,
+    client: Socket
   ): Message | { error: { code: string; reason?: string } } {
     const user = this.chatStore.getUser(client.id);
     if (!user || !user.roomId) {

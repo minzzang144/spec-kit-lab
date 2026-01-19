@@ -27,10 +27,10 @@
 
 **목적**: 프로젝트 루트 및 FE/BE 앱 골격. 루트(T001, T004) 완료 후 [FE](T002)와 [BE](T003)는 **서로 다른 git worktree에서 동시에** 진행 가능.
 
-- [X] T001 Create monorepo root: `pnpm-workspace.yaml` (`packages: ["apps/*"]`), `turbo.json` (build, dev, lint, format), root `package.json` (scripts)
-- [ ] T002 [P] [FE] Create `apps/chat-fe-with-cursor` skeleton: `package.json` (name: `chat-fe-with-cursor` for pnpm/turbo filter), `vite.config.ts`, `tailwind.config.js`, `tsconfig.json`, `playwright.config.ts`, `src/` FSD folders (app, pages, widgets, features, entities, shared), shadcn/ui init in `apps/chat-fe-with-cursor/`
-- [X] T003 [P] [BE] Create `apps/chat-be-with-cursor` skeleton: `package.json` (name: `chat-be-with-cursor` for pnpm/turbo filter), `nest-cli.json`, `tsconfig.json`, `src/` (app.module.ts, main.ts, chat/, rooms/, common/) in `apps/chat-be-with-cursor/`
-- [X] T004 [P] Create root `.prettierrc`, `.prettierignore`, `eslint.config.js` (or `.eslintrc.cjs`); apps는 루트 설정 상속
+- [x] T001 Create monorepo root: `pnpm-workspace.yaml` (`packages: ["apps/*"]`), `turbo.json` (build, dev, lint, format), root `package.json` (scripts)
+- [x] T002 [P] [FE] Create `apps/chat-fe-with-cursor` skeleton: `package.json` (name: `chat-fe-with-cursor` for pnpm/turbo filter), `vite.config.ts`, `tailwind.config.js`, `tsconfig.json`, `playwright.config.ts`, `src/` FSD folders (app, pages, widgets, features, entities, shared), shadcn/ui init in `apps/chat-fe-with-cursor/`
+- [x] T003 [P] [BE] Create `apps/chat-be-with-cursor` skeleton: `package.json` (name: `chat-be-with-cursor` for pnpm/turbo filter), `nest-cli.json`, `tsconfig.json`, `src/` (app.module.ts, main.ts, chat/, rooms/, common/) in `apps/chat-be-with-cursor/`
+- [x] T004 [P] Create root `.prettierrc`, `.prettierignore`, `eslint.config.js` (or `.eslintrc.cjs`); apps는 루트 설정 상속
 
 ---
 
@@ -51,9 +51,9 @@
 
 ### [FE] 트랙
 
-- [ ] T006 [P] [FE] Define `apps/chat-fe-with-cursor/src/shared/config/constants.ts` (and event names): MESSAGE_MAX_LENGTH, NICKNAME_MAX_LENGTH, socket event strings per `contracts/socket-events.md`, `data-model.md` §4
-- [ ] T011 [P] [FE] Implement `apps/chat-fe-with-cursor/src/shared/api/` (getRooms, createRoom with VITE_API_URL) and `apps/chat-fe-with-cursor/src/shared/lib/socket.ts` (or similar): Socket.IO connect(VITE_WS_URL), generic emit/on; event names from shared/config
-- [ ] T012 [FE] Implement `apps/chat-fe-with-cursor/src/app/`: QueryClient, Router; `pages/` placeholder for Main, Lobby, Room; routes `/`, `/lobby`, `/room/:id` in `apps/chat-fe-with-cursor/src/`
+- [x] T006 [P] [FE] Define `apps/chat-fe-with-cursor/src/shared/config/constants.ts` (and event names): MESSAGE_MAX_LENGTH, NICKNAME_MAX_LENGTH, socket event strings per `contracts/socket-events.md`, `data-model.md` §4
+- [x] T011 [P] [FE] Implement `apps/chat-fe-with-cursor/src/shared/api/` (getRooms, createRoom with VITE_API_URL) and `apps/chat-fe-with-cursor/src/shared/lib/socket.ts` (or similar): Socket.IO connect(VITE_WS_URL), generic emit/on; event names from shared/config
+- [x] T012 [FE] Implement `apps/chat-fe-with-cursor/src/app/`: QueryClient, Router; `pages/` placeholder for Main, Lobby, Room; routes `/`, `/lobby`, `/room/:id` in `apps/chat-fe-with-cursor/src/`
 
 **Checkpoint**: BE는 GET/POST /rooms, Socket connection/disconnect/set_nickname/join_room/leave_room 동작. FE는 API·Socket 클라이언트와 라우팅 준비.
 
@@ -67,8 +67,8 @@
 
 ### Implementation ([FE] 전용)
 
-- [ ] T013 [P] [FE] [US1] Implement `apps/chat-fe-with-cursor/src/pages/main/` (or Main page): 닉네임 input, “닉네임 없이 진행” 시 `User-` + `crypto.randomUUID().slice(0,8)` 부여, nickname을 sessionStorage(또는 state)에 저장 후 `/lobby`로 이동
-- [ ] T014 [FE] [US1] Implement `apps/chat-fe-with-cursor/src/pages/lobby/`: mount 시 socket connect(미연결이면), set_nickname(sessionStorage nickname), getRooms(TanStack Query); 방 목록 표시, “방 만들기” 버튼(onClick placeholder·US2에서 연동)
+- [x] T013 [P] [FE] [US1] Implement `apps/chat-fe-with-cursor/src/pages/main/` (or Main page): 닉네임 input, “닉네임 없이 진행” 시 `User-` + `crypto.randomUUID().slice(0,8)` 부여, nickname을 sessionStorage(또는 state)에 저장 후 `/lobby`로 이동
+- [x] T014 [FE] [US1] Implement `apps/chat-fe-with-cursor/src/pages/lobby/`: mount 시 socket connect(미연결이면), set_nickname(sessionStorage nickname), getRooms(TanStack Query); 방 목록 표시, “방 만들기” 버튼(onClick placeholder·US2에서 연동)
 
 **Checkpoint**: US1 단독으로 메인→닉네임 설정→/lobby·방 목록까지 확인 가능.
 
@@ -82,8 +82,8 @@
 
 ### Implementation
 
-- [ ] T015 [P] [FE] [US2] Extend `apps/chat-fe-with-cursor/src/pages/lobby/`: “방 만들기” → createRoom(nickname) 후 join_room(roomId, nickname), `/room/:id` 이동; 목록 행 클릭 → join_room(roomId, nickname), `/room/:id` 이동 in `apps/chat-fe-with-cursor/`
-- [ ] T016 [FE] [US2] Implement `apps/chat-fe-with-cursor/src/pages/room/` (or Room page): leave 버튼(leave_room), on user_joined/user_left 표시, on room_deleted 시 `/lobby` 리다이렉트, on room_joined(messages)로 메시지 목록 표시, on room_list_updated 시 `queryClient.invalidateQueries(['rooms'])` in `apps/chat-fe-with-cursor/`
+- [x] T015 [P] [FE] [US2] Extend `apps/chat-fe-with-cursor/src/pages/lobby/`: “방 만들기” → createRoom(nickname) 후 join_room(roomId, nickname), `/room/:id` 이동; 목록 행 클릭 → join_room(roomId, nickname), `/room/:id` 이동 in `apps/chat-fe-with-cursor/`
+- [x] T016 [FE] [US2] Implement `apps/chat-fe-with-cursor/src/pages/room/` (or Room page): leave 버튼(leave_room), on user_joined/user_left 표시, on room_deleted 시 `/lobby` 리다이렉트, on room_joined(messages)로 메시지 목록 표시, on room_list_updated 시 `queryClient.invalidateQueries(['rooms'])` in `apps/chat-fe-with-cursor/`
 
 **Checkpoint**: US1+US2로 방 생성·입장·나가기·빈 방 삭제가 E2E로 동작.
 
@@ -97,8 +97,8 @@
 
 ### Implementation
 
-- [X] T017 [P] [BE] [US3] Extend `apps/chat-be-with-cursor/src/chat/chat.gateway.ts`: send_message 핸들러 — NOT_IN_ROOM·MESSAGE_INVALID(빈/2000초과) 검사, Message 생성 후 Store messages에 push, `io.to(roomId).emit('message', msg)` and ACK in `apps/chat-be-with-cursor/`
-- [ ] T018 [FE] [US3] Extend `apps/chat-fe-with-cursor/src/pages/room/` (or message feature): 메시지 입력, send_message emit, on('message') 수신·목록 추가, MESSAGE_MAX_LENGTH·trim 검사·빈 메시지 전송 불가, FR-010 오류 시 안내·재전송 UI in `apps/chat-fe-with-cursor/`
+- [x] T017 [P] [BE] [US3] Extend `apps/chat-be-with-cursor/src/chat/chat.gateway.ts`: send_message 핸들러 — NOT_IN_ROOM·MESSAGE_INVALID(빈/2000초과) 검사, Message 생성 후 Store messages에 push, `io.to(roomId).emit('message', msg)` and ACK in `apps/chat-be-with-cursor/`
+- [x] T018 [FE] [US3] Extend `apps/chat-fe-with-cursor/src/pages/room/` (or message feature): 메시지 입력, send_message emit, on('message') 수신·목록 추가, MESSAGE_MAX_LENGTH·trim 검사·빈 메시지 전송 불가, FR-010 오류 시 안내·재전송 UI in `apps/chat-fe-with-cursor/`
 
 **Checkpoint**: US1~US3 완료 시 quickstart 기준 E2E(메인→닉네임→방 생성→메시지 송수신→나가기) 검증 가능.
 
@@ -108,8 +108,8 @@
 
 **목적**: 공통 UI 정리, 문서·quickstart 검증.
 
-- [ ] T019 [P] [FE] Apply shadcn/ui (Button, Input, 리스트 등) to Main, Lobby, Room in `apps/chat-fe-with-cursor/`
-- [ ] T020 [P] Run `quickstart.md` 절차(build, dev, test) 검증; 필요 시 `README`·문서 보완 at repo root or `specs/001-realtime-chat/`
+- [x] T019 [P] [FE] Apply shadcn/ui (Button, Input, 리스트 등) to Main, Lobby, Room in `apps/chat-fe-with-cursor/`
+- [x] T020 [P] Run `quickstart.md` 절차(build, dev, test) 검증; 필요 시 `README`·문서 보완 at repo root or `specs/001-realtime-chat/`
 
 ---
 

@@ -1,12 +1,12 @@
 {
-  "name": "chat-be-with-cursor",
+  "name": "spec-kit-lab",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format": "turbo run format",
     "test": "turbo run test",
     "test:e2e": "turbo run test:e2e"
   },
