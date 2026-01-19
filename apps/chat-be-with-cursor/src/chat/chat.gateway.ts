@@ -13,6 +13,7 @@ import {
   SOCKET_RESPONSE_EVENTS,
   ERROR_CODES,
   NICKNAME_MAX_LENGTH,
+  MESSAGE_MAX_LENGTH,
 } from '../common/constants';
 
 @WebSocketGateway({
@@ -202,5 +203,66 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     this.handleLeaveRoom(client);
     return { success: true };
+  }
+
+  @SubscribeMessage(SOCKET_EVENTS.SEND_MESSAGE)
+  handleSendMessage(
+    @MessageBody() payload: { text: string },
+    client: Socket,
+  ): Message | { error: { code: string; reason?: string } } {
+    const user = this.chatStore.getUser(client.id);
+    if (!user || !user.roomId) {
+      client.emit(SOCKET_RESPONSE_EVENTS.ERROR, {
+        code: ERROR_CODES.NOT_IN_ROOM,
+      });
+      return { error: { code: ERROR_CODES.NOT_IN_ROOM } };
+    }
+
+    const trimmedText = payload.text?.trim() || '';
+
+    // Validate message
+    if (trimmedText.length === 0) {
+      client.emit(SOCKET_RESPONSE_EVENTS.ERROR, {
+        code: ERROR_CODES.MESSAGE_INVALID,
+        reason: 'Message cannot be empty',
+      });
+      return { error: { code: ERROR_CODES.MESSAGE_INVALID, reason: 'Message cannot be empty' } };
+    }
+
+    if (trimmedText.length > MESSAGE_MAX_LENGTH) {
+      client.emit(SOCKET_RESPONSE_EVENTS.ERROR, {
+        code: ERROR_CODES.MESSAGE_INVALID,
+        reason: `Message exceeds maximum length of ${MESSAGE_MAX_LENGTH} characters`,
+      });
+      return {
+        error: {
+          code: ERROR_CODES.MESSAGE_INVALID,
+          reason: `Message exceeds maximum length of ${MESSAGE_MAX_LENGTH} characters`,
+        },
+      };
+    }
+
+    // Create message
+    const message: Message = {
+      id: this.generateMessageId(),
+      roomId: user.roomId,
+      senderId: client.id,
+      senderNickname: user.nickname,
+      text: trimmedText,
+      createdAt: new Date(),
+    };
+
+    // Add to store
+    this.chatStore.addMessage(message);
+
+    // Broadcast to room (including sender)
+    this.server.to(user.roomId).emit(SOCKET_RESPONSE_EVENTS.MESSAGE, message);
+
+    // Return ACK
+    return message;
+  }
+
+  private generateMessageId(): string {
+    return crypto.randomUUID().slice(0, 12);
   }
 }
