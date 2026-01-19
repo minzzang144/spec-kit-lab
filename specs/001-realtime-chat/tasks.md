@@ -109,7 +109,7 @@
 **목적**: 공통 UI 정리, 문서·quickstart 검증.
 
 - [x] T019 [P] [FE] Apply shadcn/ui (Button, Input, 리스트 등) to Main, Lobby, Room in `apps/chat-fe-with-cursor/`
-- [ ] T020 [P] Run `quickstart.md` 절차(build, dev, test) 검증; 필요 시 `README`·문서 보완 at repo root or `specs/001-realtime-chat/`
+- [x] T020 [P] Run `quickstart.md` 절차(build, dev, test) 검증; 필요 시 `README`·문서 보완 at repo root or `specs/001-realtime-chat/`
 
 ---
 

@@ -125,7 +125,13 @@ export function Room() {
       {errorMsg != null && failedText != null && (
         <div className="mb-2 p-2 bg-destructive/10 rounded text-destructive text-sm flex items-center gap-2">
           <span>전송 실패: {errorMsg}</span>
-          <Button type="button" variant="link" size="sm" className="h-auto p-0 text-destructive" onClick={handleRetry}>
+          <Button
+            type="button"
+            variant="link"
+            size="sm"
+            className="h-auto p-0 text-destructive"
+            onClick={handleRetry}
+          >
             재전송
           </Button>
         </div>

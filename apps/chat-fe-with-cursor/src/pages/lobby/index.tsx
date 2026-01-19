@@ -8,7 +8,9 @@ import { Button } from '@/shared/ui/button';
 
 function getNickname(): string {
   try {
-    return sessionStorage.getItem(NICKNAME_STORAGE_KEY) || 'User-' + crypto.randomUUID().slice(0, 8);
+    return (
+      sessionStorage.getItem(NICKNAME_STORAGE_KEY) || 'User-' + crypto.randomUUID().slice(0, 8)
+    );
   } catch {
     return 'User-' + crypto.randomUUID().slice(0, 8);
   }
@@ -16,7 +18,11 @@ function getNickname(): string {
 
 export function Lobby() {
   const navigate = useNavigate();
-  const { data: rooms = [], isLoading, error } = useQuery({ queryKey: ['rooms'], queryFn: getRooms });
+  const {
+    data: rooms = [],
+    isLoading,
+    error,
+  } = useQuery({ queryKey: ['rooms'], queryFn: getRooms });
   const createMutation = useMutation({
     mutationFn: () => createRoom(getNickname()),
     onSuccess: ({ room }) => {
@@ -50,9 +56,7 @@ export function Lobby() {
       >
         {createMutation.isPending ? '생성 중…' : '방 만들기'}
       </Button>
-      {createMutation.isError && (
-        <p className="text-destructive mb-2">방 생성에 실패했습니다.</p>
-      )}
+      {createMutation.isError && <p className="text-destructive mb-2">방 생성에 실패했습니다.</p>}
       {isLoading && <p>목록 로딩 중…</p>}
       {error && <p className="text-destructive">목록을 불러올 수 없습니다.</p>}
       {!isLoading && !error && (
