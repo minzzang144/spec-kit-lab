@@ -68,7 +68,7 @@
 ### Implementation ([FE] 전용)
 
 - [x] T013 [P] [FE] [US1] Implement `apps/chat-fe-with-cursor/src/pages/main/` (or Main page): 닉네임 input, “닉네임 없이 진행” 시 `User-` + `crypto.randomUUID().slice(0,8)` 부여, nickname을 sessionStorage(또는 state)에 저장 후 `/lobby`로 이동
-- [ ] T014 [FE] [US1] Implement `apps/chat-fe-with-cursor/src/pages/lobby/`: mount 시 socket connect(미연결이면), set_nickname(sessionStorage nickname), getRooms(TanStack Query); 방 목록 표시, “방 만들기” 버튼(onClick placeholder·US2에서 연동)
+- [x] T014 [FE] [US1] Implement `apps/chat-fe-with-cursor/src/pages/lobby/`: mount 시 socket connect(미연결이면), set_nickname(sessionStorage nickname), getRooms(TanStack Query); 방 목록 표시, “방 만들기” 버튼(onClick placeholder·US2에서 연동)
 
 **Checkpoint**: US1 단독으로 메인→닉네임 설정→/lobby·방 목록까지 확인 가능.
 
