@@ -1,0 +1,71 @@
+openapi: 3.0.3
+info:
+  title: Realtime Chat API
+  description: |
+    REST only. Real-time is via Socket.IO (see contracts/socket-events.md).
+    스키마·경로는 이 OpenAPI를 기준으로 FE/BE 각각 구현. 공용 패키지 없음.
+  version: 0.1.0
+servers:
+  - url: http://localhost:3000
+    description: Local BE
+
+paths:
+  /rooms:
+    get:
+      operationId: listRooms
+      summary: 채팅방 목록
+      tags: [rooms]
+      responses:
+        '200':
+          description: 방 목록 (참가자 0명인 방은 이미 삭제되어 포함되지 않음)
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Room' }
+    post:
+      operationId: createRoom
+      summary: 채팅방 생성 및 생성자 입장
+      tags: [rooms]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [nickname]
+              properties:
+                nickname: { type: string, minLength: 1, maxLength: 64 }
+      responses:
+        '201':
+          description: 생성된 방. 클라이언트는 room.id로 Socket join_room(roomId, nickname) 호출.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [room]
+                properties:
+                  room: { $ref: '#/components/schemas/Room' }
+        '400':
+          description: nickname 누락 또는 잘못된 형식
+
+components:
+  schemas:
+    Room:
+      type: object
+      required: [id, name, createdAt, participantCount]
+      properties:
+        id: { type: string, example: 'Room-a1b2c3d4' }
+        name: { type: string, example: 'Room-a1b2c3d4' }
+        createdAt: { type: string, format: date-time }
+        participantCount: { type: integer, minimum: 0 }
+    Message:
+      type: object
+      required: [id, roomId, senderId, senderNickname, text, createdAt]
+      properties:
+        id: { type: string }
+        roomId: { type: string }
+        senderId: { type: string }
+        senderNickname: { type: string }
+        text: { type: string, maxLength: 2000 }
+        createdAt: { type: string, format: date-time }
