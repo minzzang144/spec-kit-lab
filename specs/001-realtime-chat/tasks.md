@@ -52,7 +52,7 @@
 ### [FE] 트랙
 
 - [x] T006 [P] [FE] Define `apps/chat-fe-with-cursor/src/shared/config/constants.ts` (and event names): MESSAGE_MAX_LENGTH, NICKNAME_MAX_LENGTH, socket event strings per `contracts/socket-events.md`, `data-model.md` §4
-- [ ] T011 [P] [FE] Implement `apps/chat-fe-with-cursor/src/shared/api/` (getRooms, createRoom with VITE_API_URL) and `apps/chat-fe-with-cursor/src/shared/lib/socket.ts` (or similar): Socket.IO connect(VITE_WS_URL), generic emit/on; event names from shared/config
+- [x] T011 [P] [FE] Implement `apps/chat-fe-with-cursor/src/shared/api/` (getRooms, createRoom with VITE_API_URL) and `apps/chat-fe-with-cursor/src/shared/lib/socket.ts` (or similar): Socket.IO connect(VITE_WS_URL), generic emit/on; event names from shared/config
 - [ ] T012 [FE] Implement `apps/chat-fe-with-cursor/src/app/`: QueryClient, Router; `pages/` placeholder for Main, Lobby, Room; routes `/`, `/lobby`, `/room/:id` in `apps/chat-fe-with-cursor/src/`
 
 **Checkpoint**: BE는 GET/POST /rooms, Socket connection/disconnect/set_nickname/join_room/leave_room 동작. FE는 API·Socket 클라이언트와 라우팅 준비.
