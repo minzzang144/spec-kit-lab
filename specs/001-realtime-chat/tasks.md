@@ -27,10 +27,10 @@
 
 **목적**: 프로젝트 루트 및 FE/BE 앱 골격. 루트(T001, T004) 완료 후 [FE](T002)와 [BE](T003)는 **서로 다른 git worktree에서 동시에** 진행 가능.
 
-- [ ] T001 Create monorepo root: `pnpm-workspace.yaml` (`packages: ["apps/*"]`), `turbo.json` (build, dev, lint, format), root `package.json` (scripts)
+- [X] T001 Create monorepo root: `pnpm-workspace.yaml` (`packages: ["apps/*"]`), `turbo.json` (build, dev, lint, format), root `package.json` (scripts)
 - [ ] T002 [P] [FE] Create `apps/chat-fe-with-cursor` skeleton: `package.json` (name: `chat-fe-with-cursor` for pnpm/turbo filter), `vite.config.ts`, `tailwind.config.js`, `tsconfig.json`, `playwright.config.ts`, `src/` FSD folders (app, pages, widgets, features, entities, shared), shadcn/ui init in `apps/chat-fe-with-cursor/`
-- [ ] T003 [P] [BE] Create `apps/chat-be-with-cursor` skeleton: `package.json` (name: `chat-be-with-cursor` for pnpm/turbo filter), `nest-cli.json`, `tsconfig.json`, `src/` (app.module.ts, main.ts, chat/, rooms/, common/) in `apps/chat-be-with-cursor/`
-- [ ] T004 [P] Create root `.prettierrc`, `.prettierignore`, `eslint.config.js` (or `.eslintrc.cjs`); apps는 루트 설정 상속
+- [X] T003 [P] [BE] Create `apps/chat-be-with-cursor` skeleton: `package.json` (name: `chat-be-with-cursor` for pnpm/turbo filter), `nest-cli.json`, `tsconfig.json`, `src/` (app.module.ts, main.ts, chat/, rooms/, common/) in `apps/chat-be-with-cursor/`
+- [X] T004 [P] Create root `.prettierrc`, `.prettierignore`, `eslint.config.js` (or `.eslintrc.cjs`); apps는 루트 설정 상속
 
 ---
 
@@ -43,11 +43,11 @@
 
 ### [BE] 트랙
 
-- [ ] T005 [P] [BE] Define `apps/chat-be-with-cursor/src/common/constants/index.ts`: MESSAGE_MAX_LENGTH(2000), NICKNAME_MAX_LENGTH(64), ROOM_ID_LENGTH(8), socket event names per `contracts/socket-events.md`
-- [ ] T007 [BE] Implement `apps/chat-be-with-cursor/src/chat/chat.store.ts`: ChatStore with `rooms: Map<roomId, Room>`, `messages: Map<roomId, Message[]>`, `users: Map<socketId, User>` per data-model.md
-- [ ] T008 [BE] Implement `apps/chat-be-with-cursor/src/rooms/rooms.service.ts` (createRoom, listRooms using Store), `rooms.controller.ts` (GET /rooms, POST /rooms), `rooms.module.ts`; register in `app.module.ts`
-- [ ] T009 [BE] Configure `apps/chat-be-with-cursor/src/main.ts` (CORS with FE_ORIGIN), `app.module` with ChatModule; `apps/chat-be-with-cursor/src/chat/chat.gateway.ts`: connection (User `{ socketId, nickname: null, roomId: null }` in Store), disconnect (leave_room 로직 + User 제거)
-- [ ] T010 [BE] Extend `apps/chat-be-with-cursor/src/chat/chat.gateway.ts`: set_nickname, join_room (Room 없으면 error, socket.join, participants 추가, room_joined with messages, user_joined broadcast), leave_room (participants 제거, 0명이면 room 삭제·room_deleted·room_list_updated broadcast)
+- [X] T005 [P] [BE] Define `apps/chat-be-with-cursor/src/common/constants/index.ts`: MESSAGE_MAX_LENGTH(2000), NICKNAME_MAX_LENGTH(64), ROOM_ID_LENGTH(8), socket event names per `contracts/socket-events.md`
+- [X] T007 [BE] Implement `apps/chat-be-with-cursor/src/chat/chat.store.ts`: ChatStore with `rooms: Map<roomId, Room>`, `messages: Map<roomId, Message[]>`, `users: Map<socketId, User>` per data-model.md
+- [X] T008 [BE] Implement `apps/chat-be-with-cursor/src/rooms/rooms.service.ts` (createRoom, listRooms using Store), `rooms.controller.ts` (GET /rooms, POST /rooms), `rooms.module.ts`; register in `app.module.ts`
+- [X] T009 [BE] Configure `apps/chat-be-with-cursor/src/main.ts` (CORS with FE_ORIGIN), `app.module` with ChatModule; `apps/chat-be-with-cursor/src/chat/chat.gateway.ts`: connection (User `{ socketId, nickname: null, roomId: null }` in Store), disconnect (leave_room 로직 + User 제거)
+- [X] T010 [BE] Extend `apps/chat-be-with-cursor/src/chat/chat.gateway.ts`: set_nickname, join_room (Room 없으면 error, socket.join, participants 추가, room_joined with messages, user_joined broadcast), leave_room (participants 제거, 0명이면 room 삭제·room_deleted·room_list_updated broadcast)
 
 ### [FE] 트랙
 
@@ -97,7 +97,7 @@
 
 ### Implementation
 
-- [ ] T017 [P] [BE] [US3] Extend `apps/chat-be-with-cursor/src/chat/chat.gateway.ts`: send_message 핸들러 — NOT_IN_ROOM·MESSAGE_INVALID(빈/2000초과) 검사, Message 생성 후 Store messages에 push, `io.to(roomId).emit('message', msg)` and ACK in `apps/chat-be-with-cursor/`
+- [X] T017 [P] [BE] [US3] Extend `apps/chat-be-with-cursor/src/chat/chat.gateway.ts`: send_message 핸들러 — NOT_IN_ROOM·MESSAGE_INVALID(빈/2000초과) 검사, Message 생성 후 Store messages에 push, `io.to(roomId).emit('message', msg)` and ACK in `apps/chat-be-with-cursor/`
 - [ ] T018 [FE] [US3] Extend `apps/chat-fe-with-cursor/src/pages/room/` (or message feature): 메시지 입력, send_message emit, on('message') 수신·목록 추가, MESSAGE_MAX_LENGTH·trim 검사·빈 메시지 전송 불가, FR-010 오류 시 안내·재전송 UI in `apps/chat-fe-with-cursor/`
 
 **Checkpoint**: US1~US3 완료 시 quickstart 기준 E2E(메인→닉네임→방 생성→메시지 송수신→나가기) 검증 가능.
