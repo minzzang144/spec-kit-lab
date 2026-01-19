@@ -3,10 +3,17 @@ import {
   WebSocketServer,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  SubscribeMessage,
+  MessageBody,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { ChatStore, User } from './chat.store';
-import { SOCKET_RESPONSE_EVENTS } from '../common/constants';
+import { ChatStore, User, Room, Message } from './chat.store';
+import {
+  SOCKET_EVENTS,
+  SOCKET_RESPONSE_EVENTS,
+  ERROR_CODES,
+  NICKNAME_MAX_LENGTH,
+} from '../common/constants';
 
 @WebSocketGateway({
   cors: {
@@ -26,7 +33,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // Create user on connection
     const user: User = {
       socketId: client.id,
-      nickname: null as any, // Will be set via set_nickname or join_room
+      nickname: '', // Will be set via set_nickname or join_room
       roomId: null,
     };
     this.chatStore.addUser(user);
@@ -83,5 +90,117 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       // Broadcast room_list_updated
       this.server.emit(SOCKET_RESPONSE_EVENTS.ROOM_LIST_UPDATED, {});
     }
+  }
+
+  @SubscribeMessage(SOCKET_EVENTS.SET_NICKNAME)
+  handleSetNickname(
+    @MessageBody() payload: { nickname: string },
+    client: Socket,
+  ): { success: boolean } | { error: { code: string; reason?: string } } {
+    const trimmedNickname = payload.nickname?.trim() || '';
+
+    if (trimmedNickname.length === 0 || trimmedNickname.length > NICKNAME_MAX_LENGTH) {
+      client.emit(SOCKET_RESPONSE_EVENTS.ERROR, {
+        code: ERROR_CODES.MESSAGE_INVALID,
+        reason: `Nickname must be between 1 and ${NICKNAME_MAX_LENGTH} characters`,
+      });
+      return { error: { code: ERROR_CODES.MESSAGE_INVALID } };
+    }
+
+    const user = this.chatStore.getUser(client.id);
+    if (user) {
+      this.chatStore.updateUser(client.id, { nickname: trimmedNickname });
+    }
+
+    return { success: true };
+  }
+
+  @SubscribeMessage(SOCKET_EVENTS.JOIN_ROOM)
+  handleJoinRoom(
+    @MessageBody() payload: { roomId: string; nickname: string },
+    client: Socket,
+  ): { room: Room; messages: Message[] } | { error: { code: string; roomId?: string } } {
+    const { roomId, nickname } = payload;
+    const trimmedNickname = nickname?.trim() || '';
+
+    if (!trimmedNickname || trimmedNickname.length === 0) {
+      client.emit(SOCKET_RESPONSE_EVENTS.ERROR, {
+        code: ERROR_CODES.MESSAGE_INVALID,
+        reason: 'Nickname is required',
+      });
+      return { error: { code: ERROR_CODES.MESSAGE_INVALID } };
+    }
+
+    const room = this.chatStore.getRoom(roomId);
+    if (!room) {
+      client.emit(SOCKET_RESPONSE_EVENTS.ERROR, {
+        code: ERROR_CODES.ROOM_NOT_FOUND,
+        roomId,
+      });
+      return { error: { code: ERROR_CODES.ROOM_NOT_FOUND, roomId } };
+    }
+
+    const user = this.chatStore.getUser(client.id);
+    if (!user) {
+      client.emit(SOCKET_RESPONSE_EVENTS.ERROR, {
+        code: ERROR_CODES.NOT_IN_ROOM,
+        reason: 'User not found',
+      });
+      return { error: { code: ERROR_CODES.NOT_IN_ROOM } };
+    }
+
+    // Leave previous room if any
+    if (user.roomId && user.roomId !== roomId) {
+      client.leave(user.roomId);
+      this.chatStore.removeParticipant(user.roomId, client.id);
+      this.server.to(user.roomId).emit(SOCKET_RESPONSE_EVENTS.USER_LEFT, {
+        nickname: user.nickname,
+        socketId: client.id,
+      });
+    }
+
+    // Join new room
+    client.join(roomId);
+    this.chatStore.updateUser(client.id, {
+      roomId,
+      nickname: trimmedNickname,
+    });
+    this.chatStore.addParticipant(roomId, {
+      ...user,
+      roomId,
+      nickname: trimmedNickname,
+    });
+
+    // Broadcast user_joined to room (except sender)
+    client.to(roomId).emit(SOCKET_RESPONSE_EVENTS.USER_JOINED, {
+      nickname: trimmedNickname,
+      socketId: client.id,
+    });
+
+    // Get messages history
+    const messages = this.chatStore.getMessages(roomId);
+
+    // Send room_joined ACK to the joining client
+    return {
+      room: {
+        ...room,
+        participantCount: room.participants.size,
+      },
+      messages,
+    };
+  }
+
+  @SubscribeMessage(SOCKET_EVENTS.LEAVE_ROOM)
+  handleLeaveRoomEvent(client: Socket): { success: boolean } | { error: { code: string } } {
+    const user = this.chatStore.getUser(client.id);
+    if (!user || !user.roomId) {
+      client.emit(SOCKET_RESPONSE_EVENTS.ERROR, {
+        code: ERROR_CODES.NOT_IN_ROOM,
+      });
+      return { error: { code: ERROR_CODES.NOT_IN_ROOM } };
+    }
+
+    this.handleLeaveRoom(client);
+    return { success: true };
   }
 }
