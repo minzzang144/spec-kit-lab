@@ -21,7 +21,7 @@ export class RoomsService {
     return { room, user };
   }
 
-  listRooms(): Room[] {
+  listRooms(): Array<Room & { participantCount: number }> {
     return this.chatStore.getAllRooms().map((room) => ({
       ...room,
       participantCount: room.participants.size,
