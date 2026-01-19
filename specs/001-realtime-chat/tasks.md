@@ -98,7 +98,7 @@
 ### Implementation
 
 - [ ] T017 [P] [BE] [US3] Extend `apps/chat-be-with-cursor/src/chat/chat.gateway.ts`: send_message 핸들러 — NOT_IN_ROOM·MESSAGE_INVALID(빈/2000초과) 검사, Message 생성 후 Store messages에 push, `io.to(roomId).emit('message', msg)` and ACK in `apps/chat-be-with-cursor/`
-- [ ] T018 [FE] [US3] Extend `apps/chat-fe-with-cursor/src/pages/room/` (or message feature): 메시지 입력, send_message emit, on('message') 수신·목록 추가, MESSAGE_MAX_LENGTH·trim 검사·빈 메시지 전송 불가, FR-010 오류 시 안내·재전송 UI in `apps/chat-fe-with-cursor/`
+- [x] T018 [FE] [US3] Extend `apps/chat-fe-with-cursor/src/pages/room/` (or message feature): 메시지 입력, send_message emit, on('message') 수신·목록 추가, MESSAGE_MAX_LENGTH·trim 검사·빈 메시지 전송 불가, FR-010 오류 시 안내·재전송 UI in `apps/chat-fe-with-cursor/`
 
 **Checkpoint**: US1~US3 완료 시 quickstart 기준 E2E(메인→닉네임→방 생성→메시지 송수신→나가기) 검증 가능.
 

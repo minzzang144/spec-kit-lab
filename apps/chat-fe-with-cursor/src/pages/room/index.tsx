@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { getSocket } from '@/shared/lib/socket';
-import { SOCKET_EMIT, SOCKET_ON } from '@/shared/config/constants';
+import { SOCKET_EMIT, SOCKET_ON, MESSAGE_MAX_LENGTH } from '@/shared/config/constants';
 import type { Message } from '@/shared/api';
 
 type JoinLeftEvent = { type: 'joined' | 'left'; nickname: string };
@@ -13,6 +13,10 @@ export function Room() {
   const queryClient = useQueryClient();
   const [messages, setMessages] = useState<Message[]>([]);
   const [events, setEvents] = useState<JoinLeftEvent[]>([]);
+  const [inputText, setInputText] = useState('');
+  const [failedText, setFailedText] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const lastSentRef = useRef<string | null>(null);
 
   useEffect(() => {
     const sock = getSocket();
@@ -29,12 +33,27 @@ export function Room() {
     };
     const onRoomDeleted = () => navigate('/lobby');
     const onRoomListUpdated = () => queryClient.invalidateQueries({ queryKey: ['rooms'] });
+    const onMessage = (msg: Message) => {
+      setMessages((m) => [...m, msg]);
+    };
+    const onError = (p: { code?: string; reason?: string }) => {
+      if (p.code === 'MESSAGE_INVALID' || p.code === 'NOT_IN_ROOM') {
+        const t = lastSentRef.current;
+        if (t != null) {
+          setFailedText(t);
+          setErrorMsg(p.reason ?? p.code);
+        }
+        lastSentRef.current = null;
+      }
+    };
 
     sock.on(SOCKET_ON.ROOM_JOINED, onRoomJoined);
     sock.on(SOCKET_ON.USER_JOINED, onUserJoined);
     sock.on(SOCKET_ON.USER_LEFT, onUserLeft);
     sock.on(SOCKET_ON.ROOM_DELETED, onRoomDeleted);
     sock.on(SOCKET_ON.ROOM_LIST_UPDATED, onRoomListUpdated);
+    sock.on(SOCKET_ON.MESSAGE, onMessage);
+    sock.on(SOCKET_ON.ERROR, onError);
 
     return () => {
       sock.off(SOCKET_ON.ROOM_JOINED, onRoomJoined);
@@ -42,6 +61,8 @@ export function Room() {
       sock.off(SOCKET_ON.USER_LEFT, onUserLeft);
       sock.off(SOCKET_ON.ROOM_DELETED, onRoomDeleted);
       sock.off(SOCKET_ON.ROOM_LIST_UPDATED, onRoomListUpdated);
+      sock.off(SOCKET_ON.MESSAGE, onMessage);
+      sock.off(SOCKET_ON.ERROR, onError);
     };
   }, [id, navigate, queryClient]);
 
@@ -49,6 +70,32 @@ export function Room() {
     const sock = getSocket();
     if (sock) sock.emit(SOCKET_EMIT.LEAVE_ROOM);
     navigate('/lobby');
+  };
+
+  const handleSend = () => {
+    const t = inputText.trim();
+    if (!t || t.length > MESSAGE_MAX_LENGTH) return;
+    const sock = getSocket();
+    if (!sock) return;
+    lastSentRef.current = t;
+    sock.emit(SOCKET_EMIT.SEND_MESSAGE, { text: t });
+    setInputText('');
+  };
+
+  const handleRetry = () => {
+    if (failedText == null) return;
+    const t = failedText.trim();
+    if (!t || t.length > MESSAGE_MAX_LENGTH) {
+      setFailedText(null);
+      setErrorMsg(null);
+      return;
+    }
+    const sock = getSocket();
+    if (!sock) return;
+    lastSentRef.current = t;
+    sock.emit(SOCKET_EMIT.SEND_MESSAGE, { text: t });
+    setFailedText(null);
+    setErrorMsg(null);
   };
 
   if (!id) return <div className="p-4">잘못된 방입니다.</div>;
@@ -73,7 +120,33 @@ export function Room() {
           </div>
         ))}
       </div>
-      <p className="text-muted-foreground text-sm">메시지 입력은 US3(T018)에서 추가됩니다.</p>
+      {errorMsg != null && failedText != null && (
+        <div className="mb-2 p-2 bg-destructive/10 rounded text-destructive text-sm flex items-center gap-2">
+          <span>전송 실패: {errorMsg}</span>
+          <button type="button" className="underline" onClick={handleRetry}>
+            재전송
+          </button>
+        </div>
+      )}
+      <div className="flex gap-2">
+        <input
+          type="text"
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value.slice(0, MESSAGE_MAX_LENGTH))}
+          onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+          placeholder="메시지 (최대 2000자)"
+          maxLength={MESSAGE_MAX_LENGTH}
+          className="flex-1 border rounded px-3 py-2"
+        />
+        <button
+          type="button"
+          className="border rounded px-3 py-2 bg-primary text-primary-foreground disabled:opacity-50"
+          onClick={handleSend}
+          disabled={!inputText.trim()}
+        >
+          전송
+        </button>
+      </div>
     </div>
   );
 }
