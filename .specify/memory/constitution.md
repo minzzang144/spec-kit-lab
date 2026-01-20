@@ -1,20 +1,14 @@
 <!--
 Sync Impact Report:
-Version change: 2.0.1 → 2.1.0 (NestJS backend stack addition)
+Version change: 2.1.0 → 2.1.1 (Architecture structure clarity improvement)
 Modified sections:
-  - Technology Stack: Added Backend subsection with NestJS stack
-  - Architecture Principles: Added Backend Architecture guidelines
-  - Code Quality Rules: Extended testing requirements for backend
-  - Documentation Rules: Added API documentation requirements
-Added sections:
-  - Backend Architecture (new subsection under Architecture Principles)
-  - Backend Testing Requirements (extended Code Quality Rules)
+  - Architecture Principles: Added clarification that [APP_NAME] is defined during /speckit.plan
 Removed sections: None
+Added sections: None
 Templates requiring updates:
-  - ✅ plan-template.md: Constitution Check updated with backend checklist
-  - ⚠ spec-template.md: No backend-specific changes needed (remains technology-agnostic)
-  - ⚠ tasks-template.md: Backend task examples added
-Follow-up TODOs: None - all backend technology choices specified
+  - ⚠ spec-template.md: Should mention app naming convention
+  - ⚠ plan-template.md: Should reference app name selection
+Follow-up TODOs: None - app naming process clarified
 -->
 
 # Spec Kit Lab Constitution
@@ -58,8 +52,10 @@ Follow-up TODOs: None - all backend technology choices specified
 ## II. Architecture Principles
 
 ### Frontend Structure (FSD - Feature-Sliced Design)
+**Note**: `[APP_NAME]` is defined during spec creation with `/speckit.plan`
+
 ```
-frontend/src/
+[APP_NAME]/frontend/src/
 ├── app/           # Application initialization, providers, routing
 ├── pages/         # Page components (route-level)
 ├── widgets/       # Complex UI blocks (header, sidebar, etc.)
@@ -69,8 +65,10 @@ frontend/src/
 ```
 
 ### Backend Architecture (NestJS Modular)
+**Note**: `[APP_NAME]` is defined during spec creation with `/speckit.plan`
+
 ```
-backend/src/
+[APP_NAME]/backend/src/
 ├── app.module.ts         # Root application module
 ├── main.ts              # Application entry point
 ├── common/              # Shared utilities, guards, interceptors
@@ -433,4 +431,4 @@ Use Cursor's **Agent Review** feature:
 - Agent must refuse work that violates Constitution
 - Pre-commit hooks enforce code quality rules
 
-**Version**: 2.1.0 | **Ratified**: 2025-01-20 | **Last Amended**: 2025-01-20
+**Version**: 2.1.1 | **Ratified**: 2025-01-20 | **Last Amended**: 2025-01-21
