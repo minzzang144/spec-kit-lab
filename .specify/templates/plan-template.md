@@ -31,42 +31,48 @@
 
 _GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
-**Readability (I)**:
+**Technology Stack (I)**:
 
-- [ ] Magic numbers replaced with named constants
-- [ ] Complex logic abstracted into dedicated components/HOCs
-- [ ] Conditional rendering paths separated into distinct components
-- [ ] Complex ternaries simplified to if/else or IIFEs
-- [ ] Complex conditions assigned to named variables
+- [ ] TypeScript strict mode used
+- [ ] React 18+ as framework
+- [ ] Vite as build tool
+- [ ] TailwindCSS for styling (utility-first only)
+- [ ] shadcn/ui as component library
+- [ ] TanStack Query for server state
+- [ ] Zustand for client state (UI state only)
+- [ ] React Hook Form for all forms
 
-**Predictability (II)**:
+**Architecture Principles (II)**:
 
-- [ ] Consistent return types for similar functions/hooks
-- [ ] No hidden side effects; functions follow Single Responsibility Principle
-- [ ] Unique, descriptive names for custom wrappers/functions
-
-**Cohesion (III)**:
-
-- [ ] Code organized by feature/domain (not just by code type)
-- [ ] Constants defined near related logic with clear naming
-- [ ] Form cohesion strategy chosen (field-level vs form-level)
-
-**Coupling (IV)**:
-
-- [ ] No premature abstraction of potentially diverging logic
-- [ ] State management broken into focused hooks/contexts
-- [ ] Component Composition used instead of Props Drilling
-
-**Frontend Standards** (if applicable):
-
-- [ ] Feature-Sliced Design (FSD) architecture used
+- [ ] FSD (Feature-Sliced Design) architecture used
 - [ ] Layer hierarchy respected: `app` → `pages` → `widgets` → `features` → `entities` → `shared`
-- [ ] Lower layers do not import from higher layers
-- [ ] Each slice has Public API via `index.ts` (no direct internal file imports)
-- [ ] Slices organized by business domain within each layer
-- [ ] Segments properly organized within slices (`ui/`, `model/`, `api/`, etc.)
-- [ ] Complex interactions abstracted into dedicated components
-- [ ] Focused hooks for specific concerns (not overly broad)
+- [ ] Higher layers only import from lower layers (no reverse imports)
+- [ ] Each slice has Public API via `index.ts`
+- [ ] Container/Presenter pattern used for complex components
+- [ ] Custom hooks extract business logic from components
+
+**Code Quality Rules (III)**:
+
+- [ ] TDD approach: tests written before implementation
+- [ ] 80%+ test coverage planned for `/features` and `/entities`
+- [ ] WCAG 2.1 AA compliance planned for all UI components
+- [ ] Error boundaries planned (no try-catch in route handlers)
+- [ ] Magic numbers replaced with named constants
+- [ ] Functions under 50 lines, files under 300 lines
+- [ ] Proper naming conventions (PascalCase components, camelCase hooks, UPPER_SNAKE_CASE constants)
+
+**Documentation Rules (IV)**:
+
+- [ ] spec.md is technology-agnostic (no React, TanStack Query, etc. mentioned)
+- [ ] plan.md contains all technical implementation details
+- [ ] Clear separation between WHAT/WHY (spec) and HOW (plan)
+
+**Development Workflow (V)**:
+
+- [ ] One task = one commit strategy planned
+- [ ] Conventional commits format to be used
+- [ ] Plan Mode workflow to be followed for implementation
+- [ ] Verification checklist planned for each task completion
 
 ## Project Structure
 

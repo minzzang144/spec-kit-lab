@@ -8,9 +8,16 @@ description: "Task list template for feature implementation"
 **Input**: Design documents from `/specs/[###-feature-name]/`
 **Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/
 
-**Tests**: The examples below include test tasks. Tests are OPTIONAL - only include them if explicitly requested in the feature specification.
+**Tests**: Following constitution TDD requirements, tests are MANDATORY for business logic. All test tasks MUST be completed BEFORE implementation tasks.
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
+
+**Constitution Requirements**: All tasks must follow the new constitution v2.0.0:
+- One task = one commit (commit immediately after each task)
+- Use conventional commits format: `<type>(<scope>): <description>`
+- TDD approach: write failing tests first, then implement
+- Follow FSD architecture and layer rules
+- Verify each task with automated checks before committing
 
 ## Format: `[ID] [P?] [Story] Description`
 
@@ -79,21 +86,25 @@ Examples of foundational tasks (adjust based on your project):
 
 **Independent Test**: [How to verify this story works on its own]
 
-### Tests for User Story 1 (OPTIONAL - only if tests requested) ⚠️
+### Tests for User Story 1 (MANDATORY - TDD Required) ⚠️
 
-> **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
+> **CONSTITUTION REQUIREMENT: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T010 [P] [US1] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T011 [P] [US1] Integration test for [user journey] in tests/integration/test_[name].py
+- [ ] T010 [P] [US1] Unit test for [Entity] in src/entities/[entity]/[entity].test.ts (Vitest + Testing Library)
+- [ ] T011 [P] [US1] Integration test for [user journey] in src/features/[feature]/[feature].test.tsx
+- [ ] T012 [P] [US1] E2E test for critical flow in tests/e2e/[story].spec.ts (Playwright)
 
-### Implementation for User Story 1
+### Implementation for User Story 1 (After Tests Pass)
 
-- [ ] T012 [P] [US1] Create [Entity1] model in src/models/[entity1].py
-- [ ] T013 [P] [US1] Create [Entity2] model in src/models/[entity2].py
-- [ ] T014 [US1] Implement [Service] in src/services/[service].py (depends on T012, T013)
-- [ ] T015 [US1] Implement [endpoint/feature] in src/[location]/[file].py
-- [ ] T016 [US1] Add validation and error handling
-- [ ] T017 [US1] Add logging for user story 1 operations
+- [ ] T013 [P] [US1] Create [Entity] model in src/entities/[entity]/model/[entity].ts
+- [ ] T014 [P] [US1] Create [Entity] API client in src/entities/[entity]/api/[entity].api.ts (TanStack Query)
+- [ ] T015 [US1] Create [Feature] hook in src/features/[feature]/model/use[Feature].ts
+- [ ] T016 [US1] Create [Component] presenter in src/features/[feature]/ui/[Component].presenter.tsx
+- [ ] T017 [US1] Create [Component] container in src/features/[feature]/ui/[Component].container.tsx
+- [ ] T018 [US1] Add [Feature] public API in src/features/[feature]/index.ts
+- [ ] T019 [US1] Add error boundaries and loading states (React Query + Error Boundaries)
+- [ ] T020 [US1] Verify accessibility compliance (WCAG 2.1 AA)
+- [ ] T021 [US1] Run verification checklist (typecheck, lint, test, build)
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
