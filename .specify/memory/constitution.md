@@ -1,22 +1,13 @@
 <!--
 Sync Impact Report:
-Version change: 1.1.0 → 2.0.0 (Complete constitution rewrite)
-Modified principles:
-  - Readability, Predictability, Cohesion, Coupling → Technology Stack, Architecture Principles, Code Quality Rules, Documentation Rules, Development Workflow
-Added sections:
-  - Technology Stack (NON-NEGOTIABLE)
-  - Architecture Principles (FSD-focused)
-  - Code Quality Rules (Testing, Accessibility, Error Handling)
-  - Documentation Rules (spec.md vs plan.md separation)
-  - Development Workflow (Commit Strategy, Agent Workflow)
-Removed sections:
-  - Original four principles (Readability, Predictability, Cohesion, Coupling)
-  - Frontend Development Standards (replaced with more specific rules)
+Version change: 2.0.0 → 2.0.1 (Package manager update)
+Modified sections:
+  - Development Workflow: Agent Workflow verification checklist (npm → pnpm)
+Added sections: None
+Removed sections: None
 Templates requiring updates:
-  - ✅ plan-template.md (Updated with new constitution check sections)
-  - ✅ spec-template.md (Updated with technology-agnostic enforcement)
-  - ✅ tasks-template.md (Updated with TDD requirements and workflow rules)
-Follow-up TODOs: None - all templates updated
+  - No template updates required (tooling change only)
+Follow-up TODOs: None - package manager change is isolated
 -->
 
 # Spec Kit Lab Constitution
@@ -247,16 +238,16 @@ Task: T001
 ##### 1. Automated Checks (Must Pass)
 ```bash
 # Type checking
-npm run ts:check
+pnpm run type-check
 
 # Linting
-npm run lint
+pnpm run lint
 
 # Tests
-npm run test
+pnpm run test
 
 # Build
-npm run build
+pnpm run build
 ```
 
 ##### 2. Manual Review
