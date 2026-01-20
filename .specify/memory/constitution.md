@@ -1,23 +1,39 @@
 <!--
 Sync Impact Report:
-Version change: 2.0.0 → 2.0.1 (Package manager update)
+Version change: 2.0.1 → 2.1.0 (NestJS backend stack addition)
 Modified sections:
-  - Development Workflow: Agent Workflow verification checklist (npm → pnpm)
-Added sections: None
+  - Technology Stack: Added Backend subsection with NestJS stack
+  - Architecture Principles: Added Backend Architecture guidelines
+  - Code Quality Rules: Extended testing requirements for backend
+  - Documentation Rules: Added API documentation requirements
+Added sections:
+  - Backend Architecture (new subsection under Architecture Principles)
+  - Backend Testing Requirements (extended Code Quality Rules)
 Removed sections: None
 Templates requiring updates:
-  - No template updates required (tooling change only)
-Follow-up TODOs: None - package manager change is isolated
+  - ✅ plan-template.md: Constitution Check updated with backend checklist
+  - ⚠ spec-template.md: No backend-specific changes needed (remains technology-agnostic)
+  - ⚠ tasks-template.md: Backend task examples added
+Follow-up TODOs: None - all backend technology choices specified
 -->
 
 # Spec Kit Lab Constitution
 
 ## I. Technology Stack (NON-NEGOTIABLE)
 
-### Core
+### Frontend
 - **Language**: TypeScript (strict mode)
 - **Framework**: React 18+
 - **Build Tool**: Vite
+
+### Backend
+- **Language**: TypeScript (strict mode)
+- **Framework**: NestJS (Express 기반)
+- **Database**: PostgreSQL (production), SQLite (development/testing)
+- **ORM**: Prisma (preferred) or TypeORM
+- **Validation**: class-validator + class-transformer
+- **Authentication**: JWT + Passport
+- **Documentation**: Swagger/OpenAPI 자동 생성
 
 ### Styling & UI
 - **CSS Framework**: TailwindCSS (utility-first only)
@@ -30,9 +46,9 @@ Follow-up TODOs: None - package manager change is isolated
 - **Form State**: React Hook Form
 
 ### Testing
-- **Unit/Integration**: Vitest + Testing Library
-- **E2E Testing**: Playwright
-- **Coverage Requirement**: >80% for business logic
+- **Frontend**: Vitest + Testing Library (unit/integration), Playwright (E2E)
+- **Backend**: Jest + Supertest (unit/integration/E2E API testing)
+- **Coverage Requirement**: >80% for business logic (both frontend/backend)
 
 ### Code Quality Tools
 - **Linting**: ESLint + TypeScript ESLint
@@ -41,9 +57,9 @@ Follow-up TODOs: None - package manager change is isolated
 
 ## II. Architecture Principles
 
-### Folder Structure (FSD - Feature-Sliced Design)
+### Frontend Structure (FSD - Feature-Sliced Design)
 ```
-src/
+frontend/src/
 ├── app/           # Application initialization, providers, routing
 ├── pages/         # Page components (route-level)
 ├── widgets/       # Complex UI blocks (header, sidebar, etc.)
@@ -52,27 +68,75 @@ src/
 ├── shared/        # Reusable utilities, UI kit, API client
 ```
 
+### Backend Architecture (NestJS Modular)
+```
+backend/src/
+├── app.module.ts         # Root application module
+├── main.ts              # Application entry point
+├── common/              # Shared utilities, guards, interceptors
+│   ├── guards/          # Authentication, authorization guards
+│   ├── interceptors/    # Logging, transform, etc.
+│   ├── pipes/           # Validation, transformation pipes
+│   └── decorators/      # Custom decorators
+├── modules/             # Feature modules
+│   ├── auth/           # Authentication module
+│   ├── users/          # User management module
+│   ├── products/       # Product module (example)
+│   └── [feature]/      # Other feature modules
+├── database/           # Database configuration, migrations
+│   ├── migrations/     # Database migrations
+│   └── seeds/          # Database seeds
+├── config/             # Configuration management
+└── types/              # Shared TypeScript types
+```
+
+### Backend Module Structure (NON-NEGOTIABLE)
+Each NestJS module must follow this structure:
+```
+modules/[feature]/
+├── [feature].module.ts        # Module definition
+├── [feature].controller.ts    # API endpoints
+├── [feature].service.ts       # Business logic
+├── [feature].entity.ts        # Database entity (Prisma model)
+├── dto/                       # Data Transfer Objects
+│   ├── create-[feature].dto.ts
+│   ├── update-[feature].dto.ts
+│   └── [feature]-response.dto.ts
+├── guards/                    # Module-specific guards (if needed)
+├── pipes/                     # Module-specific pipes (if needed)
+└── tests/                     # Module tests
+    ├── [feature].controller.spec.ts
+    ├── [feature].service.spec.ts
+    └── [feature].e2e.spec.ts
+```
+
 ### Layer Rules (NON-NEGOTIABLE)
-- **Higher layers can import from lower layers ONLY**
-  - ✅ `features` → `entities` → `shared`
-  - ❌ `entities` → `features` (FORBIDDEN)
-- **Each layer is independent**: No cross-imports within same layer
-- **Public API only**: Use `index.ts` to expose module interface
+**Frontend (FSD)**:
+- Higher layers can import from lower layers ONLY
+- ✅ `features` → `entities` → `shared`
+- ❌ `entities` → `features` (FORBIDDEN)
+
+**Backend (NestJS)**:
+- Controllers only handle HTTP requests/responses
+- Services contain all business logic
+- Entities represent database models only
+- DTOs handle data validation and transformation
+- No circular dependencies between modules
 
 ### Design Principles
 - **Single Responsibility Principle (SRP)**:
-  - Each component/function does ONE thing
-  - If a component handles >2 concerns, split it
+  - Each component/service/controller does ONE thing
+  - If handling >2 concerns, split it
 - **Separation of Concerns**:
-  - UI components (presentation) ≠ Business logic
-  - Use custom hooks for logic extraction
+  - Controllers ≠ Business logic ≠ Data access
+  - Use services for business logic, repositories for data access
 - **Composition over Inheritance**:
-  - Prefer composing small components over large monolithic ones
+  - Prefer composing small modules over large monolithic ones
 - **Dependency Inversion**:
   - Depend on abstractions (interfaces) not implementations
 
 ### State Management Rules
-- **Server State**: Always use TanStack Query
+- **Server State**: Always use TanStack Query on frontend
   - NO manual fetching in components
   - NO storing server data in Zustand
 - **Client State**: Zustand for UI state only
@@ -81,21 +145,45 @@ src/
   - NO uncontrolled components without RHF
   - Use Zod for validation schemas
 
+### API Design Rules (NON-NEGOTIABLE)
+- **RESTful Design**: Follow REST conventions for resource endpoints
+- **Consistent Naming**: Use kebab-case for URLs (`/api/user-profiles`)
+- **HTTP Status Codes**: Use appropriate status codes (200, 201, 400, 401, 403, 404, 500)
+- **Response Format**: Consistent JSON response structure
+```typescript
+// Success Response
+{ data: T, message?: string }
+
+// Error Response
+{ error: string, message: string, statusCode: number }
+```
+- **Validation**: All input validation at DTO level using class-validator
+- **Documentation**: All endpoints must have Swagger/OpenAPI documentation
+
 ### Component Architecture
-- **Container/Presenter Pattern**:
+- **Container/Presenter Pattern** (Frontend):
   - Container: data fetching, logic (`*.container.tsx`)
   - Presenter: pure UI rendering (`*.presenter.tsx`)
-- **Custom Hooks for Reusability**:
-  - Extract logic to `use*.ts` hooks
-  - Keep components focused on rendering
+- **Service/Controller Pattern** (Backend):
+  - Controller: HTTP handling (`*.controller.ts`)
+  - Service: business logic (`*.service.ts`)
 
 ## III. Code Quality Rules
 
 ### Testing Requirements (NON-NEGOTIABLE)
+
+#### Frontend Testing
 - **TDD for business logic**: Write tests BEFORE implementation
 - **Test Coverage**: Minimum 80% for `/features`, `/entities`
 - **Integration tests for happy paths**: Focus on user journeys
 - **E2E tests for critical flows**: Checkout, auth, payment
+
+#### Backend Testing
+- **Unit Tests**: All services and utilities (Jest)
+- **Integration Tests**: Database interactions, external services
+- **E2E API Tests**: Complete request/response cycles (Supertest)
+- **Test Coverage**: Minimum 80% for services and controllers
+- **Test Database**: Use separate test database (SQLite for speed)
 
 ### Accessibility (NON-NEGOTIABLE)
 - **WCAG 2.1 AA compliance**: All UI components must meet AA standards
@@ -104,12 +192,37 @@ src/
 - **Color Contrast**: Minimum 4.5:1 for normal text, 3:1 for large text
 
 ### Error Handling
+
+#### Frontend Error Handling
 - **No try-catch in route handlers**: Use error boundary or middleware
   - Why? Centralized error handling prevents inconsistent error responses
   - React Query handles API errors automatically
   - Use Error Boundaries for component-level errors
 - **Explicit Error States**: Always show loading/error/empty states
 - **Type-Safe Errors**: Use discriminated unions for error types
+
+#### Backend Error Handling
+- **Global Exception Filter**: Use NestJS built-in exception filters
+- **Custom Exceptions**: Extend HttpException for domain-specific errors
+- **Validation Errors**: Automatic validation using ValidationPipe
+- **Logging**: Log all errors with context (request ID, user ID)
+```typescript
+// Example custom exception
+export class UserNotFoundException extends NotFoundException {
+  constructor(userId: string) {
+    super(`User with ID ${userId} not found`);
+  }
+}
+```
+
+### Security Requirements (NON-NEGOTIABLE)
+- **Authentication**: JWT tokens with secure HttpOnly cookies
+- **Authorization**: Guard-based role/permission checking
+- **Input Validation**: All DTOs must use class-validator
+- **SQL Injection**: Use Prisma/TypeORM parameterized queries only
+- **CORS**: Configure CORS for production domains only
+- **Rate Limiting**: Implement rate limiting for public APIs
+- **Helmet**: Use helmet middleware for security headers
 
 ### Code Organization
 - **No Magic Numbers**: Extract to named constants
@@ -119,13 +232,19 @@ src/
 - **Naming Conventions**:
   - Components: PascalCase (`UserProfile.tsx`)
   - Hooks: camelCase with `use` prefix (`useUserData.ts`)
+  - Services/Controllers: PascalCase (`UserService`, `UserController`)
   - Utils: camelCase (`formatDate.ts`)
   - Constants: UPPER_SNAKE_CASE (`MAX_RETRY_COUNT`)
 
 ### Performance
-- **Code Splitting**: Use React.lazy() for route-based splitting
-- **Memoization**: Use React.memo, useMemo, useCallback judiciously
-- **Bundle Size**: Keep initial bundle < 200KB (gzipped)
+- **Frontend**:
+  - Code Splitting: Use React.lazy() for route-based splitting
+  - Memoization: Use React.memo, useMemo, useCallback judiciously
+  - Bundle Size: Keep initial bundle < 200KB (gzipped)
+- **Backend**:
+  - Database Queries: Use indexes and optimize N+1 queries
+  - Caching: Implement Redis caching for frequently accessed data
+  - Response Time: API responses < 500ms for 95th percentile
 
 ## IV. Documentation Rules
 
@@ -137,29 +256,39 @@ src/
 - Business requirements and constraints
 - Success criteria and acceptance tests
 - UI/UX requirements (wireframes, user flows)
+- API requirements (inputs/outputs, not implementation)
 
 **Must NOT Include** (NON-NEGOTIABLE):
-- ❌ Framework names (React, Vue, etc.)
-- ❌ Library names (TanStack Query, Zustand, etc.)
-- ❌ Architecture patterns (FSD, MVC, etc.)
+- ❌ Framework names (React, NestJS, etc.)
+- ❌ Library names (TanStack Query, Prisma, etc.)
+- ❌ Architecture patterns (FSD, modular, etc.)
 - ❌ Technical implementation details
 
 **Example**:
 ```markdown
 ✅ GOOD: "Users must be able to filter products by price range"
-❌ BAD: "Create a Zustand store for filter state with TanStack Query"
+❌ BAD: "Create a NestJS service with Prisma for product filtering"
 ```
 
 ### plan.md: HOW (All Technical Details)
 **Purpose**: Translate spec into concrete technical implementation
 
 **Must Include**:
-- Framework and library choices
-- Architecture decisions (FSD layers, folder structure)
-- Component hierarchy and data flow
+- Framework and library choices (React, NestJS, Prisma)
+- Architecture decisions (FSD layers, NestJS modules)
+- Component/service hierarchy and data flow
 - API endpoints and data models
+- Database schema and relationships
 - Performance optimization strategies
 - Testing strategy for this feature
+
+### API Documentation (Backend)
+- **Swagger/OpenAPI**: Automatically generated from decorators
+- **Endpoint Documentation**: Each endpoint must have:
+  - Purpose and business logic description
+  - Request/response examples
+  - Error scenarios and status codes
+  - Authentication/authorization requirements
 
 ## V. Development Workflow
 
@@ -186,15 +315,16 @@ Follow https://www.conventionalcommits.org/en/v1.0.0/
 
 **Examples**:
 ```bash
-feat(auth): implement login form with validation
-fix(cart): resolve quantity update bug
-refactor(user): extract profile logic to custom hook
-test(checkout): add E2E test for payment flow
+feat(auth): implement JWT authentication service
+feat(users): add user profile API endpoint
+fix(products): resolve price calculation bug
+refactor(auth): extract JWT logic to separate service
+test(users): add E2E tests for user creation
 ```
 
-**Scope**: Use FSD layer or feature name
-- `auth`, `cart`, `user`, `product`
-- `shared`, `entities`, `features`
+**Scope**: Use module/feature name
+- Frontend: `auth`, `cart`, `user`, `product`, `shared`, `entities`, `features`
+- Backend: `auth`, `users`, `products`, `database`, `common`
 
 #### Commit Message Template
 ```
@@ -237,26 +367,31 @@ Task: T001
 
 ##### 1. Automated Checks (Must Pass)
 ```bash
-# Type checking
+# Frontend checks
+cd frontend
 pnpm run type-check
-
-# Linting
 pnpm run lint
-
-# Tests
 pnpm run test
+pnpm run build
 
-# Build
+# Backend checks
+cd backend
+pnpm run type-check
+pnpm run lint
+pnpm run test
+pnpm run test:e2e
 pnpm run build
 ```
 
 ##### 2. Manual Review
-- [ ] Code follows FSD architecture
+- [ ] Code follows architecture patterns (FSD frontend, modular backend)
 - [ ] No cross-layer violations (use `/analyze` to check)
-- [ ] Components under 300 lines
+- [ ] Components/services under 300 lines
 - [ ] Functions under 50 lines
 - [ ] Accessibility tested (keyboard nav, screen reader)
 - [ ] Responsive design verified (mobile, tablet, desktop)
+- [ ] API endpoints documented in Swagger
+- [ ] Database queries optimized (no N+1 problems)
 
 ##### 3. Sub-Agent Review (Recommended)
 Use Cursor's **Agent Review** feature:
@@ -271,10 +406,11 @@ Use Cursor's **Agent Review** feature:
 - Apply best suggestions from all
 
 ##### 4. Integration Testing
-- [ ] Feature works in dev environment
+- [ ] Feature works in dev environment (both frontend/backend)
 - [ ] No console errors or warnings
-- [ ] Network requests succeed
+- [ ] API requests succeed with proper status codes
 - [ ] Loading/error states display correctly
+- [ ] Database operations work correctly
 
 **Only after ALL verification passes**: Commit the code
 
@@ -288,7 +424,7 @@ Use Cursor's **Agent Review** feature:
 ### Modification Process
 1. Propose change with justification
 2. Team approval required
-3. Update Constitution
+3. Update Constitution with proper version bump
 4. Update affected specs/plans
 5. Create migration guide if needed
 
@@ -297,4 +433,4 @@ Use Cursor's **Agent Review** feature:
 - Agent must refuse work that violates Constitution
 - Pre-commit hooks enforce code quality rules
 
-**Version**: 2.0.0 | **Ratified**: 2025-01-20 | **Last Amended**: 2025-01-20
+**Version**: 2.1.0 | **Ratified**: 2025-01-20 | **Last Amended**: 2025-01-20
