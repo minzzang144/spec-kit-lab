@@ -1,0 +1,46 @@
+{
+  "name": "@repo/root",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SpecKit Lab - Monorepo for feature specification and development workflow",
+  "author": "SpecKit Lab Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=9.14.4"
+  },
+  "packageManager": "pnpm@9.14.4",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "type-check": "turbo type-check",
+    "test": "turbo test",
+    "clean": "turbo clean",
+    "format": "prettier --write \"**/*.{js,ts,tsx,md,json}\"",
+    "format:check": "prettier --check \"**/*.{js,ts,tsx,md,json}\"",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "turbo build --filter=!@repo/tsconfig && changeset publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.1",
+    "prettier": "^3.1.0",
+    "turbo": "^2.3.0"
+  },
+  "keywords": [
+    "monorepo",
+    "pnpm",
+    "turbo",
+    "typescript",
+    "speckit"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/speckit-lab/monorepo"
+  }
+}
