@@ -99,18 +99,18 @@
 
 ### Implementation for User Story 2
 
-- [ ] T029 [P] [US2] Move common dev dependencies to root package.json (typescript, eslint, prettier)
-- [ ] T030 [P] [US2] Configure pnpm workspace dependency hoisting in .npmrc
-- [ ] T031 [US2] Create dependency management scripts in root package.json (install-all, update-all)
-- [ ] T032 [P] [US2] Set up dependency version consistency checking with syncpack or similar tool
-- [ ] T033 [US2] Configure Renovate or Dependabot for automated dependency updates
+- [x] T029 [P] [US2] Move common dev dependencies to root package.json (typescript, eslint, prettier)
+- [x] T030 [P] [US2] Configure pnpm workspace dependency hoisting in .npmrc
+- [x] T031 [US2] Create dependency management scripts in root package.json (install-all, update-all)
+- [x] T032 [P] [US2] Set up dependency version consistency checking with syncpack or similar tool
+- [x] T033 [US2] Configure Renovate or Dependabot for automated dependency updates
 
 ### Validation & Testing for User Story 2
 
-- [ ] T034 [US2] Test dependency installation: `pnpm install` should work efficiently for entire workspace
-- [ ] T035 [US2] Validate dependency deduplication: check node_modules structure for shared dependencies
-- [ ] T036 [US2] Test dependency updates: ensure all projects use consistent versions
-- [ ] T037 [US2] Verify memory usage and installation speed improvements
+- [x] T034 [US2] Test dependency installation: `pnpm install` should work efficiently for entire workspace
+- [x] T035 [US2] Validate dependency deduplication: check node_modules structure for shared dependencies
+- [x] T036 [US2] Test dependency updates: ensure all projects use consistent versions
+- [x] T037 [US2] Verify memory usage and installation speed improvements
 
 **Checkpoint**: At this point, dependencies are centrally managed with no duplicates
 

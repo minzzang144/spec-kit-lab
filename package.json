@@ -25,12 +25,25 @@
     "format:check": "prettier --check \"**/*.{js,ts,tsx,md,json}\"",
     "changeset": "changeset",
     "version-packages": "changeset version",
-    "release": "turbo build --filter=!@repo/tsconfig && changeset publish"
+    "release": "turbo build --filter=!@repo/tsconfig && changeset publish",
+    "install-all": "pnpm install",
+    "update-all": "pnpm update --recursive",
+    "check-updates": "pnpm outdated --recursive",
+    "deps:install": "pnpm install",
+    "deps:update": "pnpm update --recursive",
+    "deps:check": "pnpm outdated --recursive",
+    "deps:audit": "pnpm audit",
+    "deps:clean": "pnpm store prune && rm -rf node_modules apps/*/node_modules packages/*/node_modules && pnpm install",
+    "deps:sync": "syncpack list-mismatches",
+    "deps:fix": "syncpack fix-mismatches",
+    "deps:format": "syncpack format"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.1",
+    "@types/node": "^20.0.0",
     "eslint": "^8.0.0",
     "prettier": "^3.1.0",
+    "syncpack": "^12.3.2",
     "turbo": "^2.7.5",
     "typescript": "^5.0.0"
   },
