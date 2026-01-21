@@ -82,10 +82,10 @@
 
 ### Integration & Quality for User Story 1
 
-- [ ] T025 [US1] Test independent app builds: `pnpm turbo build` (both apps should build successfully)
-- [ ] T026 [US1] Test independent app development: `pnpm turbo dev` (both apps should start)
-- [ ] T027 [US1] Verify apps inherit shared ESLint/Prettier configs correctly
-- [ ] T028 [US1] Document app creation process in README.md
+- [x] T025 [US1] Test independent app builds: `pnpm turbo build` (both apps should build successfully)
+- [x] T026 [US1] Test independent app development: `pnpm turbo dev` (both apps should start)
+- [x] T027 [US1] Verify apps inherit shared ESLint/Prettier configs correctly
+- [x] T028 [US1] Document app creation process in README.md
 
 **Checkpoint**: At this point, multiple projects can be managed in a single repository independently
 

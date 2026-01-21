@@ -1,10 +1,11 @@
 /** @type {import("eslint").Linter.Config} */
 module.exports = {
   root: true,
-  extends: ["eslint:recommended"],
+  extends: ["@repo/eslint-config"],
   parserOptions: {
     ecmaVersion: "latest",
-    sourceType: "module"
+    sourceType: "module",
+    project: "./tsconfig.json"
   },
   env: {
     node: true,
