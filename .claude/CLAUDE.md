@@ -31,7 +31,7 @@ SpecKit Lab is a feature specification and development workflow system that prov
 
 ### SpecKit Workflow System
 
-The project implements a multi-phase development workflow:
+The project implements a **strict multi-phase development workflow** that MUST be followed sequentially:
 
 1. **Specification Phase** (`speckit.specify`): Creates feature specifications from natural language descriptions
 2. **Planning Phase** (`speckit.plan`): Generates technical implementation plans with research
