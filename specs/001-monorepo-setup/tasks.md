@@ -30,11 +30,11 @@
 
 **Purpose**: 프로젝트 초기화 및 기본 구조 설정
 
-- [ ] T001 Create monorepo directory structure (apps/, packages/, .github/, docs/)
-- [ ] T002 Initialize root package.json with workspace configuration and scripts
-- [ ] T003 [P] Create pnpm-workspace.yaml with workspace patterns
-- [ ] T004 [P] Configure .npmrc with pnpm optimization settings
-- [ ] T005 [P] Create .gitignore with Node.js and build artifacts exclusions
+- [x] T001 Create monorepo directory structure (apps/, packages/, .github/, docs/)
+- [x] T002 Initialize root package.json with workspace configuration and scripts
+- [x] T003 [P] Create pnpm-workspace.yaml with workspace patterns
+- [x] T004 [P] Configure .npmrc with pnpm optimization settings
+- [x] T005 [P] Create .gitignore with Node.js and build artifacts exclusions
 
 ---
 
