@@ -66,19 +66,19 @@
 
 ### Validation & Testing for User Story 1
 
-- [ ] T015 [US1] Validate Turbo build system with `pnpm turbo build` (should complete without errors)
-- [ ] T016 [US1] Test workspace structure with `pnpm ls --depth=0` (verify workspace packages)
-- [ ] T017 [P] [US1] Validate TypeScript configuration compilation across workspace
-- [ ] T018 [P] [US1] Run ESLint validation across all workspace packages
+- [x] T015 [US1] Validate Turbo build system with `pnpm turbo build` (should complete without errors)
+- [x] T016 [US1] Test workspace structure with `pnpm ls --depth=0` (verify workspace packages)
+- [x] T017 [P] [US1] Validate TypeScript configuration compilation across workspace
+- [x] T018 [P] [US1] Run ESLint validation across all workspace packages
 
 ### Implementation for User Story 1
 
-- [ ] T019 [P] [US1] Create sample frontend app structure in apps/sample-web/ with Next.js template
-- [ ] T020 [P] [US1] Create sample backend api structure in apps/sample-api/ with basic Node.js setup
-- [ ] T021 [US1] Configure sample-web app to use @repo/typescript-config and @repo/eslint-config
-- [ ] T022 [US1] Configure sample-api app to use @repo/typescript-config and @repo/eslint-config
-- [ ] T023 [US1] Add app-specific scripts in each sample app's package.json
-- [ ] T024 [US1] Update root tsconfig.json to include references to sample apps
+- [x] T019 [P] [US1] Create sample frontend app structure in apps/sample-web/ with Next.js template
+- [x] T020 [P] [US1] Create sample backend api structure in apps/sample-api/ with basic Node.js setup
+- [x] T021 [US1] Configure sample-web app to use @repo/typescript-config and @repo/eslint-config
+- [x] T022 [US1] Configure sample-api app to use @repo/typescript-config and @repo/eslint-config
+- [x] T023 [US1] Add app-specific scripts in each sample app's package.json
+- [x] T024 [US1] Update root tsconfig.json to include references to sample apps
 
 ### Integration & Quality for User Story 1
 
