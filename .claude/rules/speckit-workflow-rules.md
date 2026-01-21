@@ -4,7 +4,60 @@
 
 This document defines the absolute boundaries and rules for each phase of the SpecKit workflow system. These rules MUST be followed without exception to maintain workflow integrity and prevent implementation violations.
 
-## Workflow Phase Overview
+---
+
+# 🔥 CRITICAL EXECUTION RULES
+
+## ⚡ ONE TASK = ONE COMMIT PROTOCOL
+
+**ENFORCEMENT LEVEL: BLOCKING** - Violations HALT execution immediately
+
+### The Golden Rule
+```
+🚫 NEVER batch multiple tasks into single commit
+✅ ALWAYS commit after EACH task completion
+🛑 STOP and commit before proceeding to next task
+```
+
+### Mandatory Execution Sequence
+```
+FOR EACH TASK:
+1. ✅ Execute ONE task implementation
+2. ✅ Verify functionality (build/test if applicable)
+3. ✅ Update TodoWrite: mark task as "completed"
+4. ✅ Git add all changed files
+5. ✅ Git commit with proper message format
+6. ✅ Verify commit was successful
+7. ✅ ONLY THEN start next task
+```
+
+### Commit Message Format (REQUIRED)
+```
+<type>(<scope>): <description>
+
+- Specific implementation details
+- Files modified and why
+- Build/test status if applicable
+
+Relates to T### [US#]
+
+Co-Authored-By: Claude Sonnet 4 <noreply@anthropic.com>
+```
+
+## 🆘 CONTEXT LOSS RECOVERY PROTOCOL
+
+**When resuming after context loss** - READ THIS FIRST:
+1. ✅ Re-read these CRITICAL EXECUTION RULES
+2. ✅ Check current TodoWrite status
+3. ✅ Identify any uncommitted work
+4. ✅ Commit any completed but uncommitted tasks separately
+5. ✅ Resume with strict "One Task = One Commit" protocol
+
+**NO EXCUSES**: Context loss does NOT exempt from commit protocol.
+
+---
+
+# 📋 WORKFLOW PHASE OVERVIEW
 
 The SpecKit system enforces a strict sequential workflow with clear phase boundaries:
 
@@ -119,7 +172,30 @@ specify → clarify → plan → tasks → implement → analyze
 
 **Critical Rule**: This phase **ONLY PLANS** the implementation work. The tasks are NOT executed here.
 
-**Output**: `tasks.md` - Prioritized task breakdown
+**🎯 Task Design Requirements for Atomic Commits**:
+- **MANDATORY**: Each task MUST be independently committable
+- **MANDATORY**: Each task MUST leave the system in a buildable state
+- **MANDATORY**: Tasks affecting the same file MUST be sequential (not parallel)
+- **MANDATORY**: Complex features MUST be broken into atomic, logical commits
+
+**Parallel Task Grouping Strategy**:
+- Group parallel tasks that can run simultaneously without conflicts
+- Mark all parallel tasks with `[P]` prefix
+- Ensure parallel tasks operate on different files/areas
+- Example proper grouping:
+  ```
+  Sequential Group (same file):
+  - T001 Create package.json structure
+  - T002 Add dependencies to package.json
+  - T003 Add scripts to package.json
+
+  Parallel Group (different files):
+  - T004 [P] Create .eslintrc.js
+  - T005 [P] Create .prettierrc.js
+  - T006 [P] Create tsconfig.json
+  ```
+
+**Output**: `tasks.md` - Prioritized task breakdown designed for atomic commits
 
 ---
 
@@ -138,7 +214,31 @@ specify → clarify → plan → tasks → implement → analyze
 
 **Critical Rule**: This is the **ONLY** phase where implementation artifacts can be created.
 
-**Output**: Complete implemented feature with all necessary files and configurations
+**🚨 MANDATORY EXECUTION PROTOCOL** - Referenced from CRITICAL EXECUTION RULES above:
+
+1. **Pre-Implementation Checklist**:
+   - [ ] Have I read the "ONE TASK = ONE COMMIT PROTOCOL" at the top of this file?
+   - [ ] Do I understand that each task requires immediate commit?
+   - [ ] Have I planned commit strategy for each task?
+
+2. **Per-Task Execution Sequence** (ENFORCED):
+   ```
+   FOR EACH TASK:
+   1. ✅ Execute ONE task implementation
+   2. ✅ Verify functionality (build/test if applicable)
+   3. ✅ Update TodoWrite: mark task as "completed"
+   4. ✅ Git add all changed files
+   5. ✅ Git commit with proper message format
+   6. ✅ Verify commit was successful
+   7. ✅ ONLY THEN start next task
+   ```
+
+3. **Violation Response**:
+   - If attempting to batch tasks: **HALT immediately**
+   - If skipping commits: **STOP and commit current task**
+   - If unsure about commit boundary: **ASK user for clarification**
+
+**Output**: Complete implemented feature with all necessary files and configurations, with each task properly committed
 
 ---
 
