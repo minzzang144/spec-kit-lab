@@ -185,12 +185,12 @@
 **Goal**: Frontend에서 방 생성 버튼, 생성 플로우, 자동 이동
 
 ### FE User Story 4 Implementation
-- [ ] T059 [P] [US4] 방 생성 기능 구현 in apps/chat-fe-with-claude/src/features/rooms/create-room/
-- [ ] T060 [US4] 방 생성 버튼 및 UI 구현 in apps/chat-fe-with-claude/src/widgets/room-list/
-- [ ] T061 [US4] 로비 페이지에 방 생성 기능 통합 in apps/chat-fe-with-claude/src/pages/lobby/
+- [x] T059 [P] [US4] 방 생성 기능 구현 in apps/chat-fe-with-claude/src/features/rooms/create-room/
+- [x] T060 [US4] 방 생성 버튼 및 UI 구현 in apps/chat-fe-with-claude/src/widgets/room-list/
+- [x] T061 [US4] 로비 페이지에 방 생성 기능 통합 in apps/chat-fe-with-claude/src/pages/lobby/
 
 ### FE US4 검증
-- [ ] T062 [US4] Frontend 검증 실행 (typecheck, lint, test, build) in apps/chat-fe-with-claude/
+- [x] T062 [US4] Frontend 검증 실행 (typecheck, lint, test, build) in apps/chat-fe-with-claude/
 
 **Checkpoint**: FE US4 완료 - 방 생성 버튼과 자동 입장
 
