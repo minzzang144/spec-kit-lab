@@ -93,15 +93,15 @@
 **Goal**: Backend에서 사용자 생성, 닉네임 검증, Socket 연결 관리
 
 ### BE User Story 1 Implementation
-- [ ] T027 [P] [US1] User 엔티티 DTO 클래스 생성 in apps/chat-be-with-claude/src/modules/users/dto/
-- [ ] T028 [P] [US1] 랜덤 닉네임 생성 유틸리티 생성 in apps/chat-be-with-claude/src/common/utils/nickname-generator.ts
-- [ ] T029 [US1] Users 서비스 구현 (사용자 생성, 닉네임 검증) in apps/chat-be-with-claude/src/modules/users/users.service.ts
-- [ ] T030 [US1] Users 컨트롤러 구현 in apps/chat-be-with-claude/src/modules/users/users.controller.ts
-- [ ] T031 [US1] Users 모듈 생성 및 등록 in apps/chat-be-with-claude/src/modules/users/users.module.ts
-- [ ] T032 [US1] Socket Gateway 기본 구조 생성 (연결 관리) in apps/chat-be-with-claude/src/modules/chat/chat.gateway.ts
+- [x] T027 [P] [US1] User 엔티티 DTO 클래스 생성 in apps/chat-be-with-claude/src/modules/users/dto/
+- [x] T028 [P] [US1] 랜덤 닉네임 생성 유틸리티 생성 in apps/chat-be-with-claude/src/common/utils/nickname-generator.ts
+- [x] T029 [US1] Users 서비스 구현 (사용자 생성, 닉네임 검증) in apps/chat-be-with-claude/src/modules/users/users.service.ts
+- [x] T030 [US1] Users 컨트롤러 구현 in apps/chat-be-with-claude/src/modules/users/users.controller.ts
+- [x] T031 [US1] Users 모듈 생성 및 등록 in apps/chat-be-with-claude/src/modules/users/users.module.ts
+- [x] T032 [US1] Socket Gateway 기본 구조 생성 (연결 관리) in apps/chat-be-with-claude/src/modules/chat/chat.gateway.ts
 
 ### BE US1 검증
-- [ ] T033 [US1] Backend 검증 실행 (typecheck, lint, test, build) in apps/chat-be-with-claude/
+- [x] T033 [US1] Backend 검증 실행 (typecheck, lint, test, build) in apps/chat-be-with-claude/
 
 **Checkpoint**: BE US1 완료 - 사용자 관리 및 Socket 연결 처리
 
