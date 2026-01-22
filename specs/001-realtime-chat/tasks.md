@@ -218,12 +218,12 @@
 **Goal**: Frontend에서 방 클릭, 참여 플로우, 채팅방 화면 이동
 
 ### FE User Story 5 Implementation
-- [ ] T068 [P] [US5] 방 참여 기능 구현 in apps/chat-fe-with-claude/src/features/chat/join-room/
-- [ ] T069 [US5] 채팅방 페이지 기본 구조 생성 in apps/chat-fe-with-claude/src/pages/chat-room/
-- [ ] T070 [US5] 방 목록에서 방 클릭 기능 추가 in apps/chat-fe-with-claude/src/widgets/room-list/
+- [x] T068 [P] [US5] 방 참여 기능 구현 in apps/chat-fe-with-claude/src/features/chat/join-room/
+- [x] T069 [US5] 채팅방 페이지 기본 구조 생성 in apps/chat-fe-with-claude/src/pages/chat-room/
+- [x] T070 [US5] 방 목록에서 방 클릭 기능 추가 in apps/chat-fe-with-claude/src/widgets/room-list/
 
 ### FE US5 검증
-- [ ] T071 [US5] Frontend 검증 실행 (typecheck, lint, test, build) in apps/chat-fe-with-claude/
+- [x] T071 [US5] Frontend 검증 실행 (typecheck, lint, test, build) in apps/chat-fe-with-claude/
 
 **Checkpoint**: FE US5 완료 - 방 목록에서 방 참여 가능
 
