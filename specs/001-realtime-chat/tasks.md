@@ -25,9 +25,9 @@
 
 **Purpose**: 워크스페이스 내 두 독립 애플리케이션 초기화
 
-- [ ] T001 워크스페이스 설정 확인 및 기본 구조 준비 in spec-kit-lab/package.json
+- [x] T001 워크스페이스 설정 확인 및 기본 구조 준비 in spec-kit-lab/package.json
 - [ ] T002 [P] NestJS 프로젝트 생성 in apps/apps/chat-be-with-claude/
-- [ ] T003 [P] React+Vite 프로젝트 생성 in apps/apps/chat-fe-with-claude/
+- [x] T003 [P] React+Vite 프로젝트 생성 in apps/apps/chat-fe-with-claude/
 
 ---
 
