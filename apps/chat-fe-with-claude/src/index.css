@@ -1,68 +1,113 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
-@layer base {
-  html {
-    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  }
-
-  body {
-    @apply bg-gray-50 text-gray-900 antialiased;
-    margin: 0;
-    min-height: 100vh;
-  }
+/* Base styles */
+html {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 }
 
-@layer components {
-  .btn {
-    @apply px-4 py-2 rounded-lg font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
-  }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: #f9fafb; /* gray-50 */
+  color: #111827; /* gray-900 */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
-  .btn-primary {
-    @apply btn bg-primary-600 hover:bg-primary-700 text-white focus:ring-primary-500;
-  }
+/* Component styles */
+.btn {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: colors 200ms;
+  outline: none;
+}
 
-  .btn-secondary {
-    @apply btn bg-gray-200 hover:bg-gray-300 text-gray-900 focus:ring-gray-500;
-  }
+.btn:focus {
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
 
-  .btn-ghost {
-    @apply btn bg-transparent hover:bg-gray-100 text-gray-700 focus:ring-gray-500;
-  }
+.btn-primary {
+  background-color: #2563eb; /* blue-600 */
+  color: white;
+}
 
-  .input {
-    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent;
-  }
+.btn-primary:hover {
+  background-color: #1d4ed8; /* blue-700 */
+}
 
-  .card {
-    @apply bg-white rounded-xl shadow-sm border border-gray-200;
-  }
+.btn-secondary {
+  background-color: #e5e7eb; /* gray-200 */
+  color: #111827; /* gray-900 */
+}
 
+.btn-secondary:hover {
+  background-color: #d1d5db; /* gray-300 */
+}
+
+.btn-ghost {
+  background-color: transparent;
+  color: #374151; /* gray-700 */
+}
+
+.btn-ghost:hover {
+  background-color: #f3f4f6; /* gray-100 */
+}
+
+.input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db; /* gray-300 */
+  border-radius: 0.5rem;
+  outline: none;
+}
+
+.input:focus {
+  border-color: #2563eb; /* blue-600 */
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+.card {
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb; /* gray-200 */
+}
+
+.message-bubble {
+  max-width: 20rem;
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+}
+
+@media (min-width: 1024px) {
   .message-bubble {
-    @apply max-w-xs lg:max-w-md px-4 py-2 rounded-2xl;
-  }
-
-  .message-bubble-own {
-    @apply message-bubble bg-primary-600 text-white ml-auto;
-  }
-
-  .message-bubble-other {
-    @apply message-bubble bg-white border border-gray-200 text-gray-900;
+    max-width: 28rem;
   }
 }
 
-@layer utilities {
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
+.message-bubble-own {
+  background-color: #2563eb; /* blue-600 */
+  color: white;
+  margin-left: auto;
+}
 
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
+.message-bubble-other {
+  background-color: white;
+  border: 1px solid #e5e7eb; /* gray-200 */
+  color: #111827; /* gray-900 */
+}
 
-  .text-balance {
-    text-wrap: balance;
-  }
+/* Utility styles */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.text-balance {
+  text-wrap: balance;
 }

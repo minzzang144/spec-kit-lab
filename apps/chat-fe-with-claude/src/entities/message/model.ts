@@ -1,8 +1,10 @@
-export enum MessageType {
-  CHAT = 'chat',
-  SYSTEM = 'system',
-  NOTIFICATION = 'notification',
-}
+export const MessageType = {
+  CHAT: 'chat',
+  SYSTEM: 'system',
+  NOTIFICATION: 'notification',
+} as const
+
+export type MessageType = typeof MessageType[keyof typeof MessageType]
 
 export interface Message {
   id: string
