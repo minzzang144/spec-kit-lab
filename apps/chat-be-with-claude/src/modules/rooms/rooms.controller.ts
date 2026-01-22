@@ -60,7 +60,7 @@ export class RoomsController {
   @ApiInternalServerErrorResponse({
     description: '서버 내부 오류가 발생했습니다.',
   })
-  async getAllRooms(): Promise<ChatRoomListResponseDto> {
+  getAllRooms(): ChatRoomListResponseDto {
     this.logger.debug('GET /rooms - Fetching all rooms');
 
     try {
@@ -107,10 +107,10 @@ export class RoomsController {
   @ApiInternalServerErrorResponse({
     description: '서버 내부 오류가 발생했습니다.',
   })
-  async getRoomById(
+  getRoomById(
     @Param('roomId') roomId: string,
     @Query('currentUserId') currentUserId?: string,
-  ): Promise<ChatRoomDetailResponseDto> {
+  ): ChatRoomDetailResponseDto {
     this.logger.debug(`GET /rooms/${roomId} - Fetching room details`);
 
     try {
@@ -171,10 +171,10 @@ export class RoomsController {
   @ApiInternalServerErrorResponse({
     description: '서버 내부 오류가 발생했습니다.',
   })
-  async createRoom(
+  createRoom(
     @Query('creatorId') creatorId: string,
-    @Body() createRoomDto: CreateRoomDto,
-  ): Promise<CreateRoomResponseDto> {
+    @Body() _createRoomDto: CreateRoomDto,
+  ): CreateRoomResponseDto {
     this.logger.debug(`POST /rooms - Creating room for user ${creatorId}`);
 
     if (!creatorId) {
@@ -232,10 +232,10 @@ export class RoomsController {
   @ApiInternalServerErrorResponse({
     description: '서버 내부 오류가 발생했습니다.',
   })
-  async addUserToRoom(
+  addUserToRoom(
     @Param('roomId') roomId: string,
     @Query('userId') userId: string,
-  ): Promise<{ success: boolean; message: string }> {
+  ): { success: boolean; message: string } {
     this.logger.debug(
       `POST /rooms/${roomId}/participants - Adding user ${userId}`,
     );
@@ -302,10 +302,10 @@ export class RoomsController {
   @ApiInternalServerErrorResponse({
     description: '서버 내부 오류가 발생했습니다.',
   })
-  async removeUserFromRoom(
+  removeUserFromRoom(
     @Param('roomId') roomId: string,
     @Query('userId') userId: string,
-  ): Promise<{ success: boolean; message: string; roomDeleted: boolean }> {
+  ): { success: boolean; message: string; roomDeleted: boolean } {
     this.logger.debug(
       `POST /rooms/${roomId}/participants/remove - Removing user ${userId}`,
     );
@@ -372,7 +372,7 @@ export class RoomsController {
   @ApiInternalServerErrorResponse({
     description: '서버 내부 오류가 발생했습니다.',
   })
-  async getUserCurrentRoom(@Param('userId') userId: string) {
+  getUserCurrentRoom(@Param('userId') userId: string) {
     this.logger.debug(
       `GET /rooms/users/${userId}/current - Fetching user's current room`,
     );
@@ -415,7 +415,7 @@ export class RoomsController {
   @ApiInternalServerErrorResponse({
     description: '서버 내부 오류가 발생했습니다.',
   })
-  async getRoomStats() {
+  getRoomStats() {
     this.logger.debug(
       'GET /rooms/statistics/summary - Fetching room statistics',
     );
@@ -453,7 +453,7 @@ export class RoomsController {
   @ApiInternalServerErrorResponse({
     description: '서버 내부 오류가 발생했습니다.',
   })
-  async cleanupEmptyRooms() {
+  cleanupEmptyRooms() {
     this.logger.debug('POST /rooms/cleanup/empty - Cleaning up empty rooms');
 
     try {

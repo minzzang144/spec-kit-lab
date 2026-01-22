@@ -13,6 +13,7 @@ import {
   ChatRoomDetailResponseDto,
   ChatRoomParticipantDto,
   CreateRoomResponseDto,
+  JoinRoomResponseDto,
 } from './dto';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -154,6 +155,91 @@ export class RoomsService {
       };
     } catch (error) {
       this.logger.error(`Failed to create room for user ${creatorId}`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * 사용자가 채팅방에 참여합니다 (User Story 5용 메서드).
+   * @param roomId 방 ID
+   * @param userId 참여할 사용자 ID
+   */
+  joinRoom(roomId: string, userId: string): JoinRoomResponseDto {
+    if (!roomId || !userId) {
+      throw new BadRequestException('방 ID와 사용자 ID가 모두 필요합니다.');
+    }
+
+    const room = this.memoryStore.getRoom(roomId);
+    if (!room) {
+      throw new NotFoundException(`방을 찾을 수 없습니다. (ID: ${roomId})`);
+    }
+
+    const user = this.memoryStore.getUser(userId);
+    if (!user) {
+      throw new NotFoundException(`사용자를 찾을 수 없습니다. (ID: ${userId})`);
+    }
+
+    // 이미 참여 중인지 확인
+    const isAlreadyParticipant = room.participants.some((p) => p.id === userId);
+    if (isAlreadyParticipant) {
+      this.logger.warn(`User ${userId} is already in room ${roomId}`);
+      // 이미 참여 중인 경우에도 성공 응답 반환 (현재 상태 정보 포함)
+      return {
+        roomId: room.id,
+        roomName: room.name,
+        success: true,
+        message: '이미 방에 참여 중입니다.',
+        joinedAt: new Date(),
+        currentParticipants: room.participants.length,
+        maxParticipants: RoomsService.MAX_PARTICIPANTS,
+        isFull: room.participants.length >= RoomsService.MAX_PARTICIPANTS,
+      };
+    }
+
+    // 방 인원 제한 확인
+    if (room.participants.length >= RoomsService.MAX_PARTICIPANTS) {
+      throw new BadRequestException(
+        `방이 가득 찼습니다. (최대 ${RoomsService.MAX_PARTICIPANTS}명)`,
+      );
+    }
+
+    // 다른 방에 참여 중인지 확인
+    const currentRoom = this.getUserCurrentRoom(userId);
+    if (currentRoom) {
+      throw new BadRequestException(
+        `이미 다른 방(${currentRoom.name})에 참여 중입니다. 먼저 방을 나가주세요.`,
+      );
+    }
+
+    try {
+      const success = this.memoryStore.addUserToRoom(roomId, user);
+      if (!success) {
+        throw new BadRequestException('방 참여에 실패했습니다.');
+      }
+
+      // 방 참여 후 업데이트된 정보 조회
+      const updatedRoom = this.memoryStore.getRoom(roomId);
+      if (!updatedRoom) {
+        throw new NotFoundException('방 참여 후 방 정보를 찾을 수 없습니다.');
+      }
+
+      this.logger.log(`User ${user.nickname} joined room ${room.name}`);
+
+      return {
+        roomId: updatedRoom.id,
+        roomName: updatedRoom.name,
+        success: true,
+        message: `${updatedRoom.name}에 참여했습니다.`,
+        joinedAt: new Date(),
+        currentParticipants: updatedRoom.participants.length,
+        maxParticipants: RoomsService.MAX_PARTICIPANTS,
+        isFull: updatedRoom.participants.length >= RoomsService.MAX_PARTICIPANTS,
+      };
+    } catch (error) {
+      this.logger.error(
+        `Failed to join room ${roomId} for user ${userId}`,
+        error,
+      );
       throw error;
     }
   }

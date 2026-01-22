@@ -13,6 +13,7 @@ import { Server, Socket } from 'socket.io';
 import { UsersService } from '../users/users.service';
 import { CreateUserDto } from '../users/dto';
 import { RoomsService } from '../rooms/rooms.service';
+import { ChatService } from './chat.service';
 
 /**
  * 실시간 채팅 Socket.IO Gateway
@@ -40,6 +41,7 @@ export class ChatGateway
   constructor(
     private readonly usersService: UsersService,
     private readonly roomsService: RoomsService,
+    private readonly chatService: ChatService,
   ) {}
 
   /**
@@ -164,7 +166,7 @@ export class ChatGateway
    * 사용자 활동 업데이트 (heartbeat)
    */
   @SubscribeMessage('ping')
-  async handlePing(@ConnectedSocket() client: Socket) {
+  handlePing(@ConnectedSocket() client: Socket) {
     try {
       const user = this.usersService.findBySocketId(client.id);
       if (user) {
@@ -229,7 +231,7 @@ export class ChatGateway
    */
   @SubscribeMessage('debug-connections')
   async handleDebugConnections(@ConnectedSocket() client: Socket) {
-    const stats = await this.usersService.getStats();
+    const stats = this.usersService.getStats();
     const socketCount = this.server.sockets.sockets.size;
 
     client.emit('debug-info', {
@@ -281,7 +283,7 @@ export class ChatGateway
    * 로비 방 목록 요청
    */
   @SubscribeMessage('get-lobby-rooms')
-  async handleGetLobbyRooms(@ConnectedSocket() client: Socket) {
+  handleGetLobbyRooms(@ConnectedSocket() client: Socket) {
     try {
       this.sendLobbyUpdateToClient(client);
     } catch (error) {
@@ -301,7 +303,7 @@ export class ChatGateway
    * 새 채팅방 생성
    */
   @SubscribeMessage('create-room')
-  async handleCreateRoom(@ConnectedSocket() client: Socket) {
+  handleCreateRoom(@ConnectedSocket() client: Socket) {
     try {
       // 현재 사용자 확인
       const user = this.usersService.findBySocketId(client.id);
@@ -338,7 +340,7 @@ export class ChatGateway
       });
 
       // 모든 로비 사용자에게 방 목록 업데이트 브로드캐스트
-      this.broadcastLobbyUpdate();
+      void this.broadcastLobbyUpdate();
     } catch (error) {
       this.logger.error(
         `Error creating room for ${client.id}:`,
@@ -394,37 +396,26 @@ export class ChatGateway
         return;
       }
 
-      // 방 참여
-      const success = this.roomsService.addUserToRoom(data.roomId, user.id);
-      if (!success) {
-        client.emit('error', {
-          event: 'join-room',
-          message: '방 참여에 실패했습니다',
-          timestamp: new Date().toISOString(),
-        });
-        return;
-      }
+      // 방 참여 (User Story 5용 메서드 사용)
+      const joinResult = this.roomsService.joinRoom(data.roomId, user.id);
 
-      // 방 정보 조회
-      const roomDetails = this.roomsService.getRoomById(data.roomId, user.id);
-
-      this.logger.log(`User ${user.nickname} joined room ${roomDetails.name}`);
+      this.logger.log(`User ${user.nickname} joined room ${joinResult.roomName}`);
 
       // 참여자에게 성공 응답
       client.emit('room-joined', {
-        room: roomDetails,
-        message: `${roomDetails.name}에 참여했습니다`,
+        room: joinResult,
+        message: joinResult.message,
         timestamp: new Date().toISOString(),
       });
 
       // 방의 다른 참여자들에게 새 참여자 알림
-      await this.notifyRoomParticipants(
+      this.notifyRoomParticipants(
         data.roomId,
         'user-joined-room',
         {
           user,
           roomId: data.roomId,
-          roomName: roomDetails.name,
+          roomName: joinResult.roomName,
           message: `${user.nickname}님이 방에 참여했습니다`,
           timestamp: new Date().toISOString(),
         },
@@ -432,7 +423,7 @@ export class ChatGateway
       );
 
       // 모든 로비 사용자에게 방 목록 업데이트
-      await this.broadcastLobbyUpdate();
+      void this.broadcastLobbyUpdate();
     } catch (error) {
       this.logger.error(
         `Error joining room for ${client.id}:`,
@@ -478,16 +469,16 @@ export class ChatGateway
       }
 
       // 방 정보 미리 조회 (삭제되기 전에)
-      let roomDetails;
+      let roomDetails: any;
       try {
         roomDetails = this.roomsService.getRoomById(data.roomId);
       } catch {
         roomDetails = null;
       }
-      const roomName = roomDetails?.name || '채팅방';
+      const roomName: string = roomDetails?.name || '채팅방';
 
       // 방의 다른 참여자들에게 퇴장 알림 (제거되기 전에)
-      await this.notifyRoomParticipants(
+      this.notifyRoomParticipants(
         data.roomId,
         'user-left-room',
         {
@@ -501,19 +492,16 @@ export class ChatGateway
       );
 
       // 방에서 사용자 제거
-      const success = this.roomsService.removeUserFromRoom(
-        data.roomId,
-        user.id,
-      );
+      this.roomsService.removeUserFromRoom(data.roomId, user.id);
 
       // 방이 삭제되었는지 확인
-      let roomStillExists;
+      let roomStillExists: any;
       try {
         roomStillExists = this.roomsService.getRoomById(data.roomId);
       } catch {
         roomStillExists = null;
       }
-      const roomDeleted = !roomStillExists;
+      const roomDeleted: boolean = !roomStillExists;
 
       this.logger.log(
         `User ${user.nickname} left room ${roomName}${roomDeleted ? ' (room deleted)' : ''}`,
@@ -531,7 +519,7 @@ export class ChatGateway
       });
 
       // 모든 로비 사용자에게 방 목록 업데이트
-      await this.broadcastLobbyUpdate();
+      void this.broadcastLobbyUpdate();
     } catch (error) {
       this.logger.error(
         `Error leaving room for ${client.id}:`,
@@ -597,14 +585,14 @@ export class ChatGateway
   /**
    * 특정 방의 모든 참여자에게 알림 전송
    */
-  private async notifyRoomParticipants(
+  private notifyRoomParticipants(
     roomId: string,
     event: string,
     data: any,
     excludeSocketId?: string,
   ) {
     try {
-      let room;
+      let room: any;
       try {
         room = this.roomsService.getRoomById(roomId);
       } catch {
@@ -617,7 +605,7 @@ export class ChatGateway
       // 방 참여자들의 소켓 ID 수집
       const participantSocketIds: string[] = [];
       for (const participant of room.participants) {
-        const user = this.usersService.findById(participant.id);
+        const user = this.usersService.findById(participant.id as string);
         if (user?.socketId && user.socketId !== excludeSocketId) {
           participantSocketIds.push(user.socketId);
         }
@@ -632,7 +620,7 @@ export class ChatGateway
       });
 
       this.logger.debug(
-        `Notified ${participantSocketIds.length} participants in room ${room.name}`,
+        `Notified ${participantSocketIds.length} participants in room ${room.name as string}`,
       );
     } catch (error) {
       this.logger.error(

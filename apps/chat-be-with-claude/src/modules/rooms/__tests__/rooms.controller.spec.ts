@@ -9,6 +9,11 @@ import {
   ChatRoomDto,
 } from '../dto';
 
+// UUID 모킹
+jest.mock('uuid', () => ({
+  v4: () => 'mocked-uuid-string',
+}));
+
 describe('RoomsController', () => {
   let controller: RoomsController;
   let roomsService: RoomsService;
@@ -116,9 +121,9 @@ describe('RoomsController', () => {
 
   describe('getAllRooms', () => {
     it('should return all rooms successfully', async () => {
-      jest
-        .spyOn(roomsService, 'getAllRooms')
-        .mockResolvedValue(mockRoomListResponse);
+      (jest.spyOn(roomsService, 'getAllRooms') as jest.Mock).mockResolvedValue(
+        mockRoomListResponse,
+      );
 
       const result = await controller.getAllRooms();
 
@@ -128,7 +133,9 @@ describe('RoomsController', () => {
 
     it('should handle service errors', async () => {
       const error = new Error('Database connection failed');
-      jest.spyOn(roomsService, 'getAllRooms').mockRejectedValue(error);
+      (jest.spyOn(roomsService, 'getAllRooms') as jest.Mock).mockRejectedValue(
+        error,
+      );
 
       await expect(controller.getAllRooms()).rejects.toThrow(error);
     });
@@ -136,7 +143,9 @@ describe('RoomsController', () => {
 
   describe('getRoomById', () => {
     it('should return room details successfully', async () => {
-      jest.spyOn(roomsService, 'getRoomById').mockResolvedValue(mockRoomDetail);
+      (jest.spyOn(roomsService, 'getRoomById') as jest.Mock).mockResolvedValue(
+        mockRoomDetail,
+      );
 
       const result = await controller.getRoomById('room-1', 'user-1');
 
@@ -149,9 +158,9 @@ describe('RoomsController', () => {
         ...mockRoomDetail,
         isCurrentUserParticipant: undefined,
       };
-      jest
-        .spyOn(roomsService, 'getRoomById')
-        .mockResolvedValue(roomDetailWithoutUser);
+      (jest.spyOn(roomsService, 'getRoomById') as jest.Mock).mockResolvedValue(
+        roomDetailWithoutUser,
+      );
 
       const result = await controller.getRoomById('room-1');
 
@@ -164,7 +173,9 @@ describe('RoomsController', () => {
 
     it('should handle not found errors', async () => {
       const error = new NotFoundException('방을 찾을 수 없습니다.');
-      jest.spyOn(roomsService, 'getRoomById').mockRejectedValue(error);
+      (jest.spyOn(roomsService, 'getRoomById') as jest.Mock).mockRejectedValue(
+        error,
+      );
 
       await expect(controller.getRoomById('non-existent')).rejects.toThrow(
         NotFoundException,
@@ -174,9 +185,9 @@ describe('RoomsController', () => {
 
   describe('createRoom', () => {
     it('should create room successfully', async () => {
-      jest
-        .spyOn(roomsService, 'createRoom')
-        .mockResolvedValue(mockCreateRoomResponse);
+      (jest.spyOn(roomsService, 'createRoom') as jest.Mock).mockResolvedValue(
+        mockCreateRoomResponse,
+      );
 
       const result = await controller.createRoom('user-1', {});
 
@@ -185,9 +196,9 @@ describe('RoomsController', () => {
     });
 
     it('should create room with creator nickname', async () => {
-      jest
-        .spyOn(roomsService, 'createRoom')
-        .mockResolvedValue(mockCreateRoomResponse);
+      (jest.spyOn(roomsService, 'createRoom') as jest.Mock).mockResolvedValue(
+        mockCreateRoomResponse,
+      );
 
       const createRoomDto = { creatorNickname: '귀여운펭귄' };
       const result = await controller.createRoom('user-1', createRoomDto);
@@ -205,7 +216,9 @@ describe('RoomsController', () => {
 
     it('should handle service errors', async () => {
       const error = new NotFoundException('사용자를 찾을 수 없습니다.');
-      jest.spyOn(roomsService, 'createRoom').mockRejectedValue(error);
+      (jest.spyOn(roomsService, 'createRoom') as jest.Mock).mockRejectedValue(
+        error,
+      );
 
       await expect(controller.createRoom('user-1', {})).rejects.toThrow(
         NotFoundException,
@@ -215,7 +228,9 @@ describe('RoomsController', () => {
 
   describe('addUserToRoom', () => {
     it('should add user to room successfully', async () => {
-      jest.spyOn(roomsService, 'addUserToRoom').mockResolvedValue(true);
+      (
+        jest.spyOn(roomsService, 'addUserToRoom') as jest.Mock
+      ).mockResolvedValue(true);
 
       const result = await controller.addUserToRoom('room-1', 'user-1');
 
@@ -230,7 +245,9 @@ describe('RoomsController', () => {
     });
 
     it('should handle when user is already in room', async () => {
-      jest.spyOn(roomsService, 'addUserToRoom').mockResolvedValue(false);
+      (
+        jest.spyOn(roomsService, 'addUserToRoom') as jest.Mock
+      ).mockResolvedValue(false);
 
       const result = await controller.addUserToRoom('room-1', 'user-1');
 
@@ -249,7 +266,9 @@ describe('RoomsController', () => {
 
     it('should handle service errors', async () => {
       const error = new BadRequestException('방이 가득 찼습니다.');
-      jest.spyOn(roomsService, 'addUserToRoom').mockRejectedValue(error);
+      (
+        jest.spyOn(roomsService, 'addUserToRoom') as jest.Mock
+      ).mockRejectedValue(error);
 
       await expect(
         controller.addUserToRoom('room-1', 'user-1'),
@@ -259,8 +278,12 @@ describe('RoomsController', () => {
 
   describe('removeUserFromRoom', () => {
     it('should remove user from room successfully', async () => {
-      jest.spyOn(roomsService, 'removeUserFromRoom').mockResolvedValue(true);
-      jest.spyOn(roomsService, 'getRoomById').mockResolvedValue(mockRoomDetail);
+      (
+        jest.spyOn(roomsService, 'removeUserFromRoom') as jest.Mock
+      ).mockResolvedValue(true);
+      (jest.spyOn(roomsService, 'getRoomById') as jest.Mock).mockResolvedValue(
+        mockRoomDetail,
+      );
 
       const result = await controller.removeUserFromRoom('room-1', 'user-1');
 
@@ -277,10 +300,12 @@ describe('RoomsController', () => {
     });
 
     it('should handle room deletion when last user leaves', async () => {
-      jest.spyOn(roomsService, 'removeUserFromRoom').mockResolvedValue(true);
-      jest
-        .spyOn(roomsService, 'getRoomById')
-        .mockRejectedValue(new NotFoundException());
+      (
+        jest.spyOn(roomsService, 'removeUserFromRoom') as jest.Mock
+      ).mockResolvedValue(true);
+      (jest.spyOn(roomsService, 'getRoomById') as jest.Mock).mockRejectedValue(
+        new NotFoundException(),
+      );
 
       const result = await controller.removeUserFromRoom('room-1', 'user-1');
 
@@ -300,7 +325,9 @@ describe('RoomsController', () => {
 
     it('should handle service errors', async () => {
       const error = new NotFoundException('방을 찾을 수 없습니다.');
-      jest.spyOn(roomsService, 'removeUserFromRoom').mockRejectedValue(error);
+      (
+        jest.spyOn(roomsService, 'removeUserFromRoom') as jest.Mock
+      ).mockRejectedValue(error);
 
       await expect(
         controller.removeUserFromRoom('room-1', 'user-1'),
@@ -310,9 +337,9 @@ describe('RoomsController', () => {
 
   describe('getUserCurrentRoom', () => {
     it('should return user current room', async () => {
-      jest
-        .spyOn(roomsService, 'getUserCurrentRoom')
-        .mockResolvedValue(mockCurrentRoom);
+      (
+        jest.spyOn(roomsService, 'getUserCurrentRoom') as jest.Mock
+      ).mockResolvedValue(mockCurrentRoom);
 
       const result = await controller.getUserCurrentRoom('user-1');
 
@@ -321,7 +348,9 @@ describe('RoomsController', () => {
     });
 
     it('should return null when user is not in any room', async () => {
-      jest.spyOn(roomsService, 'getUserCurrentRoom').mockResolvedValue(null);
+      (
+        jest.spyOn(roomsService, 'getUserCurrentRoom') as jest.Mock
+      ).mockResolvedValue(null);
 
       const result = await controller.getUserCurrentRoom('user-1');
 
@@ -330,7 +359,9 @@ describe('RoomsController', () => {
 
     it('should handle service errors', async () => {
       const error = new BadRequestException('사용자 ID가 필요합니다.');
-      jest.spyOn(roomsService, 'getUserCurrentRoom').mockRejectedValue(error);
+      (
+        jest.spyOn(roomsService, 'getUserCurrentRoom') as jest.Mock
+      ).mockRejectedValue(error);
 
       await expect(controller.getUserCurrentRoom('user-1')).rejects.toThrow(
         BadRequestException,
@@ -340,7 +371,9 @@ describe('RoomsController', () => {
 
   describe('getRoomStats', () => {
     it('should return room statistics', async () => {
-      jest.spyOn(roomsService, 'getRoomStats').mockResolvedValue(mockRoomStats);
+      (jest.spyOn(roomsService, 'getRoomStats') as jest.Mock).mockResolvedValue(
+        mockRoomStats,
+      );
 
       const result = await controller.getRoomStats();
 
@@ -350,7 +383,9 @@ describe('RoomsController', () => {
 
     it('should handle service errors', async () => {
       const error = new Error('Statistics calculation failed');
-      jest.spyOn(roomsService, 'getRoomStats').mockRejectedValue(error);
+      (jest.spyOn(roomsService, 'getRoomStats') as jest.Mock).mockRejectedValue(
+        error,
+      );
 
       await expect(controller.getRoomStats()).rejects.toThrow(error);
     });
@@ -358,7 +393,9 @@ describe('RoomsController', () => {
 
   describe('cleanupEmptyRooms', () => {
     it('should cleanup empty rooms successfully', async () => {
-      jest.spyOn(roomsService, 'cleanupEmptyRooms').mockResolvedValue(3);
+      (
+        jest.spyOn(roomsService, 'cleanupEmptyRooms') as jest.Mock
+      ).mockResolvedValue(3);
 
       const result = await controller.cleanupEmptyRooms();
 
@@ -370,7 +407,9 @@ describe('RoomsController', () => {
     });
 
     it('should handle when no empty rooms exist', async () => {
-      jest.spyOn(roomsService, 'cleanupEmptyRooms').mockResolvedValue(0);
+      (
+        jest.spyOn(roomsService, 'cleanupEmptyRooms') as jest.Mock
+      ).mockResolvedValue(0);
 
       const result = await controller.cleanupEmptyRooms();
 
@@ -382,7 +421,9 @@ describe('RoomsController', () => {
 
     it('should handle service errors', async () => {
       const error = new Error('Cleanup operation failed');
-      jest.spyOn(roomsService, 'cleanupEmptyRooms').mockRejectedValue(error);
+      (
+        jest.spyOn(roomsService, 'cleanupEmptyRooms') as jest.Mock
+      ).mockRejectedValue(error);
 
       await expect(controller.cleanupEmptyRooms()).rejects.toThrow(error);
     });

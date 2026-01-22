@@ -45,7 +45,9 @@ describe('RoomNameGenerator', () => {
       expect(RoomNameGenerator.extractRoomNumber('채팅방 #abcd')).toBeNull();
       expect(RoomNameGenerator.extractRoomNumber('잘못된 채팅방')).toBeNull();
       expect(RoomNameGenerator.extractRoomNumber('')).toBeNull();
-      expect(RoomNameGenerator.extractRoomNumber(null as unknown as string)).toBeNull();
+      expect(
+        RoomNameGenerator.extractRoomNumber(null as unknown as string),
+      ).toBeNull();
     });
   });
 
