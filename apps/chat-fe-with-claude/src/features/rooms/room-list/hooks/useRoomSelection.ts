@@ -14,7 +14,7 @@ export const useRoomSelection = ({
   onError,
 }: UseRoomSelectionProps) => {
   const navigate = useNavigate()
-  const { isLoading, joinRoom: socketJoinRoom } = useJoinRoomFlow()
+  const { isLoading } = useJoinRoomFlow()
 
   const handleRoomClick = useCallback(
     (roomId: string, isFull: boolean) => {

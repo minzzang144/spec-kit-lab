@@ -25,6 +25,7 @@ export function useJoinRoomModel(): JoinRoomModel {
   })
 
   const joinRoom = useCallback((roomId: string) => {
+    console.log('Starting to join room:', roomId)
     setState(prev => ({
       ...prev,
       isLoading: true,

@@ -19,6 +19,6 @@ export function Providers({ children }: ProvidersProps) {
 
 export { SocketProvider } from './socket-provider'
 export { QueryProvider } from './query-provider'
-export { useSocket } from './context'
+export { useSocket } from './socket-hooks'
 export { queryClient } from './query-client'
 export default Providers

@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { MessageSquare, Users, LogOut } from 'lucide-react'
 import { SessionManager, type SessionData } from '@/shared/lib/session-manager'
-import { useSocket } from '@/app/providers/context'
+import { useSocket } from '@/app/providers/socket-hooks'
 import { RoomListWidget } from '@/widgets/room-list'
 
 export function LobbyPage() {
