@@ -1,15 +1,16 @@
 import { useState, useCallback } from 'react'
-import { Plus, AlertTriangle } from 'lucide-react'
+import { AlertTriangle } from 'lucide-react'
 import {
   useRoomListModel,
   useRoomSelection,
   RoomListContent,
 } from '@/features/rooms/room-list'
+import { CreateRoomFeature } from '@/features/rooms/create-room'
 
 interface RoomListWidgetProps {
   currentUserId: string | null
   currentUserNickname: string | null
-  onCreateRoom?: () => void
+  onRoomCreated?: (roomId: string) => void
   onRoomJoin?: (roomId: string) => void
   className?: string
 }
@@ -17,7 +18,7 @@ interface RoomListWidgetProps {
 export const RoomListWidget = ({
   currentUserId,
   currentUserNickname,
-  onCreateRoom,
+  onRoomCreated,
   onRoomJoin,
   className = '',
 }: RoomListWidgetProps) => {
@@ -34,14 +35,6 @@ export const RoomListWidget = ({
     setError(null)
     refetch()
   }, [refetch])
-
-  const handleCreateRoom = useCallback(() => {
-    if (!currentUserId) {
-      setError(new Error('로그인이 필요합니다'))
-      return
-    }
-    onCreateRoom?.()
-  }, [currentUserId, onCreateRoom])
 
   // Clear error after a few seconds
   const clearError = useCallback(() => {
@@ -61,15 +54,11 @@ export const RoomListWidget = ({
           )}
         </div>
 
-        <button
-          onClick={handleCreateRoom}
-          disabled={!currentUserId || isJoining}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          title="새 채팅방 만들기"
-        >
-          <Plus size={20} />
-          <span className="hidden sm:inline">새 방 만들기</span>
-        </button>
+        <CreateRoomFeature
+          currentUserId={currentUserId}
+          currentUserNickname={currentUserNickname}
+          onRoomCreated={onRoomCreated}
+        />
       </div>
 
       {/* Error Alert */}
