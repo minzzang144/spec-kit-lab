@@ -127,7 +127,7 @@ export class MemoryStore implements IStorage {
     if (room) {
       this.rooms.delete(id);
       // Clean up room messages
-      room.messages.forEach(message => {
+      room.messages.forEach((message) => {
         this.messages.delete(message.id);
       });
       this.logger.debug(`Room deleted: ${room.name} (${id})`);
@@ -143,11 +143,11 @@ export class MemoryStore implements IStorage {
   // Room participant operations
   addUserToRoom(roomId: string, user: User): boolean {
     const room = this.getRoom(roomId);
-    if (room && !room.participants.find(p => p.id === user.id)) {
+    if (room && !room.participants.find((p) => p.id === user.id)) {
       room.participants.push(user);
       this.updateRoom(roomId, {
         participants: room.participants,
-        lastActivity: new Date()
+        lastActivity: new Date(),
       });
       return true;
     }
@@ -158,11 +158,11 @@ export class MemoryStore implements IStorage {
     const room = this.getRoom(roomId);
     if (room) {
       const initialLength = room.participants.length;
-      room.participants = room.participants.filter(p => p.id !== userId);
+      room.participants = room.participants.filter((p) => p.id !== userId);
       if (room.participants.length < initialLength) {
         this.updateRoom(roomId, {
           participants: room.participants,
-          lastActivity: new Date()
+          lastActivity: new Date(),
         });
         return true;
       }
@@ -180,11 +180,13 @@ export class MemoryStore implements IStorage {
       room.messages.push(message);
       this.updateRoom(message.roomId, {
         messages: room.messages,
-        lastActivity: new Date()
+        lastActivity: new Date(),
       });
     }
 
-    this.logger.debug(`Message created in room ${message.roomId}: ${message.content.substring(0, 50)}...`);
+    this.logger.debug(
+      `Message created in room ${message.roomId}: ${message.content.substring(0, 50)}...`,
+    );
     return message;
   }
 
@@ -196,16 +198,19 @@ export class MemoryStore implements IStorage {
     const room = this.getRoom(roomId);
     if (!room) return [];
 
-    const messages = room.messages.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+    const messages = room.messages.sort(
+      (a, b) => a.createdAt.getTime() - b.createdAt.getTime(),
+    );
     return limit ? messages.slice(-limit) : messages;
   }
 
   // Cleanup operations
   cleanupEmptyRooms(): void {
-    const emptyRooms = Array.from(this.rooms.values())
-      .filter(room => room.participants.length === 0);
+    const emptyRooms = Array.from(this.rooms.values()).filter(
+      (room) => room.participants.length === 0,
+    );
 
-    emptyRooms.forEach(room => {
+    emptyRooms.forEach((room) => {
       this.deleteRoom(room.id);
       this.logger.debug(`Cleaned up empty room: ${room.name} (${room.id})`);
     });

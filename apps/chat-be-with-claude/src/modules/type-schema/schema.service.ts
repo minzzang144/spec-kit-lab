@@ -10,41 +10,62 @@ export class SchemaService {
       // 로비 입장
       'join-lobby': {
         parameters: {
-          nickname: { type: 'string', optional: true, description: '선택적 닉네임 (없으면 랜덤 생성)' }
+          nickname: {
+            type: 'string',
+            optional: true,
+            description: '선택적 닉네임 (없으면 랜덤 생성)',
+          },
         },
-        description: '사용자가 로비에 입장할 때 발송하는 이벤트'
+        description: '사용자가 로비에 입장할 때 발송하는 이벤트',
       },
 
       // 방 생성
       'create-room': {
         parameters: {},
-        description: '새로운 채팅방을 생성하는 이벤트 (자동 이름 생성)'
+        description: '새로운 채팅방을 생성하는 이벤트 (자동 이름 생성)',
       },
 
       // 방 참여
       'join-room': {
         parameters: {
-          roomId: { type: 'string', required: true, description: '참여할 방의 ID' }
+          roomId: {
+            type: 'string',
+            required: true,
+            description: '참여할 방의 ID',
+          },
         },
-        description: '기존 채팅방에 참여하는 이벤트'
+        description: '기존 채팅방에 참여하는 이벤트',
       },
 
       // 메시지 전송
       'send-message': {
         parameters: {
-          roomId: { type: 'string', required: true, description: '메시지를 보낼 방의 ID' },
-          content: { type: 'string', required: true, maxLength: 500, description: '메시지 내용 (최대 500자)' }
+          roomId: {
+            type: 'string',
+            required: true,
+            description: '메시지를 보낼 방의 ID',
+          },
+          content: {
+            type: 'string',
+            required: true,
+            maxLength: 500,
+            description: '메시지 내용 (최대 500자)',
+          },
         },
-        description: '채팅방에 메시지를 전송하는 이벤트'
+        description: '채팅방에 메시지를 전송하는 이벤트',
       },
 
       // 방 나가기
       'leave-room': {
         parameters: {
-          roomId: { type: 'string', required: true, description: '나갈 방의 ID' }
+          roomId: {
+            type: 'string',
+            required: true,
+            description: '나갈 방의 ID',
+          },
         },
-        description: '채팅방에서 나가는 이벤트'
-      }
+        description: '채팅방에서 나가는 이벤트',
+      },
     };
   }
 
@@ -60,14 +81,27 @@ export class SchemaService {
             type: 'array',
             items: {
               id: { type: 'string', description: '방 ID' },
-              name: { type: 'string', description: '방 이름 (예: 채팅방 #001)' },
-              participantCount: { type: 'number', description: '현재 참여자 수' },
-              maxParticipants: { type: 'number', description: '최대 참여자 수 (5명)' },
-              participants: { type: 'array', items: 'string', description: '참여자 닉네임 목록' }
-            }
-          }
+              name: {
+                type: 'string',
+                description: '방 이름 (예: 채팅방 #001)',
+              },
+              participantCount: {
+                type: 'number',
+                description: '현재 참여자 수',
+              },
+              maxParticipants: {
+                type: 'number',
+                description: '최대 참여자 수 (5명)',
+              },
+              participants: {
+                type: 'array',
+                items: 'string',
+                description: '참여자 닉네임 목록',
+              },
+            },
+          },
         },
-        description: '로비의 방 목록이 업데이트될 때 브로드캐스트되는 이벤트'
+        description: '로비의 방 목록이 업데이트될 때 브로드캐스트되는 이벤트',
       },
 
       // 방 입장 성공
@@ -85,8 +119,8 @@ export class SchemaService {
                 currentRoomId: { type: 'string' },
                 createdAt: { type: 'string', format: 'date-time' },
                 lastSeen: { type: 'string', format: 'date-time' },
-                isConnected: { type: 'boolean' }
-              }
+                isConnected: { type: 'boolean' },
+              },
             },
             messages: {
               type: 'array',
@@ -97,12 +131,15 @@ export class SchemaService {
                 authorNickname: { type: 'string' },
                 roomId: { type: 'string' },
                 createdAt: { type: 'string', format: 'date-time' },
-                type: { type: 'string', enum: ['chat', 'system', 'notification'] }
-              }
-            }
-          }
+                type: {
+                  type: 'string',
+                  enum: ['chat', 'system', 'notification'],
+                },
+              },
+            },
+          },
         },
-        description: '방 입장이 성공했을 때 전송되는 이벤트'
+        description: '방 입장이 성공했을 때 전송되는 이벤트',
       },
 
       // 새 메시지 수신
@@ -115,33 +152,39 @@ export class SchemaService {
             authorNickname: { type: 'string' },
             roomId: { type: 'string' },
             createdAt: { type: 'string', format: 'date-time' },
-            type: { type: 'string', enum: ['chat', 'system', 'notification'] }
-          }
+            type: { type: 'string', enum: ['chat', 'system', 'notification'] },
+          },
         },
-        description: '새 메시지가 수신되었을 때 방 참여자들에게 브로드캐스트되는 이벤트'
+        description:
+          '새 메시지가 수신되었을 때 방 참여자들에게 브로드캐스트되는 이벤트',
       },
 
       // 사용자 활동 알림 (입장/퇴장)
       'user-activity': {
         data: {
-          type: { type: 'string', enum: ['joined', 'left'], description: '활동 유형' },
+          type: {
+            type: 'string',
+            enum: ['joined', 'left'],
+            description: '활동 유형',
+          },
           user: {
             id: { type: 'string' },
-            nickname: { type: 'string' }
+            nickname: { type: 'string' },
           },
-          roomId: { type: 'string', description: '활동이 발생한 방 ID' }
+          roomId: { type: 'string', description: '활동이 발생한 방 ID' },
         },
-        description: '사용자가 방에 입장하거나 나갈 때 브로드캐스트되는 이벤트'
+        description: '사용자가 방에 입장하거나 나갈 때 브로드캐스트되는 이벤트',
       },
 
       // 연결 에러
-      'error': {
+      error: {
         data: {
           message: { type: 'string', description: '에러 메시지' },
-          code: { type: 'string', optional: true, description: '에러 코드' }
+          code: { type: 'string', optional: true, description: '에러 코드' },
         },
-        description: '연결 또는 작업 처리 중 에러가 발생했을 때 전송되는 이벤트'
-      }
+        description:
+          '연결 또는 작업 처리 중 에러가 발생했을 때 전송되는 이벤트',
+      },
     };
   }
 
@@ -152,34 +195,88 @@ export class SchemaService {
     return {
       User: {
         id: { type: 'string', description: '고유 식별자 (UUID v4)' },
-        nickname: { type: 'string', maxLength: 20, description: '사용자 닉네임 (최대 20자)' },
+        nickname: {
+          type: 'string',
+          maxLength: 20,
+          description: '사용자 닉네임 (최대 20자)',
+        },
         socketId: { type: 'string', description: 'Socket.IO 연결 ID' },
-        currentRoomId: { type: 'string', nullable: true, description: '현재 참여 중인 방 ID' },
-        createdAt: { type: 'string', format: 'date-time', description: '접속 시간' },
-        lastSeen: { type: 'string', format: 'date-time', description: '마지막 활동 시간' },
-        isConnected: { type: 'boolean', description: '실시간 연결 상태' }
+        currentRoomId: {
+          type: 'string',
+          nullable: true,
+          description: '현재 참여 중인 방 ID',
+        },
+        createdAt: {
+          type: 'string',
+          format: 'date-time',
+          description: '접속 시간',
+        },
+        lastSeen: {
+          type: 'string',
+          format: 'date-time',
+          description: '마지막 활동 시간',
+        },
+        isConnected: { type: 'boolean', description: '실시간 연결 상태' },
       },
 
       ChatRoom: {
         id: { type: 'string', description: '고유 식별자 (UUID v4)' },
-        name: { type: 'string', description: '자동 생성된 방 이름 ("채팅방 #001")' },
-        participants: { type: 'array', items: 'User', description: '현재 참여자 목록' },
-        messages: { type: 'array', items: 'Message', description: '메시지 히스토리' },
-        maxParticipants: { type: 'number', default: 5, description: '최대 참여자 수 (5명)' },
-        createdAt: { type: 'string', format: 'date-time', description: '방 생성 시간' },
-        lastActivity: { type: 'string', format: 'date-time', description: '마지막 활동 시간 (정렬 기준)' },
-        createdBy: { type: 'string', description: '방 생성자 user ID' }
+        name: {
+          type: 'string',
+          description: '자동 생성된 방 이름 ("채팅방 #001")',
+        },
+        participants: {
+          type: 'array',
+          items: 'User',
+          description: '현재 참여자 목록',
+        },
+        messages: {
+          type: 'array',
+          items: 'Message',
+          description: '메시지 히스토리',
+        },
+        maxParticipants: {
+          type: 'number',
+          default: 5,
+          description: '최대 참여자 수 (5명)',
+        },
+        createdAt: {
+          type: 'string',
+          format: 'date-time',
+          description: '방 생성 시간',
+        },
+        lastActivity: {
+          type: 'string',
+          format: 'date-time',
+          description: '마지막 활동 시간 (정렬 기준)',
+        },
+        createdBy: { type: 'string', description: '방 생성자 user ID' },
       },
 
       Message: {
         id: { type: 'string', description: '고유 식별자 (UUID v4)' },
-        content: { type: 'string', maxLength: 500, description: '메시지 내용 (최대 500자)' },
+        content: {
+          type: 'string',
+          maxLength: 500,
+          description: '메시지 내용 (최대 500자)',
+        },
         authorId: { type: 'string', description: '작성자 user ID' },
-        authorNickname: { type: 'string', description: '작성자 닉네임 (스냅샷)' },
+        authorNickname: {
+          type: 'string',
+          description: '작성자 닉네임 (스냅샷)',
+        },
         roomId: { type: 'string', description: '채팅방 ID' },
-        createdAt: { type: 'string', format: 'date-time', description: '메시지 전송 시간' },
-        type: { type: 'string', enum: ['chat', 'system', 'notification'], description: '메시지 유형' }
-      }
+        createdAt: {
+          type: 'string',
+          format: 'date-time',
+          description: '메시지 전송 시간',
+        },
+        type: {
+          type: 'string',
+          enum: ['chat', 'system', 'notification'],
+          description: '메시지 유형',
+        },
+      },
     };
   }
 
@@ -187,11 +284,7 @@ export class SchemaService {
    * TypeScript 인터페이스 코드 생성
    */
   generateTypeScriptTypes(): string {
-    const clientToServer = this.generateClientToServerSchema();
-    const serverToClient = this.generateServerToClientSchema();
-    const dataModels = this.generateDataModelsSchema();
-
-    let typescript = `// 자동 생성된 Socket.IO 타입 정의
+    const typescript = `// 자동 생성된 Socket.IO 타입 정의
 // Backend에서 생성된 스키마를 기반으로 생성됨
 // 수동으로 편집하지 마세요 - pnpm run generate-types로 재생성하세요
 
@@ -301,7 +394,7 @@ export default {
       clientToServer: this.generateClientToServerSchema(),
       serverToClient: this.generateServerToClientSchema(),
       dataModels: this.generateDataModelsSchema(),
-      typescript: this.generateTypeScriptTypes()
+      typescript: this.generateTypeScriptTypes(),
     };
   }
 }
