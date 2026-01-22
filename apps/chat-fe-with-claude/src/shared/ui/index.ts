@@ -1,7 +1,13 @@
-// UI Components will be exported from here
-// For now, we'll use basic HTML elements with Tailwind classes
-// Future: Add reusable UI components like Button, Input, Card, etc.
+// Shared UI Components
+export { ErrorBoundary } from './ErrorBoundary'
+export { LoadingSpinner, LoadingOverlay, PageLoadingSpinner } from './LoadingSpinner'
+export { ErrorMessage, FullScreenError } from './ErrorMessage'
+export { ToastProvider, useToast } from './Toast'
+export type { Toast, ToastType } from './Toast'
+export { LoadingButton } from './LoadingButton'
+export { EmptyState, EmptyStates } from './EmptyState'
 
+// Legacy exports (to be deprecated)
 export const UI_COMPONENTS = {
   BUTTON: 'button',
   INPUT: 'input',
