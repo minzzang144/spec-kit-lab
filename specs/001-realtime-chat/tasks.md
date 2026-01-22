@@ -112,15 +112,15 @@
 **Goal**: Frontend에서 닉네임 입력, 세션 관리, 로비 화면 구현
 
 ### FE User Story 1 Implementation
-- [ ] T034 [P] [US1] User 엔티티 모델 생성 in apps/chat-fe-with-claude/src/entities/user/
-- [ ] T035 [P] [US1] 세션 매니저 유틸리티 생성 in apps/chat-fe-with-claude/src/shared/lib/session-manager.ts
-- [ ] T036 [US1] Socket 연결 훅 생성 in apps/chat-fe-with-claude/src/shared/hooks/useSocket.ts
-- [ ] T037 [US1] 닉네임 설정 기능 구현 in apps/chat-fe-with-claude/src/features/users/nickname-setup/
-- [ ] T038 [US1] 닉네임 설정 페이지 구현 in apps/chat-fe-with-claude/src/pages/nickname-setup/
-- [ ] T039 [US1] 로비 페이지 기본 구조 생성 in apps/chat-fe-with-claude/src/pages/lobby/
+- [x] T034 [P] [US1] User 엔티티 모델 생성 in apps/chat-fe-with-claude/src/entities/user/
+- [x] T035 [P] [US1] 세션 매니저 유틸리티 생성 in apps/chat-fe-with-claude/src/shared/lib/session-manager.ts
+- [x] T036 [US1] Socket 연결 훅 생성 in apps/chat-fe-with-claude/src/shared/hooks/useSocket.ts
+- [x] T037 [US1] 닉네임 설정 기능 구현 in apps/chat-fe-with-claude/src/features/users/nickname-setup/
+- [x] T038 [US1] 닉네임 설정 페이지 구현 in apps/chat-fe-with-claude/src/pages/nickname-setup/
+- [x] T039 [US1] 로비 페이지 기본 구조 생성 in apps/chat-fe-with-claude/src/pages/lobby/
 
 ### FE US1 검증
-- [ ] T040 [US1] Frontend 검증 실행 (typecheck, lint, test, build) in apps/chat-fe-with-claude/
+- [x] T040 [US1] Frontend 검증 실행 (typecheck, lint, test, build) in apps/chat-fe-with-claude/
 
 **Checkpoint**: FE US1 완료 - 닉네임 설정하고 로비 입장 가능
 
