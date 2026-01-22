@@ -9,7 +9,6 @@ import {
   HttpStatus,
   Logger,
   BadRequestException,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -50,7 +49,8 @@ export class RoomsController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: '채팅방 목록 조회',
-    description: '현재 활성화된 모든 채팅방의 목록을 최신 활동 순으로 조회합니다.',
+    description:
+      '현재 활성화된 모든 채팅방의 목록을 최신 활동 순으로 조회합니다.',
   })
   @ApiResponse({
     status: 200,
@@ -64,7 +64,7 @@ export class RoomsController {
     this.logger.debug('GET /rooms - Fetching all rooms');
 
     try {
-      const result = await this.roomsService.getAllRooms();
+      const result = this.roomsService.getAllRooms();
       this.logger.debug(`Retrieved ${result.totalCount} rooms`);
       return result;
     } catch (error) {
@@ -114,7 +114,7 @@ export class RoomsController {
     this.logger.debug(`GET /rooms/${roomId} - Fetching room details`);
 
     try {
-      const result = await this.roomsService.getRoomById(roomId, currentUserId);
+      const result = this.roomsService.getRoomById(roomId, currentUserId);
       this.logger.debug(`Retrieved room details: ${result.name}`);
       return result;
     } catch (error) {
@@ -162,7 +162,8 @@ export class RoomsController {
     type: CreateRoomResponseDto,
   })
   @ApiBadRequestResponse({
-    description: '잘못된 요청입니다. (생성자 ID가 없거나 더 이상 방을 생성할 수 없음)',
+    description:
+      '잘못된 요청입니다. (생성자 ID가 없거나 더 이상 방을 생성할 수 없음)',
   })
   @ApiNotFoundResponse({
     description: '생성자 사용자를 찾을 수 없습니다.',
@@ -181,7 +182,7 @@ export class RoomsController {
     }
 
     try {
-      const result = await this.roomsService.createRoom(creatorId);
+      const result = this.roomsService.createRoom(creatorId);
       this.logger.log(`Room created: ${result.roomName} by user ${creatorId}`);
       return result;
     } catch (error) {
@@ -222,7 +223,8 @@ export class RoomsController {
     },
   })
   @ApiBadRequestResponse({
-    description: '잘못된 요청입니다. (방이 가득참, 이미 참여중, 잘못된 파라미터)',
+    description:
+      '잘못된 요청입니다. (방이 가득참, 이미 참여중, 잘못된 파라미터)',
   })
   @ApiNotFoundResponse({
     description: '채팅방 또는 사용자를 찾을 수 없습니다.',
@@ -234,14 +236,16 @@ export class RoomsController {
     @Param('roomId') roomId: string,
     @Query('userId') userId: string,
   ): Promise<{ success: boolean; message: string }> {
-    this.logger.debug(`POST /rooms/${roomId}/participants - Adding user ${userId}`);
+    this.logger.debug(
+      `POST /rooms/${roomId}/participants - Adding user ${userId}`,
+    );
 
     if (!userId) {
       throw new BadRequestException('사용자 ID는 필수입니다.');
     }
 
     try {
-      const success = await this.roomsService.addUserToRoom(roomId, userId);
+      const success = this.roomsService.addUserToRoom(roomId, userId);
       const message = success
         ? '채팅방에 참여했습니다.'
         : '이미 채팅방에 참여 중입니다.';
@@ -249,7 +253,10 @@ export class RoomsController {
       this.logger.log(`User ${userId} joined room ${roomId}: ${success}`);
       return { success, message };
     } catch (error) {
-      this.logger.error(`Failed to add user ${userId} to room ${roomId}`, error);
+      this.logger.error(
+        `Failed to add user ${userId} to room ${roomId}`,
+        error,
+      );
       throw error;
     }
   }
@@ -299,17 +306,24 @@ export class RoomsController {
     @Param('roomId') roomId: string,
     @Query('userId') userId: string,
   ): Promise<{ success: boolean; message: string; roomDeleted: boolean }> {
-    this.logger.debug(`POST /rooms/${roomId}/participants/remove - Removing user ${userId}`);
+    this.logger.debug(
+      `POST /rooms/${roomId}/participants/remove - Removing user ${userId}`,
+    );
 
     if (!userId) {
       throw new BadRequestException('사용자 ID는 필수입니다.');
     }
 
     try {
-      const success = await this.roomsService.removeUserFromRoom(roomId, userId);
+      const success = this.roomsService.removeUserFromRoom(roomId, userId);
 
       // 방이 삭제되었는지 확인 (제거 후 빈 방이 되면 자동 삭제됨)
-      const roomExists = await this.roomsService.getRoomById(roomId).catch(() => null);
+      let roomExists;
+      try {
+        roomExists = this.roomsService.getRoomById(roomId);
+      } catch {
+        roomExists = null;
+      }
       const roomDeleted = !roomExists;
 
       const message = success
@@ -318,10 +332,15 @@ export class RoomsController {
           : '채팅방에서 나갔습니다.'
         : '채팅방에서 제거할 수 없습니다.';
 
-      this.logger.log(`User ${userId} left room ${roomId}: ${success}, deleted: ${roomDeleted}`);
+      this.logger.log(
+        `User ${userId} left room ${roomId}: ${success}, deleted: ${roomDeleted}`,
+      );
       return { success, message, roomDeleted };
     } catch (error) {
-      this.logger.error(`Failed to remove user ${userId} from room ${roomId}`, error);
+      this.logger.error(
+        `Failed to remove user ${userId} from room ${roomId}`,
+        error,
+      );
       throw error;
     }
   }
@@ -344,10 +363,7 @@ export class RoomsController {
     status: 200,
     description: '사용자의 현재 방 정보가 성공적으로 조회되었습니다.',
     schema: {
-      oneOf: [
-        { $ref: '#/components/schemas/ChatRoomDto' },
-        { type: 'null' },
-      ],
+      oneOf: [{ $ref: '#/components/schemas/ChatRoomDto' }, { type: 'null' }],
     },
   })
   @ApiBadRequestResponse({
@@ -357,11 +373,15 @@ export class RoomsController {
     description: '서버 내부 오류가 발생했습니다.',
   })
   async getUserCurrentRoom(@Param('userId') userId: string) {
-    this.logger.debug(`GET /rooms/users/${userId}/current - Fetching user's current room`);
+    this.logger.debug(
+      `GET /rooms/users/${userId}/current - Fetching user's current room`,
+    );
 
     try {
-      const result = await this.roomsService.getUserCurrentRoom(userId);
-      this.logger.debug(`User ${userId} current room: ${result?.name || 'none'}`);
+      const result = this.roomsService.getUserCurrentRoom(userId);
+      this.logger.debug(
+        `User ${userId} current room: ${result?.name || 'none'}`,
+      );
       return result;
     } catch (error) {
       this.logger.error(`Failed to get current room for user ${userId}`, error);
@@ -396,10 +416,12 @@ export class RoomsController {
     description: '서버 내부 오류가 발생했습니다.',
   })
   async getRoomStats() {
-    this.logger.debug('GET /rooms/statistics/summary - Fetching room statistics');
+    this.logger.debug(
+      'GET /rooms/statistics/summary - Fetching room statistics',
+    );
 
     try {
-      const result = await this.roomsService.getRoomStats();
+      const result = this.roomsService.getRoomStats();
       this.logger.debug(`Room stats: ${JSON.stringify(result)}`);
       return result;
     } catch (error) {
@@ -435,7 +457,7 @@ export class RoomsController {
     this.logger.debug('POST /rooms/cleanup/empty - Cleaning up empty rooms');
 
     try {
-      const deletedCount = await this.roomsService.cleanupEmptyRooms();
+      const deletedCount = this.roomsService.cleanupEmptyRooms();
       const message = `${deletedCount}개의 빈 방이 삭제되었습니다.`;
 
       this.logger.log(`Cleanup completed: ${deletedCount} empty rooms deleted`);

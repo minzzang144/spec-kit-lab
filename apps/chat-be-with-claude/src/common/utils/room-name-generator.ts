@@ -21,9 +21,12 @@ export class RoomNameGenerator {
       throw new Error('방 번호는 정수여야 합니다.');
     }
 
-    if (roomNumber < this.MIN_ROOM_NUMBER || roomNumber > this.MAX_ROOM_NUMBER) {
+    if (
+      roomNumber < this.MIN_ROOM_NUMBER ||
+      roomNumber > this.MAX_ROOM_NUMBER
+    ) {
       throw new Error(
-        `방 번호는 ${this.MIN_ROOM_NUMBER}부터 ${this.MAX_ROOM_NUMBER}까지만 지원됩니다.`
+        `방 번호는 ${this.MIN_ROOM_NUMBER}부터 ${this.MAX_ROOM_NUMBER}까지만 지원됩니다.`,
       );
     }
 
@@ -56,7 +59,10 @@ export class RoomNameGenerator {
 
     const roomNumber = parseInt(numberPart, 10);
 
-    if (roomNumber < this.MIN_ROOM_NUMBER || roomNumber > this.MAX_ROOM_NUMBER) {
+    if (
+      roomNumber < this.MIN_ROOM_NUMBER ||
+      roomNumber > this.MAX_ROOM_NUMBER
+    ) {
       return null;
     }
 
@@ -97,7 +103,7 @@ export class RoomNameGenerator {
   static generateNextAvailableRoomName(usedRoomNames: string[]): string | null {
     // 사용 중인 방 이름들에서 번호 추출
     const usedNumbers = usedRoomNames
-      .map(name => this.extractRoomNumber(name))
+      .map((name) => this.extractRoomNumber(name))
       .filter((num): num is number => num !== null);
 
     const nextNumber = this.findNextAvailableNumber(usedNumbers);

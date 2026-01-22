@@ -1,5 +1,10 @@
-import { Injectable, Logger, BadRequestException, NotFoundException } from '@nestjs/common';
-import { MemoryStore, ChatRoom, User } from '../../storage/memory-store';
+import {
+  Injectable,
+  Logger,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
+import { MemoryStore, ChatRoom } from '../../storage/memory-store';
 import { RoomNameGenerator } from '../../common/utils/room-name-generator';
 import {
   ChatRoomListDto,
@@ -30,12 +35,12 @@ export class RoomsService {
    * 모든 채팅방 목록을 조회합니다.
    * 참여자 수, 상태 정보를 포함하여 반환합니다.
    */
-  async getAllRooms(): Promise<ChatRoomListResponseDto> {
+  getAllRooms(): ChatRoomListResponseDto {
     try {
       const rooms = this.memoryStore.getAllRooms();
 
       const roomList: ChatRoomListDto[] = rooms
-        .map(room => this.mapToRoomListDto(room))
+        .map((room) => this.mapToRoomListDto(room))
         .sort((a, b) => b.lastActivity.getTime() - a.lastActivity.getTime()); // 최신 활동 순으로 정렬
 
       return {
@@ -54,7 +59,10 @@ export class RoomsService {
    * @param roomId 조회할 방 ID
    * @param currentUserId 현재 사용자 ID (선택적)
    */
-  async getRoomById(roomId: string, currentUserId?: string): Promise<ChatRoomDetailResponseDto> {
+  getRoomById(
+    roomId: string,
+    currentUserId?: string,
+  ): ChatRoomDetailResponseDto {
     if (!roomId) {
       throw new BadRequestException('방 ID가 필요합니다.');
     }
@@ -71,9 +79,13 @@ export class RoomsService {
     let isCurrentUserCreator = false;
 
     if (currentUserId) {
-      isCurrentUserParticipant = room.participants.some(p => p.id === currentUserId);
+      isCurrentUserParticipant = room.participants.some(
+        (p) => p.id === currentUserId,
+      );
       // createdBy 정보는 현재 memory store에 없으므로 첫 번째 참여자를 생성자로 간주
-      isCurrentUserCreator = room.participants.length > 0 && room.participants[0].id === currentUserId;
+      isCurrentUserCreator =
+        room.participants.length > 0 &&
+        room.participants[0].id === currentUserId;
     }
 
     return {
@@ -87,7 +99,7 @@ export class RoomsService {
    * 새로운 채팅방을 생성합니다.
    * @param creatorId 방을 생성하는 사용자 ID
    */
-  async createRoom(creatorId: string): Promise<CreateRoomResponseDto> {
+  createRoom(creatorId: string): CreateRoomResponseDto {
     if (!creatorId) {
       throw new BadRequestException('생성자 ID가 필요합니다.');
     }
@@ -95,17 +107,22 @@ export class RoomsService {
     // 생성자 사용자 확인
     const creator = this.memoryStore.getUser(creatorId);
     if (!creator) {
-      throw new NotFoundException(`사용자를 찾을 수 없습니다. (ID: ${creatorId})`);
+      throw new NotFoundException(
+        `사용자를 찾을 수 없습니다. (ID: ${creatorId})`,
+      );
     }
 
     try {
       // 기존 방 이름들을 가져와서 다음 사용 가능한 이름 생성
       const existingRooms = this.memoryStore.getAllRooms();
-      const existingRoomNames = existingRooms.map(room => room.name);
+      const existingRoomNames = existingRooms.map((room) => room.name);
 
-      const newRoomName = RoomNameGenerator.generateNextAvailableRoomName(existingRoomNames);
+      const newRoomName =
+        RoomNameGenerator.generateNextAvailableRoomName(existingRoomNames);
       if (!newRoomName) {
-        throw new BadRequestException('더 이상 방을 생성할 수 없습니다. (최대 999개)');
+        throw new BadRequestException(
+          '더 이상 방을 생성할 수 없습니다. (최대 999개)',
+        );
       }
 
       // 새 방 생성
@@ -124,7 +141,9 @@ export class RoomsService {
       // 메모리 저장소에 방 추가
       const createdRoom = this.memoryStore.createRoom(newRoom);
 
-      this.logger.log(`Room created: ${newRoomName} by ${creator.nickname} (${creatorId})`);
+      this.logger.log(
+        `Room created: ${newRoomName} by ${creator.nickname} (${creatorId})`,
+      );
 
       return {
         roomId: createdRoom.id,
@@ -144,7 +163,7 @@ export class RoomsService {
    * @param roomId 방 ID
    * @param userId 참여할 사용자 ID
    */
-  async addUserToRoom(roomId: string, userId: string): Promise<boolean> {
+  addUserToRoom(roomId: string, userId: string): boolean {
     if (!roomId || !userId) {
       throw new BadRequestException('방 ID와 사용자 ID가 모두 필요합니다.');
     }
@@ -160,7 +179,7 @@ export class RoomsService {
     }
 
     // 이미 참여 중인지 확인
-    const isAlreadyParticipant = room.participants.some(p => p.id === userId);
+    const isAlreadyParticipant = room.participants.some((p) => p.id === userId);
     if (isAlreadyParticipant) {
       this.logger.warn(`User ${userId} is already in room ${roomId}`);
       return false;
@@ -168,7 +187,9 @@ export class RoomsService {
 
     // 방 인원 제한 확인
     if (room.participants.length >= RoomsService.MAX_PARTICIPANTS) {
-      throw new BadRequestException(`방이 가득 찼습니다. (최대 ${RoomsService.MAX_PARTICIPANTS}명)`);
+      throw new BadRequestException(
+        `방이 가득 찼습니다. (최대 ${RoomsService.MAX_PARTICIPANTS}명)`,
+      );
     }
 
     try {
@@ -178,7 +199,10 @@ export class RoomsService {
       }
       return success;
     } catch (error) {
-      this.logger.error(`Failed to add user ${userId} to room ${roomId}`, error);
+      this.logger.error(
+        `Failed to add user ${userId} to room ${roomId}`,
+        error,
+      );
       throw error;
     }
   }
@@ -188,7 +212,7 @@ export class RoomsService {
    * @param roomId 방 ID
    * @param userId 제거할 사용자 ID
    */
-  async removeUserFromRoom(roomId: string, userId: string): Promise<boolean> {
+  removeUserFromRoom(roomId: string, userId: string): boolean {
     if (!roomId || !userId) {
       throw new BadRequestException('방 ID와 사용자 ID가 모두 필요합니다.');
     }
@@ -202,7 +226,9 @@ export class RoomsService {
       const success = this.memoryStore.removeUserFromRoom(roomId, userId);
       if (success) {
         const user = this.memoryStore.getUser(userId);
-        this.logger.log(`User ${user?.nickname || userId} left room ${room.name}`);
+        this.logger.log(
+          `User ${user?.nickname || userId} left room ${room.name}`,
+        );
 
         // 방이 비어있으면 자동 삭제 (User Story 6 구현 예정이지만 기본 로직 추가)
         const updatedRoom = this.memoryStore.getRoom(roomId);
@@ -213,7 +239,10 @@ export class RoomsService {
       }
       return success;
     } catch (error) {
-      this.logger.error(`Failed to remove user ${userId} from room ${roomId}`, error);
+      this.logger.error(
+        `Failed to remove user ${userId} from room ${roomId}`,
+        error,
+      );
       throw error;
     }
   }
@@ -222,14 +251,14 @@ export class RoomsService {
    * 사용자가 현재 참여 중인 방을 조회합니다.
    * @param userId 사용자 ID
    */
-  async getUserCurrentRoom(userId: string): Promise<ChatRoomDto | null> {
+  getUserCurrentRoom(userId: string): ChatRoomDto | null {
     if (!userId) {
       throw new BadRequestException('사용자 ID가 필요합니다.');
     }
 
     const rooms = this.memoryStore.getAllRooms();
-    const currentRoom = rooms.find(room =>
-      room.participants.some(p => p.id === userId)
+    const currentRoom = rooms.find((room) =>
+      room.participants.some((p) => p.id === userId),
     );
 
     return currentRoom ? this.mapToRoomDto(currentRoom) : null;
@@ -238,7 +267,7 @@ export class RoomsService {
   /**
    * 빈 방들을 정리합니다.
    */
-  async cleanupEmptyRooms(): Promise<number> {
+  cleanupEmptyRooms(): number {
     try {
       const beforeCount = this.memoryStore.getAllRooms().length;
       this.memoryStore.cleanupEmptyRooms();
@@ -259,24 +288,30 @@ export class RoomsService {
   /**
    * 방 통계 정보를 조회합니다.
    */
-  async getRoomStats(): Promise<{
+  getRoomStats(): {
     totalRooms: number;
     activeRooms: number;
     fullRooms: number;
     totalParticipants: number;
     averageParticipantsPerRoom: number;
-  }> {
+  } {
     const rooms = this.memoryStore.getAllRooms();
-    const activeRooms = rooms.filter(room => room.participants.length > 0);
-    const fullRooms = rooms.filter(room => room.participants.length >= RoomsService.MAX_PARTICIPANTS);
-    const totalParticipants = rooms.reduce((sum, room) => sum + room.participants.length, 0);
+    const activeRooms = rooms.filter((room) => room.participants.length > 0);
+    const fullRooms = rooms.filter(
+      (room) => room.participants.length >= RoomsService.MAX_PARTICIPANTS,
+    );
+    const totalParticipants = rooms.reduce(
+      (sum, room) => sum + room.participants.length,
+      0,
+    );
 
     return {
       totalRooms: rooms.length,
       activeRooms: activeRooms.length,
       fullRooms: fullRooms.length,
       totalParticipants,
-      averageParticipantsPerRoom: rooms.length > 0 ? totalParticipants / rooms.length : 0,
+      averageParticipantsPerRoom:
+        rooms.length > 0 ? totalParticipants / rooms.length : 0,
     };
   }
 
@@ -291,7 +326,7 @@ export class RoomsService {
       name: room.name,
       participantCount: room.participants.length,
       maxParticipants: RoomsService.MAX_PARTICIPANTS,
-      participantNicknames: room.participants.map(p => p.nickname),
+      participantNicknames: room.participants.map((p) => p.nickname),
       isFull: room.participants.length >= RoomsService.MAX_PARTICIPANTS,
       lastActivity: room.lastActivity,
     };
@@ -301,12 +336,14 @@ export class RoomsService {
    * ChatRoom을 ChatRoomDto로 변환합니다.
    */
   private mapToRoomDto(room: ChatRoom): ChatRoomDto {
-    const participants: ChatRoomParticipantDto[] = room.participants.map(p => ({
-      id: p.id,
-      nickname: p.nickname,
-      createdAt: p.connectedAt,
-      isConnected: !!p.socketId, // socketId가 있으면 연결된 상태로 간주
-    }));
+    const participants: ChatRoomParticipantDto[] = room.participants.map(
+      (p) => ({
+        id: p.id,
+        nickname: p.nickname,
+        createdAt: p.connectedAt,
+        isConnected: !!p.socketId, // socketId가 있으면 연결된 상태로 간주
+      }),
+    );
 
     return {
       id: room.id,

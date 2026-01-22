@@ -53,7 +53,7 @@ export class ChatGateway
   /**
    * 클라이언트 연결 처리
    */
-  async handleConnection(@ConnectedSocket() client: Socket) {
+  handleConnection(@ConnectedSocket() client: Socket) {
     this.logger.debug(`Client connecting: ${client.id}`);
 
     // 연결만 하고 실제 사용자 생성은 join-lobby 이벤트에서 처리
@@ -71,18 +71,18 @@ export class ChatGateway
   /**
    * 클라이언트 연결 해제 처리
    */
-  async handleDisconnect(@ConnectedSocket() client: Socket) {
+  handleDisconnect(@ConnectedSocket() client: Socket) {
     this.logger.debug(`Client disconnecting: ${client.id}`);
 
     try {
       // 사용자 정보 조회
-      const user = await this.usersService.findBySocketId(client.id);
+      const user = this.usersService.findBySocketId(client.id);
 
       if (user) {
         this.logger.log(`User ${user.nickname} (${user.id}) disconnected`);
 
         // Socket 연결 해제
-        await this.usersService.disconnectUser(client.id);
+        this.usersService.disconnectUser(client.id);
 
         // TODO: 방에서도 제거해야 함 (추후 구현)
         // TODO: 로비 사용자들에게 알림 (추후 구현)
@@ -93,7 +93,7 @@ export class ChatGateway
     } catch (error) {
       this.logger.error(
         `Error handling disconnect for ${client.id}:`,
-        error.message,
+        error instanceof Error ? error.message : String(error),
       );
     }
   }
@@ -111,7 +111,7 @@ export class ChatGateway
       this.logger.debug(`Join lobby request from ${client.id}:`, data);
 
       // 이미 등록된 사용자인지 확인
-      const existingUser = await this.usersService.findBySocketId(client.id);
+      const existingUser = this.usersService.findBySocketId(client.id);
       if (existingUser) {
         this.logger.warn(
           `User already exists for socket ${client.id}: ${existingUser.nickname}`,
@@ -143,13 +143,18 @@ export class ChatGateway
       });
 
       // 현재 방 목록 전송
-      await this.sendLobbyUpdateToClient(client);
+      this.sendLobbyUpdateToClient(client);
     } catch (error) {
-      this.logger.error(`Error in join-lobby for ${client.id}:`, error.message);
+      this.logger.error(
+        `Error in join-lobby for ${client.id}:`,
+        error instanceof Error ? error.message : String(error),
+      );
 
       client.emit('error', {
         event: 'join-lobby',
-        message: error.message || '로비 입장에 실패했습니다',
+        message:
+          (error instanceof Error ? error.message : String(error)) ||
+          '로비 입장에 실패했습니다',
         timestamp: new Date().toISOString(),
       });
     }
@@ -161,16 +166,19 @@ export class ChatGateway
   @SubscribeMessage('ping')
   async handlePing(@ConnectedSocket() client: Socket) {
     try {
-      const user = await this.usersService.findBySocketId(client.id);
+      const user = this.usersService.findBySocketId(client.id);
       if (user) {
-        await this.usersService.updateActivity(user.id);
+        this.usersService.updateActivity(user.id);
       }
 
       client.emit('pong', {
         timestamp: new Date().toISOString(),
       });
     } catch (error) {
-      this.logger.warn(`Ping error for ${client.id}:`, error.message);
+      this.logger.warn(
+        `Ping error for ${client.id}:`,
+        error instanceof Error ? error.message : String(error),
+      );
     }
   }
 
@@ -178,9 +186,9 @@ export class ChatGateway
    * 현재 로비 사용자 목록 요청
    */
   @SubscribeMessage('get-lobby-users')
-  async handleGetLobbyUsers(@ConnectedSocket() client: Socket) {
+  handleGetLobbyUsers(@ConnectedSocket() client: Socket) {
     try {
-      const connectedUsers = await this.usersService.findConnected();
+      const connectedUsers = this.usersService.findConnected();
 
       client.emit('lobby-users', {
         users: connectedUsers,
@@ -190,7 +198,7 @@ export class ChatGateway
     } catch (error) {
       this.logger.error(
         `Error getting lobby users for ${client.id}:`,
-        error.message,
+        error instanceof Error ? error.message : String(error),
       );
 
       client.emit('error', {
@@ -205,8 +213,8 @@ export class ChatGateway
    * 연결 상태 확인
    */
   @SubscribeMessage('check-connection')
-  async handleCheckConnection(@ConnectedSocket() client: Socket) {
-    const user = await this.usersService.findBySocketId(client.id);
+  handleCheckConnection(@ConnectedSocket() client: Socket) {
+    const user = this.usersService.findBySocketId(client.id);
 
     client.emit('connection-status', {
       connected: true,
@@ -240,7 +248,7 @@ export class ChatGateway
   /**
    * 특정 소켓에게 메시지 전송 (내부 사용)
    */
-  async sendToSocket(socketId: string, event: string, data: any) {
+  sendToSocket(socketId: string, event: string, data: any) {
     const socket = this.server.sockets.sockets.get(socketId);
     if (socket) {
       socket.emit(event, data);
@@ -252,14 +260,14 @@ export class ChatGateway
   /**
    * 모든 연결된 클라이언트에게 브로드캐스트 (내부 사용)
    */
-  async broadcastToAll(event: string, data: any) {
+  broadcastToAll(event: string, data: any) {
     this.server.emit(event, data);
   }
 
   /**
    * 특정 사용자를 제외하고 브로드캐스트 (내부 사용)
    */
-  async broadcastExcept(excludeSocketId: string, event: string, data: any) {
+  broadcastExcept(excludeSocketId: string, event: string, data: any) {
     this.server.sockets.sockets.forEach((socket, id) => {
       if (id !== excludeSocketId) {
         socket.emit(event, data);
@@ -275,9 +283,12 @@ export class ChatGateway
   @SubscribeMessage('get-lobby-rooms')
   async handleGetLobbyRooms(@ConnectedSocket() client: Socket) {
     try {
-      await this.sendLobbyUpdateToClient(client);
+      this.sendLobbyUpdateToClient(client);
     } catch (error) {
-      this.logger.error(`Error getting lobby rooms for ${client.id}:`, error.message);
+      this.logger.error(
+        `Error getting lobby rooms for ${client.id}:`,
+        error instanceof Error ? error.message : String(error),
+      );
       client.emit('error', {
         event: 'get-lobby-rooms',
         message: '방 목록 조회에 실패했습니다',
@@ -293,7 +304,7 @@ export class ChatGateway
   async handleCreateRoom(@ConnectedSocket() client: Socket) {
     try {
       // 현재 사용자 확인
-      const user = await this.usersService.findBySocketId(client.id);
+      const user = this.usersService.findBySocketId(client.id);
       if (!user) {
         client.emit('error', {
           event: 'create-room',
@@ -304,7 +315,7 @@ export class ChatGateway
       }
 
       // 이미 방에 참여 중인지 확인
-      const currentRoom = await this.roomsService.getUserCurrentRoom(user.id);
+      const currentRoom = this.roomsService.getUserCurrentRoom(user.id);
       if (currentRoom) {
         client.emit('error', {
           event: 'create-room',
@@ -315,7 +326,7 @@ export class ChatGateway
       }
 
       // 새 방 생성
-      const result = await this.roomsService.createRoom(user.id);
+      const result = this.roomsService.createRoom(user.id);
 
       this.logger.log(`Room created: ${result.roomName} by ${user.nickname}`);
 
@@ -327,13 +338,17 @@ export class ChatGateway
       });
 
       // 모든 로비 사용자에게 방 목록 업데이트 브로드캐스트
-      await this.broadcastLobbyUpdate();
-
+      this.broadcastLobbyUpdate();
     } catch (error) {
-      this.logger.error(`Error creating room for ${client.id}:`, error.message);
+      this.logger.error(
+        `Error creating room for ${client.id}:`,
+        error instanceof Error ? error.message : String(error),
+      );
       client.emit('error', {
         event: 'create-room',
-        message: error.message || '방 생성에 실패했습니다',
+        message:
+          (error instanceof Error ? error.message : String(error)) ||
+          '방 생성에 실패했습니다',
         timestamp: new Date().toISOString(),
       });
     }
@@ -349,7 +364,7 @@ export class ChatGateway
   ) {
     try {
       // 현재 사용자 확인
-      const user = await this.usersService.findBySocketId(client.id);
+      const user = this.usersService.findBySocketId(client.id);
       if (!user) {
         client.emit('error', {
           event: 'join-room',
@@ -369,7 +384,7 @@ export class ChatGateway
       }
 
       // 이미 방에 참여 중인지 확인
-      const currentRoom = await this.roomsService.getUserCurrentRoom(user.id);
+      const currentRoom = this.roomsService.getUserCurrentRoom(user.id);
       if (currentRoom) {
         client.emit('error', {
           event: 'join-room',
@@ -380,7 +395,7 @@ export class ChatGateway
       }
 
       // 방 참여
-      const success = await this.roomsService.addUserToRoom(data.roomId, user.id);
+      const success = this.roomsService.addUserToRoom(data.roomId, user.id);
       if (!success) {
         client.emit('error', {
           event: 'join-room',
@@ -391,7 +406,7 @@ export class ChatGateway
       }
 
       // 방 정보 조회
-      const roomDetails = await this.roomsService.getRoomById(data.roomId, user.id);
+      const roomDetails = this.roomsService.getRoomById(data.roomId, user.id);
 
       this.logger.log(`User ${user.nickname} joined room ${roomDetails.name}`);
 
@@ -403,22 +418,31 @@ export class ChatGateway
       });
 
       // 방의 다른 참여자들에게 새 참여자 알림
-      await this.notifyRoomParticipants(data.roomId, 'user-joined-room', {
-        user,
-        roomId: data.roomId,
-        roomName: roomDetails.name,
-        message: `${user.nickname}님이 방에 참여했습니다`,
-        timestamp: new Date().toISOString(),
-      }, client.id);
+      await this.notifyRoomParticipants(
+        data.roomId,
+        'user-joined-room',
+        {
+          user,
+          roomId: data.roomId,
+          roomName: roomDetails.name,
+          message: `${user.nickname}님이 방에 참여했습니다`,
+          timestamp: new Date().toISOString(),
+        },
+        client.id,
+      );
 
       // 모든 로비 사용자에게 방 목록 업데이트
       await this.broadcastLobbyUpdate();
-
     } catch (error) {
-      this.logger.error(`Error joining room for ${client.id}:`, error.message);
+      this.logger.error(
+        `Error joining room for ${client.id}:`,
+        error instanceof Error ? error.message : String(error),
+      );
       client.emit('error', {
         event: 'join-room',
-        message: error.message || '방 참여에 실패했습니다',
+        message:
+          (error instanceof Error ? error.message : String(error)) ||
+          '방 참여에 실패했습니다',
         timestamp: new Date().toISOString(),
       });
     }
@@ -434,7 +458,7 @@ export class ChatGateway
   ) {
     try {
       // 현재 사용자 확인
-      const user = await this.usersService.findBySocketId(client.id);
+      const user = this.usersService.findBySocketId(client.id);
       if (!user) {
         client.emit('error', {
           event: 'leave-room',
@@ -454,26 +478,46 @@ export class ChatGateway
       }
 
       // 방 정보 미리 조회 (삭제되기 전에)
-      const roomDetails = await this.roomsService.getRoomById(data.roomId).catch(() => null);
+      let roomDetails;
+      try {
+        roomDetails = this.roomsService.getRoomById(data.roomId);
+      } catch {
+        roomDetails = null;
+      }
       const roomName = roomDetails?.name || '채팅방';
 
       // 방의 다른 참여자들에게 퇴장 알림 (제거되기 전에)
-      await this.notifyRoomParticipants(data.roomId, 'user-left-room', {
-        user,
-        roomId: data.roomId,
-        roomName,
-        message: `${user.nickname}님이 방을 나갔습니다`,
-        timestamp: new Date().toISOString(),
-      }, client.id);
+      await this.notifyRoomParticipants(
+        data.roomId,
+        'user-left-room',
+        {
+          user,
+          roomId: data.roomId,
+          roomName,
+          message: `${user.nickname}님이 방을 나갔습니다`,
+          timestamp: new Date().toISOString(),
+        },
+        client.id,
+      );
 
       // 방에서 사용자 제거
-      const success = await this.roomsService.removeUserFromRoom(data.roomId, user.id);
+      const success = this.roomsService.removeUserFromRoom(
+        data.roomId,
+        user.id,
+      );
 
       // 방이 삭제되었는지 확인
-      const roomStillExists = await this.roomsService.getRoomById(data.roomId).catch(() => null);
+      let roomStillExists;
+      try {
+        roomStillExists = this.roomsService.getRoomById(data.roomId);
+      } catch {
+        roomStillExists = null;
+      }
       const roomDeleted = !roomStillExists;
 
-      this.logger.log(`User ${user.nickname} left room ${roomName}${roomDeleted ? ' (room deleted)' : ''}`);
+      this.logger.log(
+        `User ${user.nickname} left room ${roomName}${roomDeleted ? ' (room deleted)' : ''}`,
+      );
 
       // 사용자에게 성공 응답
       client.emit('room-left', {
@@ -488,12 +532,16 @@ export class ChatGateway
 
       // 모든 로비 사용자에게 방 목록 업데이트
       await this.broadcastLobbyUpdate();
-
     } catch (error) {
-      this.logger.error(`Error leaving room for ${client.id}:`, error.message);
+      this.logger.error(
+        `Error leaving room for ${client.id}:`,
+        error instanceof Error ? error.message : String(error),
+      );
       client.emit('error', {
         event: 'leave-room',
-        message: error.message || '방 나가기에 실패했습니다',
+        message:
+          (error instanceof Error ? error.message : String(error)) ||
+          '방 나가기에 실패했습니다',
         timestamp: new Date().toISOString(),
       });
     }
@@ -504,9 +552,9 @@ export class ChatGateway
   /**
    * 특정 클라이언트에게 로비 업데이트 전송
    */
-  private async sendLobbyUpdateToClient(client: Socket) {
+  private sendLobbyUpdateToClient(client: Socket) {
     try {
-      const roomsResponse = await this.roomsService.getAllRooms();
+      const roomsResponse = this.roomsService.getAllRooms();
 
       client.emit('lobby-update', {
         rooms: roomsResponse.rooms,
@@ -516,7 +564,10 @@ export class ChatGateway
 
       this.logger.debug(`Sent lobby update to client ${client.id}`);
     } catch (error) {
-      this.logger.error(`Error sending lobby update to ${client.id}:`, error.message);
+      this.logger.error(
+        `Error sending lobby update to ${client.id}:`,
+        error instanceof Error ? error.message : String(error),
+      );
       throw error;
     }
   }
@@ -524,9 +575,9 @@ export class ChatGateway
   /**
    * 모든 로비 사용자에게 방 목록 업데이트 브로드캐스트
    */
-  private async broadcastLobbyUpdate() {
+  private broadcastLobbyUpdate() {
     try {
-      const roomsResponse = await this.roomsService.getAllRooms();
+      const roomsResponse = this.roomsService.getAllRooms();
 
       this.server.emit('lobby-update', {
         rooms: roomsResponse.rooms,
@@ -536,7 +587,10 @@ export class ChatGateway
 
       this.logger.debug(`Broadcasted lobby update to all clients`);
     } catch (error) {
-      this.logger.error('Error broadcasting lobby update:', error.message);
+      this.logger.error(
+        'Error broadcasting lobby update:',
+        error instanceof Error ? error.message : String(error),
+      );
     }
   }
 
@@ -550,7 +604,12 @@ export class ChatGateway
     excludeSocketId?: string,
   ) {
     try {
-      const room = await this.roomsService.getRoomById(roomId).catch(() => null);
+      let room;
+      try {
+        room = this.roomsService.getRoomById(roomId);
+      } catch {
+        room = null;
+      }
       if (!room) {
         return;
       }
@@ -558,23 +617,27 @@ export class ChatGateway
       // 방 참여자들의 소켓 ID 수집
       const participantSocketIds: string[] = [];
       for (const participant of room.participants) {
-        const user = await this.usersService.findById(participant.id);
+        const user = this.usersService.findById(participant.id);
         if (user?.socketId && user.socketId !== excludeSocketId) {
           participantSocketIds.push(user.socketId);
         }
       }
 
       // 각 참여자에게 알림 전송
-      participantSocketIds.forEach(socketId => {
+      participantSocketIds.forEach((socketId) => {
         const socket = this.server.sockets.sockets.get(socketId);
         if (socket) {
           socket.emit(event, data);
         }
       });
 
-      this.logger.debug(`Notified ${participantSocketIds.length} participants in room ${room.name}`);
+      this.logger.debug(
+        `Notified ${participantSocketIds.length} participants in room ${room.name}`,
+      );
     } catch (error) {
-      this.logger.error(`Error notifying room participants: ${error.message}`);
+      this.logger.error(
+        `Error notifying room participants: ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
   }
 }

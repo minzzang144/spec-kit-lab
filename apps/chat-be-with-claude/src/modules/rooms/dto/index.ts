@@ -8,7 +8,4 @@ export {
 } from './chat-room.dto';
 
 // 방 생성 관련 DTO
-export {
-  CreateRoomDto,
-  CreateRoomResponseDto,
-} from './create-room.dto';
+export { CreateRoomDto, CreateRoomResponseDto } from './create-room.dto';

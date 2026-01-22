@@ -1,6 +1,16 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsNumber, IsArray, IsOptional, IsDate, IsUUID, Max, Min, ValidateNested } from 'class-validator';
-import { Type, Transform } from 'class-transformer';
+import {
+  IsString,
+  IsNumber,
+  IsArray,
+  IsOptional,
+  IsDate,
+  IsUUID,
+  Max,
+  Min,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 
 /**
  * 채팅방 참여자 정보 DTO

@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { RoomsController } from './rooms.controller';
 import { RoomsService } from './rooms.service';
-import { MemoryStore } from '../../storage/memory-store';
 
 /**
  * 채팅방 관리 모듈

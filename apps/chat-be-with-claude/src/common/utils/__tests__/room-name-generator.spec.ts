@@ -9,14 +9,24 @@ describe('RoomNameGenerator', () => {
     });
 
     it('should throw error for invalid room numbers', () => {
-      expect(() => RoomNameGenerator.generateRoomName(0)).toThrow('방 번호는 1부터 999까지만 지원됩니다.');
-      expect(() => RoomNameGenerator.generateRoomName(1000)).toThrow('방 번호는 1부터 999까지만 지원됩니다.');
-      expect(() => RoomNameGenerator.generateRoomName(-1)).toThrow('방 번호는 1부터 999까지만 지원됩니다.');
+      expect(() => RoomNameGenerator.generateRoomName(0)).toThrow(
+        '방 번호는 1부터 999까지만 지원됩니다.',
+      );
+      expect(() => RoomNameGenerator.generateRoomName(1000)).toThrow(
+        '방 번호는 1부터 999까지만 지원됩니다.',
+      );
+      expect(() => RoomNameGenerator.generateRoomName(-1)).toThrow(
+        '방 번호는 1부터 999까지만 지원됩니다.',
+      );
     });
 
     it('should throw error for non-integer room numbers', () => {
-      expect(() => RoomNameGenerator.generateRoomName(1.5)).toThrow('방 번호는 정수여야 합니다.');
-      expect(() => RoomNameGenerator.generateRoomName(NaN)).toThrow('방 번호는 정수여야 합니다.');
+      expect(() => RoomNameGenerator.generateRoomName(1.5)).toThrow(
+        '방 번호는 정수여야 합니다.',
+      );
+      expect(() => RoomNameGenerator.generateRoomName(NaN)).toThrow(
+        '방 번호는 정수여야 합니다.',
+      );
     });
   });
 
@@ -35,7 +45,7 @@ describe('RoomNameGenerator', () => {
       expect(RoomNameGenerator.extractRoomNumber('채팅방 #abcd')).toBeNull();
       expect(RoomNameGenerator.extractRoomNumber('잘못된 채팅방')).toBeNull();
       expect(RoomNameGenerator.extractRoomNumber('')).toBeNull();
-      expect(RoomNameGenerator.extractRoomNumber(null as any)).toBeNull();
+      expect(RoomNameGenerator.extractRoomNumber(null as unknown as string)).toBeNull();
     });
   });
 
@@ -67,19 +77,32 @@ describe('RoomNameGenerator', () => {
     });
 
     it('should handle duplicate numbers correctly', () => {
-      expect(RoomNameGenerator.findNextAvailableNumber([1, 1, 2, 2, 3, 3])).toBe(4);
+      expect(
+        RoomNameGenerator.findNextAvailableNumber([1, 1, 2, 2, 3, 3]),
+      ).toBe(4);
     });
 
     it('should handle unordered numbers correctly', () => {
-      expect(RoomNameGenerator.findNextAvailableNumber([5, 2, 8, 1, 3])).toBe(4);
+      expect(RoomNameGenerator.findNextAvailableNumber([5, 2, 8, 1, 3])).toBe(
+        4,
+      );
     });
   });
 
   describe('generateNextAvailableRoomName', () => {
     it('should generate next available room name', () => {
-      expect(RoomNameGenerator.generateNextAvailableRoomName([])).toBe('채팅방 #001');
-      expect(RoomNameGenerator.generateNextAvailableRoomName(['채팅방 #001'])).toBe('채팅방 #002');
-      expect(RoomNameGenerator.generateNextAvailableRoomName(['채팅방 #001', '채팅방 #003'])).toBe('채팅방 #002');
+      expect(RoomNameGenerator.generateNextAvailableRoomName([])).toBe(
+        '채팅방 #001',
+      );
+      expect(
+        RoomNameGenerator.generateNextAvailableRoomName(['채팅방 #001']),
+      ).toBe('채팅방 #002');
+      expect(
+        RoomNameGenerator.generateNextAvailableRoomName([
+          '채팅방 #001',
+          '채팅방 #003',
+        ]),
+      ).toBe('채팅방 #002');
     });
 
     it('should ignore invalid room names', () => {
@@ -90,15 +113,19 @@ describe('RoomNameGenerator', () => {
         '채팅방 #1000', // 범위 초과
         '',
       ];
-      expect(RoomNameGenerator.generateNextAvailableRoomName(usedRoomNames)).toBe('채팅방 #002');
+      expect(
+        RoomNameGenerator.generateNextAvailableRoomName(usedRoomNames),
+      ).toBe('채팅방 #002');
     });
 
     it('should return null if all room names are used', () => {
       const allRoomNames = Array.from(
         { length: 999 },
-        (_, i) => `채팅방 #${(i + 1).toString().padStart(3, '0')}`
+        (_, i) => `채팅방 #${(i + 1).toString().padStart(3, '0')}`,
       );
-      expect(RoomNameGenerator.generateNextAvailableRoomName(allRoomNames)).toBeNull();
+      expect(
+        RoomNameGenerator.generateNextAvailableRoomName(allRoomNames),
+      ).toBeNull();
     });
   });
 

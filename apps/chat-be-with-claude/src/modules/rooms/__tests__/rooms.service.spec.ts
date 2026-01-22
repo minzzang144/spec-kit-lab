@@ -137,11 +137,15 @@ describe('RoomsService', () => {
     });
 
     it('should throw BadRequestException for empty room ID', async () => {
-      await expect(service.getRoomById('')).rejects.toThrow(BadRequestException);
+      await expect(service.getRoomById('')).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('should throw NotFoundException for non-existent room', async () => {
-      await expect(service.getRoomById('non-existent')).rejects.toThrow(NotFoundException);
+      await expect(service.getRoomById('non-existent')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -179,14 +183,20 @@ describe('RoomsService', () => {
     });
 
     it('should throw NotFoundException for non-existent creator', async () => {
-      await expect(service.createRoom('non-existent')).rejects.toThrow(NotFoundException);
+      await expect(service.createRoom('non-existent')).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should throw BadRequestException when all room numbers are used', async () => {
       // RoomNameGenerator의 generateNextAvailableRoomName을 모킹하여 null 반환
-      jest.spyOn(RoomNameGenerator, 'generateNextAvailableRoomName').mockReturnValue(null);
+      jest
+        .spyOn(RoomNameGenerator, 'generateNextAvailableRoomName')
+        .mockReturnValue(null);
 
-      await expect(service.createRoom('user-1')).rejects.toThrow(BadRequestException);
+      await expect(service.createRoom('user-1')).rejects.toThrow(
+        BadRequestException,
+      );
     });
   });
 
@@ -202,7 +212,7 @@ describe('RoomsService', () => {
 
       const room = memoryStore.getRoom('room-1');
       expect(room?.participants).toHaveLength(2);
-      expect(room?.participants.some(p => p.id === 'user-2')).toBe(true);
+      expect(room?.participants.some((p) => p.id === 'user-2')).toBe(true);
     });
 
     it('should return false when user is already in room', async () => {
@@ -229,17 +239,27 @@ describe('RoomsService', () => {
       const extraUser = { ...mockUser1, id: 'user-6', nickname: 'user6' };
       memoryStore.createUser(extraUser);
 
-      await expect(service.addUserToRoom('room-1', 'user-6')).rejects.toThrow(BadRequestException);
+      await expect(service.addUserToRoom('room-1', 'user-6')).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('should throw BadRequestException for invalid parameters', async () => {
-      await expect(service.addUserToRoom('', 'user-1')).rejects.toThrow(BadRequestException);
-      await expect(service.addUserToRoom('room-1', '')).rejects.toThrow(BadRequestException);
+      await expect(service.addUserToRoom('', 'user-1')).rejects.toThrow(
+        BadRequestException,
+      );
+      await expect(service.addUserToRoom('room-1', '')).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('should throw NotFoundException for non-existent room or user', async () => {
-      await expect(service.addUserToRoom('non-existent', 'user-1')).rejects.toThrow(NotFoundException);
-      await expect(service.addUserToRoom('room-1', 'non-existent')).rejects.toThrow(NotFoundException);
+      await expect(
+        service.addUserToRoom('non-existent', 'user-1'),
+      ).rejects.toThrow(NotFoundException);
+      await expect(
+        service.addUserToRoom('room-1', 'non-existent'),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -255,7 +275,7 @@ describe('RoomsService', () => {
 
       const room = memoryStore.getRoom('room-1');
       expect(room?.participants).toHaveLength(1);
-      expect(room?.participants.some(p => p.id === 'user-2')).toBe(false);
+      expect(room?.participants.some((p) => p.id === 'user-2')).toBe(false);
     });
 
     it('should delete room when last user leaves', async () => {
@@ -271,12 +291,18 @@ describe('RoomsService', () => {
     });
 
     it('should throw BadRequestException for invalid parameters', async () => {
-      await expect(service.removeUserFromRoom('', 'user-1')).rejects.toThrow(BadRequestException);
-      await expect(service.removeUserFromRoom('room-1', '')).rejects.toThrow(BadRequestException);
+      await expect(service.removeUserFromRoom('', 'user-1')).rejects.toThrow(
+        BadRequestException,
+      );
+      await expect(service.removeUserFromRoom('room-1', '')).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('should throw NotFoundException for non-existent room', async () => {
-      await expect(service.removeUserFromRoom('non-existent', 'user-1')).rejects.toThrow(NotFoundException);
+      await expect(
+        service.removeUserFromRoom('non-existent', 'user-1'),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -300,7 +326,9 @@ describe('RoomsService', () => {
     });
 
     it('should throw BadRequestException for empty user ID', async () => {
-      await expect(service.getUserCurrentRoom('')).rejects.toThrow(BadRequestException);
+      await expect(service.getUserCurrentRoom('')).rejects.toThrow(
+        BadRequestException,
+      );
     });
   });
 

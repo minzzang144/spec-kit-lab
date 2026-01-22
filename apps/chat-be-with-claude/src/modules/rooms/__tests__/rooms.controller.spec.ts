@@ -116,7 +116,9 @@ describe('RoomsController', () => {
 
   describe('getAllRooms', () => {
     it('should return all rooms successfully', async () => {
-      jest.spyOn(roomsService, 'getAllRooms').mockResolvedValue(mockRoomListResponse);
+      jest
+        .spyOn(roomsService, 'getAllRooms')
+        .mockResolvedValue(mockRoomListResponse);
 
       const result = await controller.getAllRooms();
 
@@ -143,26 +145,38 @@ describe('RoomsController', () => {
     });
 
     it('should return room details without current user info', async () => {
-      const roomDetailWithoutUser = { ...mockRoomDetail, isCurrentUserParticipant: undefined };
-      jest.spyOn(roomsService, 'getRoomById').mockResolvedValue(roomDetailWithoutUser);
+      const roomDetailWithoutUser = {
+        ...mockRoomDetail,
+        isCurrentUserParticipant: undefined,
+      };
+      jest
+        .spyOn(roomsService, 'getRoomById')
+        .mockResolvedValue(roomDetailWithoutUser);
 
       const result = await controller.getRoomById('room-1');
 
       expect(result).toEqual(roomDetailWithoutUser);
-      expect(roomsService.getRoomById).toHaveBeenCalledWith('room-1', undefined);
+      expect(roomsService.getRoomById).toHaveBeenCalledWith(
+        'room-1',
+        undefined,
+      );
     });
 
     it('should handle not found errors', async () => {
       const error = new NotFoundException('방을 찾을 수 없습니다.');
       jest.spyOn(roomsService, 'getRoomById').mockRejectedValue(error);
 
-      await expect(controller.getRoomById('non-existent')).rejects.toThrow(NotFoundException);
+      await expect(controller.getRoomById('non-existent')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
   describe('createRoom', () => {
     it('should create room successfully', async () => {
-      jest.spyOn(roomsService, 'createRoom').mockResolvedValue(mockCreateRoomResponse);
+      jest
+        .spyOn(roomsService, 'createRoom')
+        .mockResolvedValue(mockCreateRoomResponse);
 
       const result = await controller.createRoom('user-1', {});
 
@@ -171,7 +185,9 @@ describe('RoomsController', () => {
     });
 
     it('should create room with creator nickname', async () => {
-      jest.spyOn(roomsService, 'createRoom').mockResolvedValue(mockCreateRoomResponse);
+      jest
+        .spyOn(roomsService, 'createRoom')
+        .mockResolvedValue(mockCreateRoomResponse);
 
       const createRoomDto = { creatorNickname: '귀여운펭귄' };
       const result = await controller.createRoom('user-1', createRoomDto);
@@ -181,7 +197,9 @@ describe('RoomsController', () => {
     });
 
     it('should throw BadRequestException when creatorId is missing', async () => {
-      await expect(controller.createRoom('', {})).rejects.toThrow(BadRequestException);
+      await expect(controller.createRoom('', {})).rejects.toThrow(
+        BadRequestException,
+      );
       expect(roomsService.createRoom).not.toHaveBeenCalled();
     });
 
@@ -189,7 +207,9 @@ describe('RoomsController', () => {
       const error = new NotFoundException('사용자를 찾을 수 없습니다.');
       jest.spyOn(roomsService, 'createRoom').mockRejectedValue(error);
 
-      await expect(controller.createRoom('user-1', {})).rejects.toThrow(NotFoundException);
+      await expect(controller.createRoom('user-1', {})).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -203,7 +223,10 @@ describe('RoomsController', () => {
         success: true,
         message: '채팅방에 참여했습니다.',
       });
-      expect(roomsService.addUserToRoom).toHaveBeenCalledWith('room-1', 'user-1');
+      expect(roomsService.addUserToRoom).toHaveBeenCalledWith(
+        'room-1',
+        'user-1',
+      );
     });
 
     it('should handle when user is already in room', async () => {
@@ -218,7 +241,9 @@ describe('RoomsController', () => {
     });
 
     it('should throw BadRequestException when userId is missing', async () => {
-      await expect(controller.addUserToRoom('room-1', '')).rejects.toThrow(BadRequestException);
+      await expect(controller.addUserToRoom('room-1', '')).rejects.toThrow(
+        BadRequestException,
+      );
       expect(roomsService.addUserToRoom).not.toHaveBeenCalled();
     });
 
@@ -226,7 +251,9 @@ describe('RoomsController', () => {
       const error = new BadRequestException('방이 가득 찼습니다.');
       jest.spyOn(roomsService, 'addUserToRoom').mockRejectedValue(error);
 
-      await expect(controller.addUserToRoom('room-1', 'user-1')).rejects.toThrow(BadRequestException);
+      await expect(
+        controller.addUserToRoom('room-1', 'user-1'),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 
@@ -242,13 +269,18 @@ describe('RoomsController', () => {
         message: '채팅방에서 나갔습니다.',
         roomDeleted: false,
       });
-      expect(roomsService.removeUserFromRoom).toHaveBeenCalledWith('room-1', 'user-1');
+      expect(roomsService.removeUserFromRoom).toHaveBeenCalledWith(
+        'room-1',
+        'user-1',
+      );
       expect(roomsService.getRoomById).toHaveBeenCalledWith('room-1');
     });
 
     it('should handle room deletion when last user leaves', async () => {
       jest.spyOn(roomsService, 'removeUserFromRoom').mockResolvedValue(true);
-      jest.spyOn(roomsService, 'getRoomById').mockRejectedValue(new NotFoundException());
+      jest
+        .spyOn(roomsService, 'getRoomById')
+        .mockRejectedValue(new NotFoundException());
 
       const result = await controller.removeUserFromRoom('room-1', 'user-1');
 
@@ -260,7 +292,9 @@ describe('RoomsController', () => {
     });
 
     it('should throw BadRequestException when userId is missing', async () => {
-      await expect(controller.removeUserFromRoom('room-1', '')).rejects.toThrow(BadRequestException);
+      await expect(controller.removeUserFromRoom('room-1', '')).rejects.toThrow(
+        BadRequestException,
+      );
       expect(roomsService.removeUserFromRoom).not.toHaveBeenCalled();
     });
 
@@ -268,13 +302,17 @@ describe('RoomsController', () => {
       const error = new NotFoundException('방을 찾을 수 없습니다.');
       jest.spyOn(roomsService, 'removeUserFromRoom').mockRejectedValue(error);
 
-      await expect(controller.removeUserFromRoom('room-1', 'user-1')).rejects.toThrow(NotFoundException);
+      await expect(
+        controller.removeUserFromRoom('room-1', 'user-1'),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 
   describe('getUserCurrentRoom', () => {
     it('should return user current room', async () => {
-      jest.spyOn(roomsService, 'getUserCurrentRoom').mockResolvedValue(mockCurrentRoom);
+      jest
+        .spyOn(roomsService, 'getUserCurrentRoom')
+        .mockResolvedValue(mockCurrentRoom);
 
       const result = await controller.getUserCurrentRoom('user-1');
 
@@ -294,7 +332,9 @@ describe('RoomsController', () => {
       const error = new BadRequestException('사용자 ID가 필요합니다.');
       jest.spyOn(roomsService, 'getUserCurrentRoom').mockRejectedValue(error);
 
-      await expect(controller.getUserCurrentRoom('user-1')).rejects.toThrow(BadRequestException);
+      await expect(controller.getUserCurrentRoom('user-1')).rejects.toThrow(
+        BadRequestException,
+      );
     });
   });
 

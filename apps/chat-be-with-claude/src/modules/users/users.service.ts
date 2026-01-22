@@ -91,7 +91,7 @@ export class UsersService {
   /**
    * 사용자 ID로 사용자 정보를 조회합니다.
    */
-  async findById(userId: string): Promise<UserDto> {
+  findById(userId: string): UserDto {
     const user = this.memoryStore.getUser(userId);
     if (!user) {
       throw new NotFoundException(`사용자를 찾을 수 없습니다: ${userId}`);
@@ -102,7 +102,7 @@ export class UsersService {
   /**
    * Socket ID로 사용자 정보를 조회합니다.
    */
-  async findBySocketId(socketId: string): Promise<UserDto | null> {
+  findBySocketId(socketId: string): UserDto | null {
     const user = this.memoryStore.getUserBySocket(socketId);
     return user ? this.mapToUserDto(user) : null;
   }
@@ -110,7 +110,7 @@ export class UsersService {
   /**
    * 모든 사용자 목록을 조회합니다.
    */
-  async findAll(): Promise<UserDto[]> {
+  findAll(): UserDto[] {
     const users = this.memoryStore.getAllUsers();
     return users.map((user) => this.mapToUserDto(user));
   }
@@ -118,7 +118,7 @@ export class UsersService {
   /**
    * 현재 연결된 사용자 목록을 조회합니다.
    */
-  async findConnected(): Promise<UserDto[]> {
+  findConnected(): UserDto[] {
     const users = this.memoryStore.getAllUsers();
     const connectedUsers = users.filter((user) => user.socketId);
     return connectedUsers.map((user) => this.mapToUserDto(user));
@@ -171,7 +171,7 @@ export class UsersService {
   /**
    * 사용자 연결을 해제합니다.
    */
-  async disconnectUser(socketId: string): Promise<void> {
+  disconnectUser(socketId: string): void {
     const user = this.memoryStore.getUserBySocket(socketId);
     if (user) {
       this.logger.debug(`Disconnecting user: ${user.nickname} (${user.id})`);
@@ -185,7 +185,7 @@ export class UsersService {
   /**
    * 사용자를 완전히 삭제합니다.
    */
-  async removeUser(userId: string): Promise<void> {
+  removeUser(userId: string): void {
     const user = this.memoryStore.getUser(userId);
     if (user) {
       const deleted = this.memoryStore.deleteUser(userId);
@@ -198,7 +198,7 @@ export class UsersService {
   /**
    * 사용자 활동 시간을 업데이트합니다.
    */
-  async updateActivity(userId: string): Promise<void> {
+  updateActivity(userId: string): void {
     const user = this.memoryStore.getUser(userId);
     if (user) {
       // connectedAt을 lastSeen처럼 사용 (기존 구조 유지)
@@ -242,7 +242,7 @@ export class UsersService {
   /**
    * 서비스 통계 정보를 반환합니다.
    */
-  async getStats() {
+  getStats() {
     const storeStats = this.memoryStore.getStats();
     const nicknameStats = getNicknameGeneratorStats();
 
@@ -258,7 +258,7 @@ export class UsersService {
   /**
    * 개발/디버그용: 모든 데이터 초기화
    */
-  async clearAll(): Promise<void> {
+  clearAll(): void {
     this.memoryStore.clear();
     this.logger.warn('All user data cleared');
   }
