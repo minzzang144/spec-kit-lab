@@ -114,7 +114,7 @@ export function MessageListWidget({
         ) : (
           <>
             {messages.map((message, index) => {
-              const isCurrentUser = currentUserId && message.authorId === currentUserId
+              const isCurrentUser = !!(currentUserId && message.authorId === currentUserId)
               const prevMessage = index > 0 ? messages[index - 1] : null
               const showTimestamp = !prevMessage ||
                 new Date(message.createdAt).getTime() - new Date(prevMessage.createdAt).getTime() > 60000 // 1 minute

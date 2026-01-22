@@ -9,6 +9,7 @@ export interface ChatInputFlow {
   canSend: boolean
   remainingChars: number
   updateMessage: (message: string) => void
+  setComposing: (isComposing: boolean) => void
   sendMessage: () => void
   handleKeyPress: (e: React.KeyboardEvent) => void
   clearError: () => void
@@ -73,6 +74,7 @@ export function useChatInputFlow({
     canSend: model.canSend && !disabled,
     remainingChars: model.remainingChars,
     updateMessage: model.updateMessage,
+    setComposing: model.setComposing,
     sendMessage,
     handleKeyPress,
     clearError,

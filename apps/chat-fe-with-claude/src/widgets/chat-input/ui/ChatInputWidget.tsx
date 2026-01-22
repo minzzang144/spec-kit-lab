@@ -1,5 +1,5 @@
 import { Send, Loader2, AlertCircle } from 'lucide-react'
-import { useChatInputFlow, type ChatInputFlow } from '../hooks/useChatInputFlow'
+import { useChatInputFlow } from '../hooks/useChatInputFlow'
 
 interface ChatInputWidgetProps {
   roomId?: string
