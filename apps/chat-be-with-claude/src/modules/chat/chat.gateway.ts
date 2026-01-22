@@ -12,6 +12,7 @@ import { Logger, Injectable } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { UsersService } from '../users/users.service';
 import { CreateUserDto } from '../users/dto';
+import { RoomsService } from '../rooms/rooms.service';
 
 /**
  * 실시간 채팅 Socket.IO Gateway
@@ -36,7 +37,10 @@ export class ChatGateway
   @WebSocketServer()
   server: Server;
 
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly roomsService: RoomsService,
+  ) {}
 
   /**
    * Gateway 초기화
@@ -138,7 +142,8 @@ export class ChatGateway
         message: `${user.nickname}님이 로비에 입장했습니다`,
       });
 
-      // TODO: 현재 방 목록도 전송 (추후 구현)
+      // 현재 방 목록 전송
+      await this.sendLobbyUpdateToClient(client);
     } catch (error) {
       this.logger.error(`Error in join-lobby for ${client.id}:`, error.message);
 
@@ -260,5 +265,316 @@ export class ChatGateway
         socket.emit(event, data);
       }
     });
+  }
+
+  // === 로비 및 방 관리 이벤트들 ===
+
+  /**
+   * 로비 방 목록 요청
+   */
+  @SubscribeMessage('get-lobby-rooms')
+  async handleGetLobbyRooms(@ConnectedSocket() client: Socket) {
+    try {
+      await this.sendLobbyUpdateToClient(client);
+    } catch (error) {
+      this.logger.error(`Error getting lobby rooms for ${client.id}:`, error.message);
+      client.emit('error', {
+        event: 'get-lobby-rooms',
+        message: '방 목록 조회에 실패했습니다',
+        timestamp: new Date().toISOString(),
+      });
+    }
+  }
+
+  /**
+   * 새 채팅방 생성
+   */
+  @SubscribeMessage('create-room')
+  async handleCreateRoom(@ConnectedSocket() client: Socket) {
+    try {
+      // 현재 사용자 확인
+      const user = await this.usersService.findBySocketId(client.id);
+      if (!user) {
+        client.emit('error', {
+          event: 'create-room',
+          message: '로비에 입장한 후 방을 생성할 수 있습니다',
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
+      // 이미 방에 참여 중인지 확인
+      const currentRoom = await this.roomsService.getUserCurrentRoom(user.id);
+      if (currentRoom) {
+        client.emit('error', {
+          event: 'create-room',
+          message: '이미 다른 방에 참여 중입니다. 먼저 방을 나가주세요',
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
+      // 새 방 생성
+      const result = await this.roomsService.createRoom(user.id);
+
+      this.logger.log(`Room created: ${result.roomName} by ${user.nickname}`);
+
+      // 생성자에게 성공 응답
+      client.emit('room-created', {
+        room: result,
+        message: '새로운 채팅방이 생성되었습니다',
+        timestamp: new Date().toISOString(),
+      });
+
+      // 모든 로비 사용자에게 방 목록 업데이트 브로드캐스트
+      await this.broadcastLobbyUpdate();
+
+    } catch (error) {
+      this.logger.error(`Error creating room for ${client.id}:`, error.message);
+      client.emit('error', {
+        event: 'create-room',
+        message: error.message || '방 생성에 실패했습니다',
+        timestamp: new Date().toISOString(),
+      });
+    }
+  }
+
+  /**
+   * 채팅방 참여
+   */
+  @SubscribeMessage('join-room')
+  async handleJoinRoom(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { roomId: string },
+  ) {
+    try {
+      // 현재 사용자 확인
+      const user = await this.usersService.findBySocketId(client.id);
+      if (!user) {
+        client.emit('error', {
+          event: 'join-room',
+          message: '로비에 입장한 후 방에 참여할 수 있습니다',
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
+      if (!data.roomId) {
+        client.emit('error', {
+          event: 'join-room',
+          message: '방 ID가 필요합니다',
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
+      // 이미 방에 참여 중인지 확인
+      const currentRoom = await this.roomsService.getUserCurrentRoom(user.id);
+      if (currentRoom) {
+        client.emit('error', {
+          event: 'join-room',
+          message: '이미 다른 방에 참여 중입니다. 먼저 방을 나가주세요',
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
+      // 방 참여
+      const success = await this.roomsService.addUserToRoom(data.roomId, user.id);
+      if (!success) {
+        client.emit('error', {
+          event: 'join-room',
+          message: '방 참여에 실패했습니다',
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
+      // 방 정보 조회
+      const roomDetails = await this.roomsService.getRoomById(data.roomId, user.id);
+
+      this.logger.log(`User ${user.nickname} joined room ${roomDetails.name}`);
+
+      // 참여자에게 성공 응답
+      client.emit('room-joined', {
+        room: roomDetails,
+        message: `${roomDetails.name}에 참여했습니다`,
+        timestamp: new Date().toISOString(),
+      });
+
+      // 방의 다른 참여자들에게 새 참여자 알림
+      await this.notifyRoomParticipants(data.roomId, 'user-joined-room', {
+        user,
+        roomId: data.roomId,
+        roomName: roomDetails.name,
+        message: `${user.nickname}님이 방에 참여했습니다`,
+        timestamp: new Date().toISOString(),
+      }, client.id);
+
+      // 모든 로비 사용자에게 방 목록 업데이트
+      await this.broadcastLobbyUpdate();
+
+    } catch (error) {
+      this.logger.error(`Error joining room for ${client.id}:`, error.message);
+      client.emit('error', {
+        event: 'join-room',
+        message: error.message || '방 참여에 실패했습니다',
+        timestamp: new Date().toISOString(),
+      });
+    }
+  }
+
+  /**
+   * 채팅방 나가기
+   */
+  @SubscribeMessage('leave-room')
+  async handleLeaveRoom(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { roomId: string },
+  ) {
+    try {
+      // 현재 사용자 확인
+      const user = await this.usersService.findBySocketId(client.id);
+      if (!user) {
+        client.emit('error', {
+          event: 'leave-room',
+          message: '로비에 입장한 후 방을 나갈 수 있습니다',
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
+      if (!data.roomId) {
+        client.emit('error', {
+          event: 'leave-room',
+          message: '방 ID가 필요합니다',
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
+      // 방 정보 미리 조회 (삭제되기 전에)
+      const roomDetails = await this.roomsService.getRoomById(data.roomId).catch(() => null);
+      const roomName = roomDetails?.name || '채팅방';
+
+      // 방의 다른 참여자들에게 퇴장 알림 (제거되기 전에)
+      await this.notifyRoomParticipants(data.roomId, 'user-left-room', {
+        user,
+        roomId: data.roomId,
+        roomName,
+        message: `${user.nickname}님이 방을 나갔습니다`,
+        timestamp: new Date().toISOString(),
+      }, client.id);
+
+      // 방에서 사용자 제거
+      const success = await this.roomsService.removeUserFromRoom(data.roomId, user.id);
+
+      // 방이 삭제되었는지 확인
+      const roomStillExists = await this.roomsService.getRoomById(data.roomId).catch(() => null);
+      const roomDeleted = !roomStillExists;
+
+      this.logger.log(`User ${user.nickname} left room ${roomName}${roomDeleted ? ' (room deleted)' : ''}`);
+
+      // 사용자에게 성공 응답
+      client.emit('room-left', {
+        roomId: data.roomId,
+        roomName,
+        roomDeleted,
+        message: roomDeleted
+          ? `${roomName}을 나갔고, 빈 방이 삭제되었습니다`
+          : `${roomName}을 나갔습니다`,
+        timestamp: new Date().toISOString(),
+      });
+
+      // 모든 로비 사용자에게 방 목록 업데이트
+      await this.broadcastLobbyUpdate();
+
+    } catch (error) {
+      this.logger.error(`Error leaving room for ${client.id}:`, error.message);
+      client.emit('error', {
+        event: 'leave-room',
+        message: error.message || '방 나가기에 실패했습니다',
+        timestamp: new Date().toISOString(),
+      });
+    }
+  }
+
+  // === 내부 헬퍼 메서드들 ===
+
+  /**
+   * 특정 클라이언트에게 로비 업데이트 전송
+   */
+  private async sendLobbyUpdateToClient(client: Socket) {
+    try {
+      const roomsResponse = await this.roomsService.getAllRooms();
+
+      client.emit('lobby-update', {
+        rooms: roomsResponse.rooms,
+        totalCount: roomsResponse.totalCount,
+        timestamp: new Date().toISOString(),
+      });
+
+      this.logger.debug(`Sent lobby update to client ${client.id}`);
+    } catch (error) {
+      this.logger.error(`Error sending lobby update to ${client.id}:`, error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * 모든 로비 사용자에게 방 목록 업데이트 브로드캐스트
+   */
+  private async broadcastLobbyUpdate() {
+    try {
+      const roomsResponse = await this.roomsService.getAllRooms();
+
+      this.server.emit('lobby-update', {
+        rooms: roomsResponse.rooms,
+        totalCount: roomsResponse.totalCount,
+        timestamp: new Date().toISOString(),
+      });
+
+      this.logger.debug(`Broadcasted lobby update to all clients`);
+    } catch (error) {
+      this.logger.error('Error broadcasting lobby update:', error.message);
+    }
+  }
+
+  /**
+   * 특정 방의 모든 참여자에게 알림 전송
+   */
+  private async notifyRoomParticipants(
+    roomId: string,
+    event: string,
+    data: any,
+    excludeSocketId?: string,
+  ) {
+    try {
+      const room = await this.roomsService.getRoomById(roomId).catch(() => null);
+      if (!room) {
+        return;
+      }
+
+      // 방 참여자들의 소켓 ID 수집
+      const participantSocketIds: string[] = [];
+      for (const participant of room.participants) {
+        const user = await this.usersService.findById(participant.id);
+        if (user?.socketId && user.socketId !== excludeSocketId) {
+          participantSocketIds.push(user.socketId);
+        }
+      }
+
+      // 각 참여자에게 알림 전송
+      participantSocketIds.forEach(socketId => {
+        const socket = this.server.sockets.sockets.get(socketId);
+        if (socket) {
+          socket.emit(event, data);
+        }
+      });
+
+      this.logger.debug(`Notified ${participantSocketIds.length} participants in room ${room.name}`);
+    } catch (error) {
+      this.logger.error(`Error notifying room participants: ${error.message}`);
+    }
   }
 }

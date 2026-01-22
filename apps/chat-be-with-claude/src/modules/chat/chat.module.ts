@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ChatGateway } from './chat.gateway';
 import { UsersModule } from '../users/users.module';
+import { RoomsModule } from '../rooms/rooms.module';
 
 /**
  * 채팅 모듈
@@ -9,7 +10,7 @@ import { UsersModule } from '../users/users.module';
  * - Users 모듈과 연동
  */
 @Module({
-  imports: [UsersModule],
+  imports: [UsersModule, RoomsModule],
   providers: [ChatGateway],
   exports: [ChatGateway],
 })
