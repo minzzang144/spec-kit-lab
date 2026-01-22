@@ -168,13 +168,13 @@
 **Goal**: Backend에서 방 생성 API, Socket 이벤트, 자동 입장 처리
 
 ### BE User Story 4 Implementation
-- [ ] T054 [P] [US4] 방 생성 DTO 클래스 생성 in apps/chat-be-with-claude/src/modules/rooms/dto/create-room.dto.ts
-- [ ] T055 [US4] Rooms 서비스에 방 생성 기능 추가 in apps/chat-be-with-claude/src/modules/rooms/rooms.service.ts
-- [ ] T056 [US4] Rooms 컨트롤러에 방 생성 엔드포인트 추가 in apps/chat-be-with-claude/src/modules/rooms/rooms.controller.ts
-- [ ] T057 [US4] Socket Gateway에 방 생성 이벤트 추가 in apps/chat-be-with-claude/src/modules/chat/chat.gateway.ts
+- [x] T054 [P] [US4] 방 생성 DTO 클래스 생성 in apps/chat-be-with-claude/src/modules/rooms/dto/create-room.dto.ts
+- [x] T055 [US4] Rooms 서비스에 방 생성 기능 추가 in apps/chat-be-with-claude/src/modules/rooms/rooms.service.ts
+- [x] T056 [US4] Rooms 컨트롤러에 방 생성 엔드포인트 추가 in apps/chat-be-with-claude/src/modules/rooms/rooms.controller.ts
+- [x] T057 [US4] Socket Gateway에 방 생성 이벤트 추가 in apps/chat-be-with-claude/src/modules/chat/chat.gateway.ts
 
 ### BE US4 검증
-- [ ] T058 [US4] Backend 검증 실행 (typecheck, lint, test, build) in apps/chat-be-with-claude/
+- [x] T058 [US4] Backend 검증 실행 (typecheck, lint, test, build) in apps/chat-be-with-claude/
 
 **Checkpoint**: BE US4 완료 - 방 생성 및 자동 입장 API
 
@@ -201,13 +201,13 @@
 **Goal**: Backend에서 방 참여 처리, 인원 제한 검증, 참여자 관리
 
 ### BE User Story 5 Implementation
-- [ ] T063 [P] [US5] 방 참여 DTO 클래스 생성 in apps/chat-be-with-claude/src/modules/rooms/dto/join-room.dto.ts
-- [ ] T064 [US5] Rooms 서비스에 방 참여 기능 추가 in apps/chat-be-with-claude/src/modules/rooms/rooms.service.ts
-- [ ] T065 [US5] Socket Gateway에 방 참여 이벤트 추가 in apps/chat-be-with-claude/src/modules/chat/chat.gateway.ts
-- [ ] T066 [US5] 방 참여자 관리 기능 구현 in apps/chat-be-with-claude/src/modules/chat/chat.service.ts
+- [x] T063 [P] [US5] 방 참여 DTO 클래스 생성 in apps/chat-be-with-claude/src/modules/rooms/dto/join-room.dto.ts
+- [x] T064 [US5] Rooms 서비스에 방 참여 기능 추가 in apps/chat-be-with-claude/src/modules/rooms/rooms.service.ts
+- [x] T065 [US5] Socket Gateway에 방 참여 이벤트 추가 in apps/chat-be-with-claude/src/modules/chat/chat.gateway.ts
+- [x] T066 [US5] 방 참여자 관리 기능 구현 in apps/chat-be-with-claude/src/modules/chat/chat.service.ts
 
 ### BE US5 검증
-- [ ] T067 [US5] Backend 검증 실행 (typecheck, lint, test, build) in apps/chat-be-with-claude/
+- [x] T067 [US5] Backend 검증 실행 (typecheck, lint, test, build) in apps/chat-be-with-claude/
 
 **Checkpoint**: BE US5 완료 - 방 참여 및 참여자 관리
 
