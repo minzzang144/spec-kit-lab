@@ -285,12 +285,12 @@
 **Goal**: Frontend에서 방 나가기, 연결 상태 모니터링, 방 삭제 알림
 
 ### FE User Story 6 Implementation
-- [ ] T087 [P] [US6] 방 나가기 기능 구현 in apps/chat-fe-with-claude/src/features/chat/leave-room/
-- [ ] T088 [US6] 채팅방에서 나가기 버튼 추가 in apps/chat-fe-with-claude/src/pages/chat-room/
-- [ ] T089 [US6] 연결 상태 모니터링 훅 구현 in apps/chat-fe-with-claude/src/shared/hooks/useConnectionStatus.ts
+- [x] T087 [P] [US6] 방 나가기 기능 구현 in apps/chat-fe-with-claude/src/features/chat/leave-room/
+- [x] T088 [US6] 채팅방에서 나가기 버튼 추가 in apps/chat-fe-with-claude/src/pages/chat-room/
+- [x] T089 [US6] 연결 상태 모니터링 훅 구현 in apps/chat-fe-with-claude/src/shared/hooks/useConnectionStatus.ts
 
 ### FE US6 검증
-- [ ] T090 [US6] Frontend 검증 실행 (typecheck, lint, test, build) in apps/chat-fe-with-claude/
+- [x] T090 [US6] Frontend 검증 실행 (typecheck, lint, test, build) in apps/chat-fe-with-claude/
 
 **Checkpoint**: FE US6 완료 - 방 나가기 및 자동 삭제 알림
 
