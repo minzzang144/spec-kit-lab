@@ -251,14 +251,14 @@
 **Goal**: Frontend에서 채팅 입력, 메시지 표시, 실시간 업데이트
 
 ### FE User Story 2 Implementation
-- [ ] T077 [P] [US2] Message 엔티티 모델 생성 in apps/chat-fe-with-claude/src/entities/message/
-- [ ] T078 [P] [US2] 채팅 입력 위젯 구현 in apps/chat-fe-with-claude/src/widgets/chat-input/
-- [ ] T079 [US2] 메시지 전송 기능 구현 in apps/chat-fe-with-claude/src/features/chat/send-message/
-- [ ] T080 [US2] 메시지 목록 표시 위젯 구현 in apps/chat-fe-with-claude/src/widgets/message-list/
-- [ ] T081 [US2] 채팅방 페이지에 채팅 기능 통합 in apps/chat-fe-with-claude/src/pages/chat-room/
+- [x] T077 [P] [US2] Message 엔티티 모델 생성 in apps/chat-fe-with-claude/src/entities/message/
+- [x] T078 [P] [US2] 채팅 입력 위젯 구현 in apps/chat-fe-with-claude/src/widgets/chat-input/
+- [x] T079 [US2] 메시지 전송 기능 구현 in apps/chat-fe-with-claude/src/features/chat/send-message/
+- [x] T080 [US2] 메시지 목록 표시 위젯 구현 in apps/chat-fe-with-claude/src/widgets/message-list/
+- [x] T081 [US2] 채팅방 페이지에 채팅 기능 통합 in apps/chat-fe-with-claude/src/pages/chat-room/
 
 ### FE US2 검증
-- [ ] T082 [US2] Frontend 검증 실행 (typecheck, lint, test, build) in apps/chat-fe-with-claude/
+- [x] T082 [US2] Frontend 검증 실행 (typecheck, lint, test, build) in apps/chat-fe-with-claude/
 
 **Checkpoint**: FE US2 완료 - 실시간 채팅 기능 완성
 
