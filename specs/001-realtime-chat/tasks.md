@@ -52,9 +52,9 @@
 - [x] T011 [P] 데이터 저장소 인터페이스 정의 in apps/chat-be-with-claude/src/storage/interfaces/
 
 ### BE 타입 스키마 모듈 (Frontend 타입 생성용)
-- [ ] T012 [P] Socket.IO 타입 스키마 서비스 생성 in apps/chat-be-with-claude/src/modules/type-schema/schema.service.ts
-- [ ] T013 [P] Socket.IO 타입 스키마 컨트롤러 생성 in apps/chat-be-with-claude/src/modules/type-schema/schema.controller.ts
-- [ ] T014 Socket.IO 타입 스키마 모듈 생성 in apps/chat-be-with-claude/src/modules/type-schema/schema.module.ts
+- [x] T012 [P] Socket.IO 타입 스키마 서비스 생성 in apps/chat-be-with-claude/src/modules/type-schema/schema.service.ts
+- [x] T013 [P] Socket.IO 타입 스키마 컨트롤러 생성 in apps/chat-be-with-claude/src/modules/type-schema/schema.controller.ts
+- [x] T014 Socket.IO 타입 스키마 모듈 생성 in apps/chat-be-with-claude/src/modules/type-schema/schema.module.ts
 
 **Checkpoint**: Backend 기초 인프라 완료 - Frontend 타입 생성 가능
 
