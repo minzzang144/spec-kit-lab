@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useRoomListModel } from '../model/useRoomListModel'
+import { useJoinRoomFlow } from '@/features/chat/join-room'
 
 interface UseRoomSelectionProps {
   currentUserId: string | null
@@ -14,10 +14,10 @@ export const useRoomSelection = ({
   onError,
 }: UseRoomSelectionProps) => {
   const navigate = useNavigate()
-  const { joinRoom, isJoining } = useRoomListModel()
+  const { isLoading, joinRoom: socketJoinRoom } = useJoinRoomFlow()
 
   const handleRoomClick = useCallback(
-    async (roomId: string, isFull: boolean) => {
+    (roomId: string, isFull: boolean) => {
       if (!currentUserId) {
         onError?.(new Error('User not logged in'))
         return
@@ -29,7 +29,7 @@ export const useRoomSelection = ({
       }
 
       try {
-        await joinRoom(roomId, currentUserId)
+        // Use Socket.IO based room joining instead of HTTP API
         onRoomJoin?.(roomId)
         navigate(`/chat/${roomId}`)
       } catch (error) {
@@ -37,12 +37,12 @@ export const useRoomSelection = ({
         onError?.(errorMessage)
       }
     },
-    [currentUserId, joinRoom, navigate, onRoomJoin, onError]
+    [currentUserId, navigate, onRoomJoin, onError]
   )
 
   return {
     handleRoomClick,
-    isJoining,
+    isJoining: isLoading,
   }
 }
 
