@@ -4,13 +4,11 @@ import { MessageSquare, Users, LogOut } from 'lucide-react'
 import { SessionManager, type SessionData } from '@/shared/lib/session-manager'
 import { useSocket } from '@/app/providers/context'
 import { RoomListWidget } from '@/widgets/room-list'
-import { useCreateRoomMutation } from '@/entities/chat-room'
 
 export function LobbyPage() {
   const navigate = useNavigate()
   const [userSession, setUserSession] = useState<SessionData | null>(null)
   const { isConnected, connectionStatus, error: socketError } = useSocket()
-  const createRoomMutation = useCreateRoomMutation()
 
   useEffect(() => {
     // Check if user has a valid session
@@ -32,21 +30,12 @@ export function LobbyPage() {
     navigate('/nickname-setup')
   }
 
-  const handleCreateRoom = useCallback(async () => {
-    if (!userSession?.userId) {
-      console.error('User session not available')
-      return
-    }
-
-    try {
-      const newRoom = await createRoomMutation.mutateAsync({
-        createdBy: userSession.userId,
-      })
-      navigate(`/chat/${newRoom.id}`)
-    } catch (error) {
-      console.error('Failed to create room:', error)
-    }
-  }, [userSession, createRoomMutation, navigate])
+  const handleRoomCreated = useCallback(
+    (roomId: string) => {
+      console.log('Room created:', roomId)
+    },
+    []
+  )
 
   const handleRoomJoin = useCallback(
     (roomId: string) => {
@@ -143,7 +132,7 @@ export function LobbyPage() {
           <RoomListWidget
             currentUserId={userSession?.userId || null}
             currentUserNickname={userSession?.nickname || null}
-            onCreateRoom={handleCreateRoom}
+            onRoomCreated={handleRoomCreated}
             onRoomJoin={handleRoomJoin}
           />
 
