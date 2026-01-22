@@ -131,15 +131,15 @@
 **Goal**: Backend에서 방 목록 API, 방 정보 관리, 실시간 업데이트
 
 ### BE User Story 3 Implementation
-- [ ] T041 [P] [US3] ChatRoom 엔티티 DTO 클래스 생성 in apps/chat-be-with-claude/src/modules/rooms/dto/
-- [ ] T042 [P] [US3] 방 자동 이름 생성 유틸리티 생성 in apps/chat-be-with-claude/src/common/utils/room-name-generator.ts
-- [ ] T043 [US3] Rooms 서비스 구현 (방 목록, 방 정보 조회) in apps/chat-be-with-claude/src/modules/rooms/rooms.service.ts
-- [ ] T044 [US3] Rooms 컨트롤러 구현 in apps/chat-be-with-claude/src/modules/rooms/rooms.controller.ts
-- [ ] T045 [US3] Rooms 모듈 생성 및 등록 in apps/chat-be-with-claude/src/modules/rooms/rooms.module.ts
-- [ ] T046 [US3] Socket Gateway에 로비 업데이트 이벤트 추가 in apps/chat-be-with-claude/src/modules/chat/chat.gateway.ts
+- [x] T041 [P] [US3] ChatRoom 엔티티 DTO 클래스 생성 in apps/chat-be-with-claude/src/modules/rooms/dto/
+- [x] T042 [P] [US3] 방 자동 이름 생성 유틸리티 생성 in apps/chat-be-with-claude/src/common/utils/room-name-generator.ts
+- [x] T043 [US3] Rooms 서비스 구현 (방 목록, 방 정보 조회) in apps/chat-be-with-claude/src/modules/rooms/rooms.service.ts
+- [x] T044 [US3] Rooms 컨트롤러 구현 in apps/chat-be-with-claude/src/modules/rooms/rooms.controller.ts
+- [x] T045 [US3] Rooms 모듈 생성 및 등록 in apps/chat-be-with-claude/src/modules/rooms/rooms.module.ts
+- [x] T046 [US3] Socket Gateway에 로비 업데이트 이벤트 추가 in apps/chat-be-with-claude/src/modules/chat/chat.gateway.ts
 
 ### BE US3 검증
-- [ ] T047 [US3] Backend 검증 실행 (typecheck, lint, test, build) in apps/chat-be-with-claude/
+- [x] T047 [US3] Backend 검증 실행 (typecheck, lint, test, build) in apps/chat-be-with-claude/
 
 **Checkpoint**: BE US3 완료 - 방 목록 조회 및 관리 API
 
