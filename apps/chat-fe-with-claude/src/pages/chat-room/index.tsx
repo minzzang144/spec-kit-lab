@@ -3,9 +3,10 @@ import { useEffect, useCallback } from 'react'
 import { SessionManager } from '@/shared/lib'
 import { ROUTES } from '@/shared/constants'
 import { useJoinRoomFlow } from '@/features/chat/join-room'
+import { LeaveRoomFeature } from '@/features/chat/leave-room'
 import { MessageListWidget } from '@/widgets/message-list'
 import { SendMessageFeature } from '@/features/chat/send-message'
-import { ArrowLeft, Users, Loader2 } from 'lucide-react'
+import { Users, Loader2, LogOut } from 'lucide-react'
 
 export function ChatRoomPage() {
   const { roomId } = useParams<{ roomId: string }>()
@@ -34,6 +35,16 @@ export function ChatRoomPage() {
     leaveRoom()
     navigate(ROUTES.LOBBY)
   }, [leaveRoom, navigate])
+
+  const handleRoomLeft = useCallback((roomData: any) => {
+    console.log('✅ Room left successfully:', roomData.name)
+    // Room left event - will auto-navigate via LeaveRoomFeature
+  }, [])
+
+  const handleLeaveError = useCallback((error: string) => {
+    console.error('❌ Leave room error:', error)
+    // Could show toast notification here
+  }, [])
 
   const handleMessageSent = useCallback((content: string) => {
     console.log('✅ Message sent successfully:', content)
@@ -89,20 +100,41 @@ export function ChatRoomPage() {
       <header className="bg-white border-b border-gray-200 px-4 py-3 flex-shrink-0">
         <div className="flex items-center justify-between max-w-6xl mx-auto">
           <div className="flex items-center space-x-4">
-            <button
-              onClick={handleLeaveRoom}
-              className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md"
-              type="button"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </button>
+            {/* Back button using LeaveRoomFeature */}
+            <LeaveRoomFeature
+              roomId={roomId!}
+              variant="back"
+              size="md"
+              autoNavigate={true}
+              navigateToAfterLeave={ROUTES.LOBBY}
+              onRoomLeft={handleRoomLeft}
+              onLeaveError={handleLeaveError}
+            />
             <h1 className="text-xl font-semibold text-gray-900">
               {currentRoom?.name || `채팅방 #${roomId}`}
             </h1>
           </div>
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
-            <Users className="w-4 h-4" />
-            <span>{currentRoom?.participants.length || 0}/{currentRoom?.maxParticipants || 5}</span>
+
+          <div className="flex items-center space-x-4">
+            {/* Participants count */}
+            <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <Users className="w-4 h-4" />
+              <span>{currentRoom?.participants.length || 0}/{currentRoom?.maxParticipants || 5}</span>
+            </div>
+
+            {/* Exit button for explicit room leaving */}
+            <LeaveRoomFeature
+              roomId={roomId!}
+              variant="exit"
+              size="lg"
+              autoNavigate={true}
+              navigateToAfterLeave={ROUTES.LOBBY}
+              onRoomLeft={handleRoomLeft}
+              onLeaveError={handleLeaveError}
+              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            >
+              방 나가기
+            </LeaveRoomFeature>
           </div>
         </div>
       </header>
@@ -169,11 +201,26 @@ export function ChatRoomPage() {
             {currentRoom && (
               <div className="mt-6 pt-4 border-t border-gray-200">
                 <h4 className="font-medium text-gray-900 mb-2">방 정보</h4>
-                <div className="space-y-1 text-sm text-gray-600">
+                <div className="space-y-1 text-sm text-gray-600 mb-4">
                   <p>방 이름: {currentRoom.name}</p>
                   <p>최대 참여자: {currentRoom.maxParticipants}명</p>
                   <p>메시지 수: {currentRoom.messages.length}개</p>
                 </div>
+
+                {/* Sidebar Leave Button */}
+                <LeaveRoomFeature
+                  roomId={roomId!}
+                  variant="exit"
+                  size="lg"
+                  autoNavigate={true}
+                  navigateToAfterLeave={ROUTES.LOBBY}
+                  onRoomLeft={handleRoomLeft}
+                  onLeaveError={handleLeaveError}
+                  className="w-full justify-center px-4 py-2 bg-red-50 text-red-700 hover:bg-red-100 border border-red-200 rounded-md"
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  방 나가기
+                </LeaveRoomFeature>
               </div>
             )}
           </div>
