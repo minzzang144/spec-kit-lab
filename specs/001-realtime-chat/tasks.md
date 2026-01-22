@@ -150,14 +150,14 @@
 **Goal**: Frontend에서 방 목록 화면, 실시간 업데이트, 방 정보 표시
 
 ### FE User Story 3 Implementation
-- [ ] T048 [P] [US3] ChatRoom 엔티티 모델 생성 in apps/chat-fe-with-claude/src/entities/chat-room/
-- [ ] T049 [P] [US3] Rooms API 클라이언트 생성 (TanStack Query) in apps/chat-fe-with-claude/src/entities/chat-room/api/rooms.api.ts
-- [ ] T050 [US3] 방 목록 조회 기능 구현 in apps/chat-fe-with-claude/src/features/rooms/room-list/
-- [ ] T051 [US3] 방 목록 위젯 구현 in apps/chat-fe-with-claude/src/widgets/room-list/
-- [ ] T052 [US3] 로비 페이지 방 목록 통합 in apps/chat-fe-with-claude/src/pages/lobby/
+- [x] T048 [P] [US3] ChatRoom 엔티티 모델 생성 in apps/chat-fe-with-claude/src/entities/chat-room/
+- [x] T049 [P] [US3] Rooms API 클라이언트 생성 (TanStack Query) in apps/chat-fe-with-claude/src/entities/chat-room/api/rooms.api.ts
+- [x] T050 [US3] 방 목록 조회 기능 구현 in apps/chat-fe-with-claude/src/features/rooms/room-list/
+- [x] T051 [US3] 방 목록 위젯 구현 in apps/chat-fe-with-claude/src/widgets/room-list/
+- [x] T052 [US3] 로비 페이지 방 목록 통합 in apps/chat-fe-with-claude/src/pages/lobby/
 
 ### FE US3 검증
-- [ ] T053 [US3] Frontend 검증 실행 (typecheck, lint, test, build) in apps/chat-fe-with-claude/
+- [x] T053 [US3] Frontend 검증 실행 (typecheck, lint, test, build) in apps/chat-fe-with-claude/
 
 **Checkpoint**: FE US3 완료 - 방 목록 조회 및 실시간 업데이트
 
