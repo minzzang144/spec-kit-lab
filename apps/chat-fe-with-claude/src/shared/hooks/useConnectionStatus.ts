@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { useSocket } from '@/app/providers/socket-hooks'
 
 export interface ConnectionStatus {
@@ -70,7 +70,7 @@ const DEFAULT_OPTIONS: Required<Omit<ConnectionMonitorOptions, 'onConnect' | 'on
 
 export function useConnectionStatus(options: ConnectionMonitorOptions = {}): ConnectionStatus {
   const { socket, isConnected } = useSocket()
-  const opts = { ...DEFAULT_OPTIONS, ...options }
+  const opts = useMemo(() => ({ ...DEFAULT_OPTIONS, ...options }), [options])
 
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>({
     isConnected: false,
@@ -81,98 +81,115 @@ export function useConnectionStatus(options: ConnectionMonitorOptions = {}): Con
     error: null,
   })
 
-  const reconnectTimeoutRef = useRef<NodeJS.Timeout>()
-  const longDisconnectTimeoutRef = useRef<NodeJS.Timeout>()
+  const reconnectTimeoutRef = useRef<number | undefined>(undefined)
+  const longDisconnectTimeoutRef = useRef<number | undefined>(undefined)
   const disconnectStartTimeRef = useRef<number | null>(null)
 
   // Update connection state when socket connection changes
   useEffect(() => {
-    if (isConnected) {
-      const wasReconnecting = connectionStatus.isReconnecting
+    const handleConnectionChange = () => {
+      if (isConnected) {
+        const wasReconnecting = connectionStatus.isReconnecting
 
-      setConnectionStatus(prev => ({
-        ...prev,
-        isConnected: true,
-        isReconnecting: false,
-        connectionState: 'connected',
-        reconnectAttempts: 0,
-        error: null,
-      }))
+        // Clear disconnect timers
+        if (reconnectTimeoutRef.current) {
+          clearTimeout(reconnectTimeoutRef.current)
+          reconnectTimeoutRef.current = undefined
+        }
+        if (longDisconnectTimeoutRef.current) {
+          clearTimeout(longDisconnectTimeoutRef.current)
+          longDisconnectTimeoutRef.current = undefined
+        }
 
-      // Clear disconnect timers
-      if (reconnectTimeoutRef.current) {
-        clearTimeout(reconnectTimeoutRef.current)
-        reconnectTimeoutRef.current = undefined
+        setTimeout(() => {
+          setConnectionStatus(prev => ({
+            ...prev,
+            isConnected: true,
+            isReconnecting: false,
+            connectionState: 'connected',
+            reconnectAttempts: 0,
+            error: null,
+          }))
+
+          // Call appropriate callback
+          if (wasReconnecting) {
+            options.onReconnect?.()
+          } else {
+            options.onConnect?.()
+          }
+        }, 0)
+
+        disconnectStartTimeRef.current = null
       }
-      if (longDisconnectTimeoutRef.current) {
-        clearTimeout(longDisconnectTimeoutRef.current)
-        longDisconnectTimeoutRef.current = undefined
-      }
+    }
 
-      // Call appropriate callback
-      if (wasReconnecting) {
-        options.onReconnect?.()
-      } else {
-        options.onConnect?.()
-      }
+    handleConnectionChange()
+  }, [isConnected, connectionStatus.isReconnecting, options])
 
-      disconnectStartTimeRef.current = null
-    } else {
-      // Record disconnect time if not already recorded
-      if (!disconnectStartTimeRef.current) {
-        disconnectStartTimeRef.current = Date.now()
-      }
+  // Handle disconnection
+  useEffect(() => {
+    const handleDisconnection = () => {
+      if (!isConnected) {
+        // Record disconnect time if not already recorded
+        if (!disconnectStartTimeRef.current) {
+          disconnectStartTimeRef.current = Date.now()
+        }
 
-      setConnectionStatus(prev => ({
-        ...prev,
-        isConnected: false,
-        connectionState: prev.isReconnecting ? 'reconnecting' : 'disconnected',
-        lastDisconnectTime: disconnectStartTimeRef.current,
-      }))
+        setTimeout(() => {
+          setConnectionStatus(prev => ({
+            ...prev,
+            isConnected: false,
+            connectionState: prev.isReconnecting ? 'reconnecting' : 'disconnected',
+            lastDisconnectTime: disconnectStartTimeRef.current,
+          }))
 
-      options.onDisconnect?.()
+          options.onDisconnect?.()
+        }, 0)
 
-      // Set up long disconnect detection
-      if (!longDisconnectTimeoutRef.current) {
-        longDisconnectTimeoutRef.current = setTimeout(() => {
-          const duration = Date.now() - disconnectStartTimeRef.current!
-          console.warn(`🔌 Long disconnect detected: ${duration}ms`)
-          options.onLongDisconnect?.(duration)
-        }, opts.longDisconnectThreshold)
-      }
+        // Set up long disconnect detection
+        if (!longDisconnectTimeoutRef.current) {
+          longDisconnectTimeoutRef.current = setTimeout(() => {
+            const duration = Date.now() - disconnectStartTimeRef.current!
+            console.warn(`🔌 Long disconnect detected: ${duration}ms`)
+            options.onLongDisconnect?.(duration)
+          }, opts.longDisconnectThreshold)
+        }
 
-      // Set up auto-reconnection
-      if (opts.autoReconnect && connectionStatus.reconnectAttempts < opts.maxReconnectAttempts) {
-        if (!reconnectTimeoutRef.current) {
-          reconnectTimeoutRef.current = setTimeout(() => {
-            setConnectionStatus(prev => ({
-              ...prev,
-              isReconnecting: true,
-              connectionState: 'reconnecting',
-              reconnectAttempts: prev.reconnectAttempts + 1,
-            }))
+        // Set up auto-reconnection
+        if (opts.autoReconnect && connectionStatus.reconnectAttempts < opts.maxReconnectAttempts) {
+          if (!reconnectTimeoutRef.current) {
+            reconnectTimeoutRef.current = setTimeout(() => {
+              setConnectionStatus(prev => ({
+                ...prev,
+                isReconnecting: true,
+                connectionState: 'reconnecting',
+                reconnectAttempts: prev.reconnectAttempts + 1,
+              }))
 
-            console.log(`🔄 Attempting reconnection ${connectionStatus.reconnectAttempts + 1}/${opts.maxReconnectAttempts}`)
+              console.log(`🔄 Attempting reconnection ${connectionStatus.reconnectAttempts + 1}/${opts.maxReconnectAttempts}`)
 
-            // Trigger reconnection (socket.io will handle this automatically)
-            if (socket) {
-              socket.connect()
-            }
+              // Trigger reconnection (socket.io will handle this automatically)
+              if (socket) {
+                socket.connect()
+              }
 
-            reconnectTimeoutRef.current = undefined
-          }, opts.reconnectDelay)
+              reconnectTimeoutRef.current = undefined
+            }, opts.reconnectDelay)
+          }
         }
       }
     }
+
+    handleDisconnection()
   }, [isConnected, socket, opts, connectionStatus.isReconnecting, connectionStatus.reconnectAttempts, options])
 
   // Handle socket errors
   useEffect(() => {
     if (!socket) return
 
-    const handleError = (error: any) => {
+    const handleError = (error: Error | string | { message?: string }) => {
       console.error('🔌 Socket connection error:', error)
-      const errorMessage = typeof error === 'string' ? error : error?.message || 'Connection error'
+      const errorMessage = typeof error === 'string' ? error : (error as Error)?.message || 'Connection error'
 
       setConnectionStatus(prev => ({
         ...prev,
@@ -183,12 +200,12 @@ export function useConnectionStatus(options: ConnectionMonitorOptions = {}): Con
       options.onError?.(errorMessage)
     }
 
-    const handleConnectError = (error: any) => {
+    const handleConnectError = (error: Error | string | { message?: string }) => {
       console.error('🔌 Socket connect error:', error)
       handleError(error)
     }
 
-    const handleReconnectError = (error: any) => {
+    const handleReconnectError = (error: Error | string | { message?: string }) => {
       console.error('🔌 Socket reconnect error:', error)
       handleError(error)
     }
@@ -224,6 +241,8 @@ export function useConnectionStatus(options: ConnectionMonitorOptions = {}): Con
  * Follows the 30-second timeout rule from the specification
  */
 export function useChatRoomConnectionMonitor(roomId?: string) {
+  const [currentTime, setCurrentTime] = useState(() => Date.now())
+
   const connectionStatus = useConnectionStatus({
     longDisconnectThreshold: 30000, // 30 seconds as per spec
     maxReconnectAttempts: 3,
@@ -236,13 +255,26 @@ export function useChatRoomConnectionMonitor(roomId?: string) {
     },
   })
 
+  // Update current time periodically to calculate timeout duration
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(Date.now())
+    }, 1000) // Update every second
+
+    return () => clearInterval(interval)
+  }, [])
+
+  const isTimedOut = connectionStatus.lastDisconnectTime
+    ? (currentTime - connectionStatus.lastDisconnectTime) > 30000
+    : false
+
+  const timeoutDuration = connectionStatus.lastDisconnectTime
+    ? currentTime - connectionStatus.lastDisconnectTime
+    : 0
+
   return {
     ...connectionStatus,
-    isTimedOut: connectionStatus.lastDisconnectTime
-      ? (Date.now() - connectionStatus.lastDisconnectTime) > 30000
-      : false,
-    timeoutDuration: connectionStatus.lastDisconnectTime
-      ? Date.now() - connectionStatus.lastDisconnectTime
-      : 0,
+    isTimedOut,
+    timeoutDuration,
   }
 }

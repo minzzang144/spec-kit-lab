@@ -11,7 +11,7 @@ import { Users, Loader2, LogOut } from 'lucide-react'
 export function ChatRoomPage() {
   const { roomId } = useParams<{ roomId: string }>()
   const navigate = useNavigate()
-  const { isLoading, error, currentRoom, joinRoom, leaveRoom, clearError } = useJoinRoomFlow()
+  const { isLoading, error, currentRoom, joinRoom, clearError } = useJoinRoomFlow()
 
   useEffect(() => {
     // Check if user has a valid session
@@ -31,12 +31,7 @@ export function ChatRoomPage() {
     joinRoom(roomId)
   }, [roomId, navigate, joinRoom])
 
-  const handleLeaveRoom = useCallback(() => {
-    leaveRoom()
-    navigate(ROUTES.LOBBY)
-  }, [leaveRoom, navigate])
-
-  const handleRoomLeft = useCallback((roomData: any) => {
+  const handleRoomLeft = useCallback((roomData: { id: string; name: string }) => {
     console.log('✅ Room left successfully:', roomData.name)
     // Room left event - will auto-navigate via LeaveRoomFeature
   }, [])

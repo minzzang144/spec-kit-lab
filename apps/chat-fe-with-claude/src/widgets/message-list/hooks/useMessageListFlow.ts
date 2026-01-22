@@ -22,7 +22,6 @@ interface UseMessageListFlowProps {
 export function useMessageListFlow({
   roomId,
   initialMessages = [],
-  autoScroll: _autoScroll = true,
 }: UseMessageListFlowProps): MessageListFlow {
   const { socket, isConnected } = useSocket()
   const model = useMessageListModel()

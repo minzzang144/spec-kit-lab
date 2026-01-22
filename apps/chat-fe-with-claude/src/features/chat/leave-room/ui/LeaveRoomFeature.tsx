@@ -38,7 +38,7 @@ export interface LeaveRoomFeatureProps {
   /**
    * Callback called when room is successfully left
    */
-  onRoomLeft?: (roomData: any) => void
+  onRoomLeft?: (roomData: { id: string; name: string }) => void
 
   /**
    * Callback called when leave operation fails
