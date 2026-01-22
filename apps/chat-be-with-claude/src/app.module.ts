@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { SchemaModule } from './modules/type-schema/schema.module';
 import { UsersModule } from './modules/users/users.module';
 import { ChatModule } from './modules/chat/chat.module';
+import { RoomsModule } from './modules/rooms/rooms.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { ChatModule } from './modules/chat/chat.module';
     SchemaModule,
     UsersModule,
     ChatModule,
+    RoomsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
