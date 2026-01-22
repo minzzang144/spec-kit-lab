@@ -25,8 +25,8 @@
 
 **Purpose**: 워크스페이스 내 두 독립 애플리케이션 초기화
 
-- [ ] T001 워크스페이스 설정 확인 및 기본 구조 준비 in spec-kit-lab/package.json
-- [ ] T002 [P] NestJS 프로젝트 생성 in apps/apps/chat-be-with-claude/
+- [x] T001 워크스페이스 설정 확인 및 기본 구조 준비 in spec-kit-lab/package.json
+- [x] T002 [P] NestJS 프로젝트 생성 in apps/chat-be-with-claude/
 - [ ] T003 [P] React+Vite 프로젝트 생성 in apps/apps/chat-fe-with-claude/
 
 ---
@@ -38,18 +38,18 @@
 **⚠️ CRITICAL**: Backend 기초가 완료되어야 Frontend가 타입을 생성할 수 있음
 
 ### BE 의존성 및 설정 구성
-- [ ] T004 [P] Socket.IO 의존성 설치 in apps/chat-be-with-claude/package.json
-- [ ] T005 [P] NestJS Swagger 및 기본 의존성 설치 in apps/chat-be-with-claude/package.json
-- [ ] T006 [P] 환경 설정 및 CORS 구성 in apps/chat-be-with-claude/src/main.ts
+- [x] T004 [P] Socket.IO 의존성 설치 in apps/chat-be-with-claude/package.json
+- [x] T005 [P] NestJS Swagger 및 기본 의존성 설치 in apps/chat-be-with-claude/package.json
+- [x] T006 [P] 환경 설정 및 CORS 구성 in apps/chat-be-with-claude/src/main.ts
 
 ### BE 기본 구조
-- [ ] T007 [P] NestJS 모듈 구조 설정 in apps/chat-be-with-claude/src/app.module.ts
-- [ ] T008 [P] 전역 예외 필터 생성 in apps/chat-be-with-claude/src/common/filters/
-- [ ] T009 [P] Swagger OpenAPI 자동 생성 설정 in apps/chat-be-with-claude/src/main.ts
+- [x] T007 [P] NestJS 모듈 구조 설정 in apps/chat-be-with-claude/src/app.module.ts
+- [x] T008 [P] 전역 예외 필터 생성 in apps/chat-be-with-claude/src/common/filters/
+- [x] T009 [P] Swagger OpenAPI 자동 생성 설정 in apps/chat-be-with-claude/src/main.ts
 
 ### BE 데이터 저장소
-- [ ] T010 [P] 인메모리 데이터 저장소 클래스 생성 in apps/chat-be-with-claude/src/storage/memory-store.ts
-- [ ] T011 [P] 데이터 저장소 인터페이스 정의 in apps/chat-be-with-claude/src/storage/interfaces/
+- [x] T010 [P] 인메모리 데이터 저장소 클래스 생성 in apps/chat-be-with-claude/src/storage/memory-store.ts
+- [x] T011 [P] 데이터 저장소 인터페이스 정의 in apps/chat-be-with-claude/src/storage/interfaces/
 
 ### BE 타입 스키마 모듈 (Frontend 타입 생성용)
 - [ ] T012 [P] Socket.IO 타입 스키마 서비스 생성 in apps/chat-be-with-claude/src/modules/type-schema/schema.service.ts
