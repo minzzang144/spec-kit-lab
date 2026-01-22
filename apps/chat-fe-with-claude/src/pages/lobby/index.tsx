@@ -1,13 +1,16 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { MessageSquare, Users, LogOut } from 'lucide-react'
 import { SessionManager, type SessionData } from '@/shared/lib/session-manager'
 import { useSocket } from '@/app/providers/context'
+import { RoomListWidget } from '@/widgets/room-list'
+import { useCreateRoomMutation } from '@/entities/chat-room'
 
 export function LobbyPage() {
   const navigate = useNavigate()
   const [userSession, setUserSession] = useState<SessionData | null>(null)
   const { isConnected, connectionStatus, error: socketError } = useSocket()
+  const createRoomMutation = useCreateRoomMutation()
 
   useEffect(() => {
     // Check if user has a valid session
@@ -28,6 +31,29 @@ export function LobbyPage() {
     SessionManager.clear()
     navigate('/nickname-setup')
   }
+
+  const handleCreateRoom = useCallback(async () => {
+    if (!userSession?.userId) {
+      console.error('User session not available')
+      return
+    }
+
+    try {
+      const newRoom = await createRoomMutation.mutateAsync({
+        createdBy: userSession.userId,
+      })
+      navigate(`/chat/${newRoom.id}`)
+    } catch (error) {
+      console.error('Failed to create room:', error)
+    }
+  }, [userSession, createRoomMutation, navigate])
+
+  const handleRoomJoin = useCallback(
+    (roomId: string) => {
+      console.log('Joined room:', roomId)
+    },
+    []
+  )
 
   if (!userSession) {
     return (
@@ -112,49 +138,24 @@ export function LobbyPage() {
           </div>
         )}
 
-        {/* Room List Placeholder */}
-        <div className="max-w-4xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Create Room Card */}
-            <div className="card p-6">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <MessageSquare className="w-8 h-8 text-blue-600" />
-                </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">새 채팅방 만들기</h3>
-                <p className="text-gray-600 mb-4">새로운 채팅방을 만들고 친구들을 초대하세요</p>
-                <button
-                  className="btn btn-primary w-full"
-                  disabled={!isConnected}
-                >
-                  채팅방 만들기
-                </button>
-              </div>
-            </div>
-
-            {/* Room List Card */}
-            <div className="card p-6">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Users className="w-8 h-8 text-green-600" />
-                </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">활성 채팅방</h3>
-                <p className="text-gray-600 mb-4">현재 활성화된 채팅방 목록입니다</p>
-                <div className="text-gray-500 text-sm py-4">
-                  아직 활성 채팅방이 없습니다
-                </div>
-              </div>
-            </div>
-          </div>
+        {/* Room List Widget */}
+        <div className="max-w-6xl mx-auto">
+          <RoomListWidget
+            currentUserId={userSession?.userId || null}
+            currentUserNickname={userSession?.nickname || null}
+            onCreateRoom={handleCreateRoom}
+            onRoomJoin={handleRoomJoin}
+          />
 
           {/* User Guide */}
           <div className="mt-12 text-center">
             <div className="bg-blue-50 rounded-lg p-6 max-w-2xl mx-auto">
               <h4 className="font-bold text-blue-900 mb-2">💡 사용 방법</h4>
               <ul className="text-blue-800 text-sm space-y-1">
-                <li>• 새 채팅방을 만들거나 기존 채팅방에 참여할 수 있습니다</li>
-                <li>• 최대 5명까지 참여할 수 있습니다</li>
-                <li>• 실시간으로 메시지를 주고받을 수 있습니다</li>
+                <li>• 새 채팅방을 만들거나 기존 채팅방을 클릭하여 참여하세요</li>
+                <li>• 각 채팅방은 최대 5명까지 참여할 수 있습니다</li>
+                <li>• 방 목록은 실시간으로 업데이트됩니다</li>
+                <li>• 모든 참여자가 나가면 방은 자동으로 삭제됩니다</li>
               </ul>
             </div>
           </div>
