@@ -28,7 +28,9 @@ import { CreateUserDto } from '../users/dto';
   },
   namespace: '/', // 기본 네임스페이스 사용
 })
-export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+export class ChatGateway
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
   private readonly logger = new Logger(ChatGateway.name);
 
   @WebSocketServer()
@@ -85,7 +87,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         this.logger.debug(`Broadcasting user disconnect: ${user.nickname}`);
       }
     } catch (error) {
-      this.logger.error(`Error handling disconnect for ${client.id}:`, error.message);
+      this.logger.error(
+        `Error handling disconnect for ${client.id}:`,
+        error.message,
+      );
     }
   }
 
@@ -104,7 +109,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       // 이미 등록된 사용자인지 확인
       const existingUser = await this.usersService.findBySocketId(client.id);
       if (existingUser) {
-        this.logger.warn(`User already exists for socket ${client.id}: ${existingUser.nickname}`);
+        this.logger.warn(
+          `User already exists for socket ${client.id}: ${existingUser.nickname}`,
+        );
 
         client.emit('lobby-joined', {
           user: existingUser,
@@ -132,7 +139,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       });
 
       // TODO: 현재 방 목록도 전송 (추후 구현)
-
     } catch (error) {
       this.logger.error(`Error in join-lobby for ${client.id}:`, error.message);
 
@@ -177,7 +183,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         timestamp: new Date().toISOString(),
       });
     } catch (error) {
-      this.logger.error(`Error getting lobby users for ${client.id}:`, error.message);
+      this.logger.error(
+        `Error getting lobby users for ${client.id}:`,
+        error.message,
+      );
 
       client.emit('error', {
         event: 'get-lobby-users',

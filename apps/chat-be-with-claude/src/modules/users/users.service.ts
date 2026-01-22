@@ -1,11 +1,17 @@
-import { Injectable, Logger, BadRequestException, ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { MemoryStore, User as StorageUser } from '../../storage/memory-store';
 import { UserDto, CreateUserDto, UpdateUserDto } from './dto';
 import {
   generateUniqueNickname,
   validateNickname,
-  getNicknameGeneratorStats
+  getNicknameGeneratorStats,
 } from '../../common/utils';
 
 /**
@@ -26,7 +32,10 @@ export class UsersService {
    * @param socketId Socket.IO 연결 ID
    * @returns 생성된 사용자 정보
    */
-  async createUser(createUserDto: CreateUserDto, socketId: string): Promise<UserDto> {
+  async createUser(
+    createUserDto: CreateUserDto,
+    socketId: string,
+  ): Promise<UserDto> {
     this.logger.debug(`Creating user with socket ${socketId}`);
 
     let nickname = createUserDto.nickname;
@@ -55,7 +64,9 @@ export class UsersService {
     // 기존 소켓 연결이 있는지 확인
     const existingUser = this.memoryStore.getUserBySocket(socketId);
     if (existingUser) {
-      this.logger.warn(`Socket ${socketId} already has user ${existingUser.id}`);
+      this.logger.warn(
+        `Socket ${socketId} already has user ${existingUser.id}`,
+      );
       throw new ConflictException('이미 연결된 소켓입니다');
     }
 
@@ -101,7 +112,7 @@ export class UsersService {
    */
   async findAll(): Promise<UserDto[]> {
     const users = this.memoryStore.getAllUsers();
-    return users.map(user => this.mapToUserDto(user));
+    return users.map((user) => this.mapToUserDto(user));
   }
 
   /**
@@ -109,14 +120,17 @@ export class UsersService {
    */
   async findConnected(): Promise<UserDto[]> {
     const users = this.memoryStore.getAllUsers();
-    const connectedUsers = users.filter(user => user.socketId);
-    return connectedUsers.map(user => this.mapToUserDto(user));
+    const connectedUsers = users.filter((user) => user.socketId);
+    return connectedUsers.map((user) => this.mapToUserDto(user));
   }
 
   /**
    * 사용자 정보를 업데이트합니다.
    */
-  async updateUser(userId: string, updateUserDto: UpdateUserDto): Promise<UserDto> {
+  async updateUser(
+    userId: string,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserDto> {
     const existingUser = this.memoryStore.getUser(userId);
     if (!existingUser) {
       throw new NotFoundException(`사용자를 찾을 수 없습니다: ${userId}`);
@@ -133,14 +147,19 @@ export class UsersService {
       }
 
       // 중복 검사 (자기 자신 제외)
-      if (updateUserDto.nickname !== existingUser.nickname &&
-          this.isNicknameTaken(updateUserDto.nickname)) {
+      if (
+        updateUserDto.nickname !== existingUser.nickname &&
+        this.isNicknameTaken(updateUserDto.nickname)
+      ) {
         throw new ConflictException('이미 사용 중인 닉네임입니다');
       }
     }
 
     // 업데이트 실행
-    const updatedUser = this.memoryStore.updateUser(userId, updateUserDto as Partial<StorageUser>);
+    const updatedUser = this.memoryStore.updateUser(
+      userId,
+      updateUserDto as Partial<StorageUser>,
+    );
     if (!updatedUser) {
       throw new NotFoundException(`사용자 업데이트에 실패했습니다: ${userId}`);
     }
@@ -192,8 +211,8 @@ export class UsersService {
    */
   private isNicknameTaken(nickname: string): boolean {
     const users = this.memoryStore.getAllUsers();
-    return users.some(user =>
-      user.nickname.toLowerCase() === nickname.toLowerCase()
+    return users.some(
+      (user) => user.nickname.toLowerCase() === nickname.toLowerCase(),
     );
   }
 
@@ -202,7 +221,7 @@ export class UsersService {
    */
   private getAllNicknames(): string[] {
     const users = this.memoryStore.getAllUsers();
-    return users.map(user => user.nickname);
+    return users.map((user) => user.nickname);
   }
 
   /**

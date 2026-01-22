@@ -22,7 +22,7 @@ import { MemoryStore } from '../../storage/memory-store';
   ],
   exports: [
     UsersService, // 다른 모듈에서 사용할 수 있도록 내보냄
-    MemoryStore,  // 다른 모듈에서 저장소에 직접 접근할 수 있도록 내보냄
+    MemoryStore, // 다른 모듈에서 저장소에 직접 접근할 수 있도록 내보냄
   ],
 })
 export class UsersModule {}

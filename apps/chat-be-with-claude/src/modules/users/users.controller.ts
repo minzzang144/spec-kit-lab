@@ -42,7 +42,8 @@ export class UsersController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: '새 사용자 생성',
-    description: '새로운 사용자를 생성합니다. 닉네임을 지정하지 않으면 랜덤 생성됩니다.',
+    description:
+      '새로운 사용자를 생성합니다. 닉네임을 지정하지 않으면 랜덤 생성됩니다.',
   })
   @ApiBody({ type: CreateUserDto })
   @ApiResponse({
@@ -63,7 +64,9 @@ export class UsersController {
     @Query('socketId') socketId?: string,
   ): Promise<UserDto> {
     // HTTP API 사용 시 임시 Socket ID 생성
-    const tempSocketId = socketId || `http-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+    const tempSocketId =
+      socketId ||
+      `http-${Date.now()}-${Math.random().toString(36).substring(7)}`;
 
     return await this.usersService.createUser(createUserDto, tempSocketId);
   }
@@ -87,7 +90,9 @@ export class UsersController {
     description: '사용자 목록을 성공적으로 조회했습니다.',
     type: [UserDto],
   })
-  async findAll(@Query('connected') connectedOnly?: string): Promise<UserDto[]> {
+  async findAll(
+    @Query('connected') connectedOnly?: string,
+  ): Promise<UserDto[]> {
     const isConnectedFilter = connectedOnly === 'true';
 
     if (isConnectedFilter) {
@@ -220,7 +225,9 @@ export class UsersController {
 
     const user = await this.usersService.findBySocketId(socketId);
     if (!user) {
-      throw new BadRequestException(`Socket ID ${socketId}와 연결된 사용자를 찾을 수 없습니다`);
+      throw new BadRequestException(
+        `Socket ID ${socketId}와 연결된 사용자를 찾을 수 없습니다`,
+      );
     }
 
     return user;
