@@ -3,6 +3,7 @@ import { STORAGE_KEYS } from '@/shared/constants'
 export interface SessionData {
   userId: string
   nickname: string
+  socketId?: string
   createdAt: string
 }
 

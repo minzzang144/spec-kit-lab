@@ -1,5 +1,5 @@
 // Fallback API Types
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   data: T
   message?: string
   success: boolean
@@ -10,7 +10,8 @@ export interface CreateUserRequest {
 }
 
 export interface CreateRoomRequest {
-  // No additional fields needed for basic room creation
+  name?: string
+  maxParticipants?: number
 }
 
 export interface User {

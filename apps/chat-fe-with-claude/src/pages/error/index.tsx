@@ -3,7 +3,12 @@ import { AlertTriangle, Home } from 'lucide-react'
 import { ROUTES } from '@/shared/constants'
 
 export function ErrorPage() {
-  const error = useRouteError() as any
+  const error = useRouteError() as {
+    message?: string
+    data?: { message?: string }
+    status?: string | number
+    statusText?: string
+  }
   const navigate = useNavigate()
 
   const errorMessage = error?.message || error?.data?.message || '알 수 없는 오류가 발생했습니다.'

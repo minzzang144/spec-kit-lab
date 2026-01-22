@@ -1,5 +1,6 @@
+/* eslint-disable react-refresh/only-export-components */
 import type { ReactNode } from 'react'
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useEffect, useState } from 'react'
 import { io, Socket } from 'socket.io-client'
 import { SOCKET_URL } from '@/shared/constants'
 
@@ -14,7 +15,7 @@ interface SocketContextValue {
   disconnect: () => void
 }
 
-const SocketContext = createContext<SocketContextValue | null>(null)
+export const SocketContext = createContext<SocketContextValue | null>(null)
 
 interface SocketProviderProps {
   children: ReactNode
@@ -67,9 +68,13 @@ export function SocketProvider({ children }: SocketProviderProps) {
     })
 
     // Application-specific error handling
-    newSocket.on('error', (errorData: any) => {
+    newSocket.on('error', (errorData: unknown) => {
       console.error('🔥 Application error:', errorData)
-      setError(errorData.message)
+      if (typeof errorData === 'object' && errorData !== null && 'message' in errorData) {
+        setError((errorData as { message: string }).message)
+      } else {
+        setError('Application error occurred')
+      }
     })
 
     setSocket(newSocket)
@@ -109,14 +114,6 @@ export function SocketProvider({ children }: SocketProviderProps) {
       {children}
     </SocketContext.Provider>
   )
-}
-
-export function useSocket(): SocketContextValue {
-  const context = useContext(SocketContext)
-  if (!context) {
-    throw new Error('useSocket must be used within a SocketProvider')
-  }
-  return context
 }
 
 export default SocketProvider

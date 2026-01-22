@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import type { ReactNode } from 'react'
 import { QueryProvider } from './query-provider'
 import { SocketProvider } from './socket-provider'
@@ -16,6 +17,8 @@ export function Providers({ children }: ProvidersProps) {
   )
 }
 
-export { SocketProvider, useSocket } from './socket-provider'
+export { SocketProvider } from './socket-provider'
 export { QueryProvider } from './query-provider'
+export { useSocket } from './context'
+export { queryClient } from './query-client'
 export default Providers

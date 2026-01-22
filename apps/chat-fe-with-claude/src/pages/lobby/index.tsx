@@ -1,40 +1,165 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { SessionManager } from '@/shared/lib'
-import { ROUTES } from '@/shared/constants'
+import { MessageSquare, Users, LogOut } from 'lucide-react'
+import { SessionManager, type SessionData } from '@/shared/lib/session-manager'
+import { useSocket } from '@/app/providers/context'
 
 export function LobbyPage() {
   const navigate = useNavigate()
+  const [userSession, setUserSession] = useState<SessionData | null>(null)
+  const { isConnected, connectionStatus, error: socketError } = useSocket()
 
   useEffect(() => {
     // Check if user has a valid session
     const session = SessionManager.load()
-    if (!SessionManager.isValid(session)) {
-      navigate(ROUTES.NICKNAME_SETUP)
+    if (!session?.nickname) {
+      navigate('/nickname-setup')
       return
     }
 
-    console.log('User session:', session)
+    // Use setTimeout to avoid direct setState in effect
+    setTimeout(() => {
+      setUserSession(session)
+      console.log('User session:', session)
+    }, 0)
   }, [navigate])
+
+  const handleLogout = () => {
+    SessionManager.clear()
+    navigate('/nickname-setup')
+  }
+
+  if (!userSession) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">로딩 중...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            채팅 로비
-          </h1>
-          <p className="text-gray-600 mb-8">
-            채팅방을 만들거나 기존 채팅방에 참여하세요
-          </p>
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            {/* Logo & Title */}
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                <MessageSquare className="w-5 h-5 text-white" />
+              </div>
+              <h1 className="text-xl font-bold text-gray-900">채팅 로비</h1>
+            </div>
 
-          <div className="bg-white rounded-lg p-8 shadow-sm">
-            <p className="text-gray-500">
-              곧 채팅방 목록과 생성 기능이 여기에 표시됩니다...
-            </p>
+            {/* User Info & Actions */}
+            <div className="flex items-center space-x-4">
+              {/* Connection Status */}
+              <div className="flex items-center space-x-2 text-sm">
+                <div className={`w-2 h-2 rounded-full ${
+                  isConnected ? 'bg-green-500' : connectionStatus === 'connecting' ? 'bg-yellow-500' : 'bg-red-500'
+                }`}></div>
+                <span className="text-gray-600">
+                  {isConnected ? '연결됨' : connectionStatus === 'connecting' ? '연결 중...' : '연결 끊김'}
+                </span>
+              </div>
+
+              {/* User Nickname */}
+              <div className="flex items-center space-x-2 text-gray-700">
+                <Users className="w-4 h-4" />
+                <span className="font-medium">{userSession.nickname}</span>
+              </div>
+
+              {/* Logout Button */}
+              <button
+                onClick={handleLogout}
+                className="flex items-center space-x-1 text-gray-500 hover:text-red-600 transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="text-sm">로그아웃</span>
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-8">
+        {/* Welcome Message */}
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            안녕하세요, {userSession.nickname}님! 👋
+          </h2>
+          <p className="text-gray-600">
+            채팅방을 만들거나 기존 채팅방에 참여하세요
+          </p>
+        </div>
+
+        {/* Connection Error */}
+        {socketError && (
+          <div className="max-w-md mx-auto mb-6">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <div className="flex items-center">
+                <span className="text-red-500 mr-2">⚠️</span>
+                <div>
+                  <p className="text-red-800 font-medium">연결 오류</p>
+                  <p className="text-red-600 text-sm">{socketError}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Room List Placeholder */}
+        <div className="max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Create Room Card */}
+            <div className="card p-6">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <MessageSquare className="w-8 h-8 text-blue-600" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">새 채팅방 만들기</h3>
+                <p className="text-gray-600 mb-4">새로운 채팅방을 만들고 친구들을 초대하세요</p>
+                <button
+                  className="btn btn-primary w-full"
+                  disabled={!isConnected}
+                >
+                  채팅방 만들기
+                </button>
+              </div>
+            </div>
+
+            {/* Room List Card */}
+            <div className="card p-6">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Users className="w-8 h-8 text-green-600" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">활성 채팅방</h3>
+                <p className="text-gray-600 mb-4">현재 활성화된 채팅방 목록입니다</p>
+                <div className="text-gray-500 text-sm py-4">
+                  아직 활성 채팅방이 없습니다
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* User Guide */}
+          <div className="mt-12 text-center">
+            <div className="bg-blue-50 rounded-lg p-6 max-w-2xl mx-auto">
+              <h4 className="font-bold text-blue-900 mb-2">💡 사용 방법</h4>
+              <ul className="text-blue-800 text-sm space-y-1">
+                <li>• 새 채팅방을 만들거나 기존 채팅방에 참여할 수 있습니다</li>
+                <li>• 최대 5명까지 참여할 수 있습니다</li>
+                <li>• 실시간으로 메시지를 주고받을 수 있습니다</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
   )
 }

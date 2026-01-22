@@ -64,7 +64,7 @@ export function useNicknameSetup() {
           isCheckingAvailability: false,
         }))
       }
-    } catch (error) {
+    } catch {
       setState(prev => ({
         ...prev,
         isCheckingAvailability: false,
@@ -98,11 +98,11 @@ export function useNicknameSetup() {
 
       setState(prev => ({ ...prev, isCreatingUser: false }))
     },
-    onError: (error) => {
+    onError: () => {
       setState(prev => ({
         ...prev,
         isCreatingUser: false,
-        error: error instanceof Error ? error.message : '사용자 생성 중 오류가 발생했습니다.'
+        error: '사용자 생성 중 오류가 발생했습니다.'
       }))
     },
   })
