@@ -65,24 +65,24 @@
 **Purpose**: Frontend 핵심 인프라 구축 - Backend에서 타입 생성
 
 ### FE 의존성 및 설정 구성
-- [ ] T015 [P] Socket.IO Client 및 상태관리 의존성 설치 in apps/chat-fe-with-claude/package.json
-- [ ] T016 [P] TailwindCSS 및 UI 의존성 설치 in apps/chat-fe-with-claude/package.json
-- [ ] T017 [P] 타입 생성 도구 설치 및 스크립트 설정 in apps/chat-fe-with-claude/package.json
+- [x] T015 [P] Socket.IO Client 및 상태관리 의존성 설치 in apps/chat-fe-with-claude/package.json
+- [x] T016 [P] TailwindCSS 및 UI 의존성 설치 in apps/chat-fe-with-claude/package.json
+- [x] T017 [P] 타입 생성 도구 설치 및 스크립트 설정 in apps/chat-fe-with-claude/package.json
 
 ### FE 프로젝트 설정
-- [ ] T018 [P] Vite 프록시 설정 in apps/chat-fe-with-claude/vite.config.ts
-- [ ] T019 [P] TailwindCSS 설정 in apps/chat-fe-with-claude/tailwind.config.js
-- [ ] T020 [P] TypeScript 설정 in apps/chat-fe-with-claude/tsconfig.json
+- [x] T018 [P] Vite 프록시 설정 in apps/chat-fe-with-claude/vite.config.ts
+- [x] T019 [P] TailwindCSS 설정 in apps/chat-fe-with-claude/tailwind.config.js
+- [x] T020 [P] TypeScript 설정 in apps/chat-fe-with-claude/tsconfig.json
 
 ### FE FSD 아키텍처 구조
-- [ ] T021 [P] FSD 디렉터리 구조 생성 in apps/chat-fe-with-claude/src/
-- [ ] T022 [P] 앱 초기화 및 라우터 설정 in apps/chat-fe-with-claude/src/app/
-- [ ] T023 [P] 프로바이더 설정 (React Query, Socket) in apps/chat-fe-with-claude/src/app/providers.tsx
+- [x] T021 [P] FSD 디렉터리 구조 생성 in apps/chat-fe-with-claude/src/
+- [x] T022 [P] 앱 초기화 및 라우터 설정 in apps/chat-fe-with-claude/src/app/
+- [x] T023 [P] 프로바이더 설정 (React Query, Socket) in apps/chat-fe-with-claude/src/app/providers.tsx
 
 ### FE 타입 자동 생성 시스템
-- [ ] T024 [P] OpenAPI 타입 자동 생성 스크립트 생성 in apps/chat-fe-with-claude/scripts/generate-api-types.js
-- [ ] T025 [P] Socket.IO 타입 자동 생성 스크립트 생성 in apps/chat-fe-with-claude/scripts/generate-socket-types.js
-- [ ] T026 타입 자동 생성 실행 및 테스트 in apps/chat-fe-with-claude/src/generated/
+- [x] T024 [P] OpenAPI 타입 자동 생성 스크립트 생성 in apps/chat-fe-with-claude/scripts/generate-api-types.js
+- [x] T025 [P] Socket.IO 타입 자동 생성 스크립트 생성 in apps/chat-fe-with-claude/scripts/generate-socket-types.js
+- [x] T026 타입 자동 생성 실행 및 테스트 in apps/chat-fe-with-claude/src/generated/
 
 **Checkpoint**: Frontend 기초 인프라 완료 - 두 애플리케이션 병렬 개발 가능
 
