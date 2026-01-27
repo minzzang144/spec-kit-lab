@@ -1,9 +1,10 @@
 # 🚀 실시간 채팅 앱 - Frontend
 
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-18+-61DAFB.svg)](https://reactjs.org/)
-[![Vite](https://img.shields.io/badge/Vite-5+-646CFF.svg)](https://vitejs.dev/)
-[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3+-38B2AC.svg)](https://tailwindcss.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9+-blue.svg)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-19+-61DAFB.svg)](https://reactjs.org/)
+[![Vite](https://img.shields.io/badge/Vite-7+-646CFF.svg)](https://vitejs.dev/)
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4+-38B2AC.svg)](https://tailwindcss.com/)
+[![Bundle Size](https://img.shields.io/badge/Bundle%20Size-192kB-brightgreen.svg)](https://bundlephobia.com/)
 
 **최대 5명이 참여할 수 있는 실시간 채팅 애플리케이션의 프론트엔드**
 
@@ -24,8 +25,15 @@ Socket.IO를 활용한 실시간 통신으로 사용자들이 채팅방을 생�
 ### 🔧 **기술적 특징**
 - **실시간 통신**: Socket.IO 클라이언트로 실시간 메시지 송수신
 - **연결 상태 모니터링**: 30초 타임아웃 감지 및 자동 재연결
-- **에러 처리**: ErrorBoundary와 Toast 시스템으로 종합적 에러 관리
-- **로딩 상태**: 모든 비동기 작업에 대한 로딩 UI 제공
+- **종합적 에러 처리**:
+  - ErrorBoundary와 Toast 시스템으로 전역 에러 관리
+  - 네트워크 상태 모니터링 및 연결성 체크
+  - 자동 재시도 메커니즘과 사용자 친화적 오류 복구
+- **로딩 상태**: 모든 비동기 작업에 대한 세분화된 로딩 UI 제공
+- **성능 최적화**:
+  - 코드 분할로 초기 번들 크기 47% 감소 (359kB → 192kB)
+  - 벤더 라이브러리별 청크 분리로 캐싱 최적화
+  - 실시간 성능 모니터링 및 메모리 사용량 추적
 - **반응형 디자인**: 모바일/데스크톱 모든 화면 크기 지원
 
 ---
@@ -59,8 +67,9 @@ src/
 │   └── message/          # 메시지 엔티티
 ├── shared/                # 공용 코드
 │   ├── ui/               # 공용 UI 컴포넌트
-│   ├── hooks/            # 공용 훅
+│   ├── hooks/            # 공용 훅 (에러처리, 네트워크, 로딩상태)
 │   ├── lib/              # 유틸리티
+│   ├── utils/            # 성능 모니터링, 유틸 함수
 │   └── constants/        # 상수
 └── generated/             # 백엔드에서 자동 생성된 타입
     ├── api/              # REST API 클라이언트
@@ -109,6 +118,31 @@ pnpm test:ui                # 테스트 UI 실행
 
 ---
 
+## ⚡ 성능 최적화
+
+### **번들 최적화**
+- **메인 번들 크기**: 359kB → **192kB** (47% 감소)
+- **코드 분할**: 라이브러리별 청크 분리
+  ```
+  react-vendor.js     (88.6kB) - React 코어
+  query-vendor.js     (43.9kB) - TanStack Query
+  socket-vendor.js    (41.2kB) - Socket.IO
+  icon-vendor.js      (5.5kB)  - Lucide Icons
+  ui-vendor.js        (0.04kB) - Form & State
+  ```
+
+### **로딩 성능**
+- **초기 로딩**: 최적화된 청크 로딩으로 빠른 페이지 렌더링
+- **캐싱 전략**: 벤더 라이브러리별 분리로 업데이트시 효율적 캐싱
+- **트리 쉐이킹**: 사용하지 않는 코드 자동 제거
+
+### **런타임 모니터링**
+- **메모리 추적**: 실시간 메모리 사용량 모니터링
+- **성능 메트릭**: First Paint, FCP, DOM 로딩 시간 측정
+- **개발 도구**: 개발 환경에서 자동 성능 체크 (`window.performanceMonitor`)
+
+---
+
 ## 🔌 Backend 연동
 
 ### **Backend-First 타입 생성**
@@ -149,10 +183,10 @@ socket.on('forced-leave', (data) => { /* 강제 퇴장 (방 삭제 등) */ })
 ## 🛠️ 기술 스택
 
 ### **핵심 기술**
-- **React 18** - UI 라이브러리
-- **TypeScript** - 정적 타입 검사
-- **Vite** - 빌드 도구 및 개발 서버
-- **Socket.IO Client** - 실시간 통신
+- **React 19** - 최신 UI 라이브러리 (Concurrent Features)
+- **TypeScript 5.9** - 정적 타입 검사 (Strict Mode)
+- **Vite 7** - 빠른 빌드 도구 및 개발 서버
+- **Socket.IO Client 4.8** - 실시간 통신
 
 ### **상태 관리**
 - **TanStack Query** - 서버 상태 관리
@@ -203,44 +237,86 @@ src/features/chat/send-message/
 └── index.ts         # Public API
 ```
 
-### **에러 처리**
+### **종합적 에러 처리**
 ```typescript
+import { useErrorHandler, useNetworkStatus } from '@/shared/hooks'
 import { useToast } from '@/app/providers'
 
 function MyComponent() {
   const { error, success } = useToast()
+  const handleError = useErrorHandler()
+  const { isOnline, isSlowConnection } = useNetworkStatus()
 
-  const handleError = () => {
-    error('오류가 발생했습니다', '네트워크 문제')
+  const handleApiCall = async () => {
+    try {
+      await api.call()
+      success('작업이 완료되었습니다')
+    } catch (err) {
+      handleError(err, 'API 호출 중', () => handleApiCall())
+    }
   }
 
-  const handleSuccess = () => {
-    success('작업이 완료되었습니다')
+  // 네트워크 상태에 따른 UI 조건부 렌더링
+  if (!isOnline) {
+    return <NetworkErrorMessage />
   }
 }
 ```
 
-### **로딩 상태**
+### **고급 로딩 상태 관리**
 ```typescript
 import { LoadingButton, LoadingSpinner } from '@/shared/ui'
+import { useLoadingState } from '@/shared/hooks'
 
 function MyComponent() {
-  const [isLoading, setIsLoading] = useState(false)
+  const { isLoading, startLoading, stopLoading } = useLoadingState()
+
+  const handleSubmit = async () => {
+    startLoading('submitting') // 네임스페이스별 로딩
+    try {
+      await api.submit()
+    } finally {
+      stopLoading('submitting')
+    }
+  }
 
   return (
     <>
       <LoadingButton
-        loading={isLoading}
+        loading={isLoading('submitting')}
         onClick={handleSubmit}
         loadingText="처리 중..."
+        disabled={isLoading('any')} // 전역 로딩 체크
       >
         전송하기
       </LoadingButton>
 
-      {isLoading && <LoadingSpinner text="로딩 중..." />}
+      {isLoading() && <LoadingSpinner text="로딩 중..." />}
     </>
   )
 }
+```
+
+### **성능 모니터링**
+```typescript
+import { performanceMonitor } from '@/shared/utils'
+
+// 개발 환경에서 성능 메트릭 확인
+function DevComponent() {
+  useEffect(() => {
+    // 3초 후 자동 로깅
+    setTimeout(() => {
+      performanceMonitor.logMetrics()
+
+      // 메모리 사용량이 70% 초과시 경고
+      performanceMonitor.checkMemoryThreshold(70)
+    }, 3000)
+  }, [])
+}
+
+// 브라우저 콘솔에서 직접 확인 (개발 환경)
+// window.performanceMonitor.getMetrics()
+// window.performanceMonitor.logMetrics()
 ```
 
 ---
