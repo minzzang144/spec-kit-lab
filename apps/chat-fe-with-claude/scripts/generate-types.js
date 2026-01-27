@@ -60,7 +60,7 @@ async function generateApiTypes() {
 async function generateSocketTypes() {
   try {
     // Fetch Socket.IO schema from backend
-    const response = await fetch(`${BACKEND_URL}/api/socket-schema`)
+    const response = await fetch(`${BACKEND_URL}/api/schema/socket-types`)
 
     if (!response.ok) {
       throw new Error('Socket schema not available')

@@ -11,7 +11,7 @@ async function generateSocketTypes() {
   try {
     // Try to fetch Socket.IO schema from backend
     console.log('🔍 Fetching socket schema from backend...')
-    const response = await fetch(`${BACKEND_URL}/api/socket-schema`).catch(() => null)
+    const response = await fetch(`${BACKEND_URL}/api/schema/socket-types`).catch(() => null)
 
     if (!response || !response.ok) {
       throw new Error('Socket schema endpoint not available at ' + BACKEND_URL)
@@ -36,10 +36,19 @@ async function generateSocketTypes() {
 }
 
 function generateSocketTypescript(schema) {
-  // If we have a schema from backend, we would parse it here
-  // For now, we'll create comprehensive types based on our planned events
+  // If we have a schema from backend, use the TypeScript code directly
+  if (schema && schema.typescript) {
+    return `// Generated Socket.IO Types from Backend
+// Auto-generated from backend schema: ${new Date().toISOString()}
+// Backend API: ${BACKEND_URL}/api/schema/socket-types
 
-  return `// Generated Socket.IO Types
+import type { Socket } from 'socket.io-client'
+
+${schema.typescript}`
+  }
+
+  // Fallback types if no schema is available
+  return `// Generated Socket.IO Types (Fallback)
 // Auto-generated from backend schema: ${new Date().toISOString()}
 
 import type { User, Room, Message } from './api'

@@ -26,15 +26,16 @@ async function generateApiTypes() {
       fs.mkdirSync(outputDir, { recursive: true })
     }
 
-    // Generate OpenAPI client
-    console.log('🔄 Generating OpenAPI client...')
-    execSync(`npx openapi-generator-cli generate \\
-      -i ${BACKEND_URL}/api-json \\
-      -g typescript-fetch \\
-      -o ${outputDir} \\
-      --additional-properties=typescriptThreePlus=true,supportsES6=true,npmName=chat-api,apiPackage=api,modelPackage=models`,
+    // Generate OpenAPI types using openapi-typescript
+    console.log('🔄 Generating OpenAPI types...')
+    execSync(`npx openapi-typescript ${BACKEND_URL}/api-json -o ${outputDir}/types.ts`,
       { stdio: 'inherit' }
     )
+
+    // Create a simple API client wrapper
+    console.log('🔄 Creating API client wrapper...')
+    const clientWrapper = createApiClientWrapper()
+    fs.writeFileSync(path.join(outputDir, 'client.ts'), clientWrapper)
 
     console.log('✅ API types generated successfully!')
   } catch (error) {
@@ -221,6 +222,110 @@ export interface Message {
   fs.writeFileSync(path.join(outputDir, 'models.ts'), modelsFile)
 
   console.log('✅ Fallback API types created')
+}
+
+function createApiClientWrapper() {
+  return `// Generated API Client Wrapper
+// Auto-generated from backend OpenAPI schema: ${new Date().toISOString()}
+// Backend API: ${BACKEND_URL}/api-json
+
+import type { paths } from './types'
+
+const BASE_URL = '${BACKEND_URL}'
+
+type ApiResponse<T> = {
+  data: T
+  success: boolean
+  message?: string
+}
+
+class ApiClient {
+  private baseUrl: string
+
+  constructor(baseUrl: string = BASE_URL) {
+    this.baseUrl = baseUrl
+  }
+
+  private async request<T>(
+    path: string,
+    options: RequestInit = {}
+  ): Promise<ApiResponse<T>> {
+    const url = \`\${this.baseUrl}\${path}\`
+
+    const response = await fetch(url, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+      ...options,
+    })
+
+    if (!response.ok) {
+      throw new Error(\`API request failed: \${response.status} \${response.statusText}\`)
+    }
+
+    const data = await response.json()
+    return data
+  }
+
+  // User endpoints
+  async createUser(data: { nickname?: string }, socketId: string) {
+    return this.request<any>(\`/users?socketId=\${socketId}\`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+  }
+
+  async getUsers(connected?: boolean) {
+    const query = connected ? '?connected=true' : ''
+    return this.request<any[]>(\`/users\${query}\`)
+  }
+
+  async getUserById(id: string) {
+    return this.request<any>(\`/users/\${id}\`)
+  }
+
+  // Room endpoints
+  async getRooms() {
+    return this.request<any[]>('/rooms')
+  }
+
+  async createRoom(creatorId: string, data: { creatorNickname?: string } = {}) {
+    return this.request<any>(\`/rooms?creatorId=\${creatorId}\`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+  }
+
+  async getRoomById(roomId: string, currentUserId?: string) {
+    const query = currentUserId ? \`?currentUserId=\${currentUserId}\` : ''
+    return this.request<any>(\`/rooms/\${roomId}\${query}\`)
+  }
+
+  async joinRoom(roomId: string, userId: string) {
+    return this.request<any>(\`/rooms/\${roomId}/participants?userId=\${userId}\`, {
+      method: 'POST',
+    })
+  }
+
+  async leaveRoom(roomId: string, userId: string) {
+    return this.request<any>(\`/rooms/\${roomId}/participants/remove?userId=\${userId}\`, {
+      method: 'POST',
+    })
+  }
+
+  // Health check
+  async getHealth() {
+    return this.request<{ status: string; timestamp: string; uptime: number }>('/api/health')
+  }
+}
+
+export { ApiClient }
+export default new ApiClient()
+
+// Re-export types for convenience
+export type { paths } from './types'
+`
 }
 
 // Run if called directly
