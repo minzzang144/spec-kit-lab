@@ -27,4 +27,41 @@ export default defineConfig({
       '@': '/src',
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // React core
+          'react-vendor': ['react', 'react-dom'],
+          // Query and state management
+          'query-vendor': ['@tanstack/react-query'],
+          // Socket.io
+          'socket-vendor': ['socket.io-client'],
+          // Router
+          'router-vendor': ['react-router-dom'],
+          // Icons
+          'icon-vendor': ['lucide-react'],
+          // Forms and UI
+          'ui-vendor': ['react-hook-form', 'zustand'],
+        },
+      },
+    },
+    // Optimize bundle size
+    minify: 'esbuild',
+    sourcemap: false, // Disable sourcemaps in production
+    reportCompressedSize: false, // Skip gzip size reporting for faster builds
+    chunkSizeWarningLimit: 1000, // Increase warning threshold
+  },
+  // Performance optimizations
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      '@tanstack/react-query',
+      'socket.io-client',
+      'react-router-dom',
+      'react-hook-form',
+      'zustand',
+    ],
+  },
 })
