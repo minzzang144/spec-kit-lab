@@ -73,7 +73,11 @@ describe('ChatService', () => {
         content: 'Hello, world!',
       };
 
-      const message = service.createMessage(sendMessageDto, mockUser.id, mockUser.nickname);
+      const message = service.createMessage(
+        sendMessageDto,
+        mockUser.id,
+        mockUser.nickname,
+      );
 
       expect(message).toBeDefined();
       expect(message.roomId).toBe(mockRoom.id);
@@ -132,7 +136,11 @@ describe('ChatService', () => {
     it('should create a system message successfully', () => {
       const content = 'TestUser님이 방에 참여했습니다';
 
-      const message = service.createSystemMessage(mockRoom.id, content, 'user_joined');
+      const message = service.createSystemMessage(
+        mockRoom.id,
+        content,
+        'user_joined',
+      );
 
       expect(message).toBeDefined();
       expect(message.roomId).toBe(mockRoom.id);

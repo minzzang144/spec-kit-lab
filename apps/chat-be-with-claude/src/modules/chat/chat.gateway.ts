@@ -401,7 +401,9 @@ export class ChatGateway
       // 방 참여 (User Story 5용 메서드 사용)
       const joinResult = this.roomsService.joinRoom(data.roomId, user.id);
 
-      this.logger.log(`User ${user.nickname} joined room ${joinResult.roomName}`);
+      this.logger.log(
+        `User ${user.nickname} joined room ${joinResult.roomName}`,
+      );
 
       // 참여자에게 성공 응답
       client.emit('room-joined', {
@@ -428,7 +430,7 @@ export class ChatGateway
       this.broadcastSystemMessageToRoom(
         data.roomId,
         `${user.nickname}님이 방에 참여했습니다`,
-        'user_joined'
+        'user_joined',
       );
 
       // 모든 로비 사용자에게 방 목록 업데이트
@@ -504,7 +506,7 @@ export class ChatGateway
       this.broadcastSystemMessageToRoom(
         data.roomId,
         `${user.nickname}님이 방을 나갔습니다`,
-        'user_left'
+        'user_left',
       );
 
       // 방에서 사용자 제거
@@ -707,13 +709,15 @@ export class ChatGateway
         {
           roomId: data.roomId,
           content: data.content,
-          metadata: data.metadata
+          metadata: data.metadata,
         },
         user.id,
-        user.nickname
+        user.nickname,
       );
 
-      this.logger.log(`Message sent by ${user.nickname} in room ${room.name}: ${data.content.substring(0, 50)}...`);
+      this.logger.log(
+        `Message sent by ${user.nickname} in room ${room.name}: ${data.content.substring(0, 50)}...`,
+      );
 
       // 발신자에게 성공 응답
       client.emit('message-sent', {
@@ -725,7 +729,6 @@ export class ChatGateway
 
       // 방의 다른 참여자들에게 메시지 브로드캐스트
       this.broadcastMessageToRoom(data.roomId, message, room.name, client.id);
-
     } catch (error) {
       this.logger.error(
         `Error sending message from ${client.id}:`,
@@ -787,7 +790,7 @@ export class ChatGateway
       // 메시지 히스토리 조회
       const messages = this.chatService.getRecentMessages(
         data.roomId,
-        data.limit || 50
+        data.limit || 50,
       );
 
       // 방 정보 가져오기
@@ -808,8 +811,9 @@ export class ChatGateway
         timestamp: new Date().toISOString(),
       });
 
-      this.logger.debug(`Sent ${messages.length} messages to ${user.nickname} for room ${roomName}`);
-
+      this.logger.debug(
+        `Sent ${messages.length} messages to ${user.nickname} for room ${roomName}`,
+      );
     } catch (error) {
       this.logger.error(
         `Error getting message history for ${client.id}:`,
@@ -855,11 +859,11 @@ export class ChatGateway
       );
 
       this.logger.debug(
-        `Broadcasted message to room ${roomName}: ${message.content.substring(0, 50)}...`
+        `Broadcasted message to room ${roomName}: ${message.content.substring(0, 50)}...`,
       );
     } catch (error) {
       this.logger.error(
-        `Error broadcasting message to room ${roomId}: ${error instanceof Error ? error.message : String(error)}`
+        `Error broadcasting message to room ${roomId}: ${error instanceof Error ? error.message : String(error)}`,
       );
     }
   }
@@ -870,11 +874,20 @@ export class ChatGateway
   broadcastSystemMessageToRoom(
     roomId: string,
     content: string,
-    systemMessageType: 'user_joined' | 'user_left' | 'room_created' | 'room_deleted' | 'other' = 'other',
+    systemMessageType:
+      | 'user_joined'
+      | 'user_left'
+      | 'room_created'
+      | 'room_deleted'
+      | 'other' = 'other',
   ) {
     try {
       // 시스템 메시지 생성
-      const systemMessage = this.chatService.createSystemMessage(roomId, content, systemMessageType);
+      const systemMessage = this.chatService.createSystemMessage(
+        roomId,
+        content,
+        systemMessageType,
+      );
 
       // 방 정보 가져오기
       let roomName = '채팅방';
@@ -888,10 +901,12 @@ export class ChatGateway
       // 모든 참여자에게 시스템 메시지 브로드캐스트
       this.broadcastMessageToRoom(roomId, systemMessage, roomName);
 
-      this.logger.debug(`Broadcasted system message to room ${roomName}: ${content}`);
+      this.logger.debug(
+        `Broadcasted system message to room ${roomName}: ${content}`,
+      );
     } catch (error) {
       this.logger.error(
-        `Error broadcasting system message to room ${roomId}: ${error instanceof Error ? error.message : String(error)}`
+        `Error broadcasting system message to room ${roomId}: ${error instanceof Error ? error.message : String(error)}`,
       );
     }
   }

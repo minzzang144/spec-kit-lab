@@ -7,7 +7,7 @@ import {
   CreateMessageInput,
   MessageQueryOptions,
   MessagesResult,
-  MessageStats
+  MessageStats,
 } from '../modules/chat/interfaces/message.interface';
 
 export interface User {
@@ -232,15 +232,17 @@ export class MemoryStore implements IStorage {
 
     // Filter by date range
     if (options.fromDate) {
-      messages = messages.filter(msg => msg.createdAt >= options.fromDate!);
+      messages = messages.filter((msg) => msg.createdAt >= options.fromDate!);
     }
     if (options.toDate) {
-      messages = messages.filter(msg => msg.createdAt <= options.toDate!);
+      messages = messages.filter((msg) => msg.createdAt <= options.toDate!);
     }
 
     // Filter by message types
     if (options.messageTypes && options.messageTypes.length > 0) {
-      messages = messages.filter(msg => options.messageTypes!.includes(msg.type));
+      messages = messages.filter((msg) =>
+        options.messageTypes!.includes(msg.type),
+      );
     }
 
     // Sort by creation time (newest first for typical chat display)
@@ -270,12 +272,20 @@ export class MemoryStore implements IStorage {
     }
 
     const messages = room.messages;
-    const userMessages = messages.filter(msg => msg.type === MessageType.USER).length;
-    const systemMessages = messages.filter(msg => msg.type === MessageType.SYSTEM).length;
+    const userMessages = messages.filter(
+      (msg) => msg.type === MessageType.USER,
+    ).length;
+    const systemMessages = messages.filter(
+      (msg) => msg.type === MessageType.SYSTEM,
+    ).length;
 
-    const timestamps = messages.map(msg => msg.createdAt.getTime()).sort();
-    const lastMessageAt = timestamps.length > 0 ? new Date(timestamps[timestamps.length - 1]) : null;
-    const firstMessageAt = timestamps.length > 0 ? new Date(timestamps[0]) : null;
+    const timestamps = messages.map((msg) => msg.createdAt.getTime()).sort();
+    const lastMessageAt =
+      timestamps.length > 0
+        ? new Date(timestamps[timestamps.length - 1])
+        : null;
+    const firstMessageAt =
+      timestamps.length > 0 ? new Date(timestamps[0]) : null;
 
     return {
       roomId,
@@ -298,7 +308,7 @@ export class MemoryStore implements IStorage {
     // Remove from room messages
     const room = this.getRoom(message.roomId);
     if (room) {
-      room.messages = room.messages.filter(msg => msg.id !== messageId);
+      room.messages = room.messages.filter((msg) => msg.id !== messageId);
       this.updateRoom(message.roomId, { messages: room.messages });
     }
 
@@ -317,7 +327,7 @@ export class MemoryStore implements IStorage {
     // Also update in room messages array
     const room = this.getRoom(message.roomId);
     if (room) {
-      const roomMessage = room.messages.find(msg => msg.id === messageId);
+      const roomMessage = room.messages.find((msg) => msg.id === messageId);
       if (roomMessage) {
         roomMessage.status = status;
         roomMessage.updatedAt = new Date();
@@ -346,7 +356,9 @@ export class MemoryStore implements IStorage {
     }
 
     if (deletedCount > 0) {
-      this.logger.log(`Cleaned ${deletedCount} old messages older than ${olderThan.toISOString()}`);
+      this.logger.log(
+        `Cleaned ${deletedCount} old messages older than ${olderThan.toISOString()}`,
+      );
     }
 
     return deletedCount;

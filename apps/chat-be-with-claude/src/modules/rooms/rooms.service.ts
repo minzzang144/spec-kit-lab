@@ -233,7 +233,8 @@ export class RoomsService {
         joinedAt: new Date(),
         currentParticipants: updatedRoom.participants.length,
         maxParticipants: RoomsService.MAX_PARTICIPANTS,
-        isFull: updatedRoom.participants.length >= RoomsService.MAX_PARTICIPANTS,
+        isFull:
+          updatedRoom.participants.length >= RoomsService.MAX_PARTICIPANTS,
       };
     } catch (error) {
       this.logger.error(

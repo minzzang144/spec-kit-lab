@@ -9,7 +9,13 @@ import {
   HttpStatus,
   BadRequestException,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { ChatService } from './chat.service';
 import { UsersService } from '../users/users.service';
 import {
@@ -19,7 +25,7 @@ import {
   MessageResponseDto,
   MessagesResponseDto,
   MessageStatsResponseDto,
-  SendMessageResponseDto
+  SendMessageResponseDto,
 } from './dto';
 
 /**
@@ -55,10 +61,16 @@ export class ChatController {
   ): Promise<SendMessageResponseDto> {
     // 테스트를 위한 임시 사용자 정보 처리
     if (!userId || !userNickname) {
-      throw new BadRequestException('userId와 userNickname 쿼리 파라미터가 필요합니다 (테스트용)');
+      throw new BadRequestException(
+        'userId와 userNickname 쿼리 파라미터가 필요합니다 (테스트용)',
+      );
     }
 
-    const message = this.chatService.createMessage(sendMessageDto, userId, userNickname);
+    const message = this.chatService.createMessage(
+      sendMessageDto,
+      userId,
+      userNickname,
+    );
 
     return {
       message,
@@ -73,10 +85,28 @@ export class ChatController {
   @Get('rooms/:roomId/messages')
   @ApiOperation({ summary: '채팅방 메시지 목록 조회' })
   @ApiParam({ name: 'roomId', description: '채팅방 ID' })
-  @ApiQuery({ name: 'limit', required: false, description: '조회할 메시지 수 (최대 100)', example: 50 })
-  @ApiQuery({ name: 'offset', required: false, description: '건너뛸 메시지 수', example: 0 })
-  @ApiQuery({ name: 'fromDate', required: false, description: '조회 시작 일시 (ISO 8601)' })
-  @ApiQuery({ name: 'toDate', required: false, description: '조회 종료 일시 (ISO 8601)' })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: '조회할 메시지 수 (최대 100)',
+    example: 50,
+  })
+  @ApiQuery({
+    name: 'offset',
+    required: false,
+    description: '건너뛸 메시지 수',
+    example: 0,
+  })
+  @ApiQuery({
+    name: 'fromDate',
+    required: false,
+    description: '조회 시작 일시 (ISO 8601)',
+  })
+  @ApiQuery({
+    name: 'toDate',
+    required: false,
+    description: '조회 종료 일시 (ISO 8601)',
+  })
   @ApiResponse({
     status: 200,
     description: '메시지 목록 조회 성공',
@@ -108,7 +138,9 @@ export class ChatController {
     type: MessageResponseDto,
   })
   @ApiResponse({ status: 404, description: '메시지를 찾을 수 없음' })
-  async getMessage(@Param('messageId') messageId: string): Promise<MessageResponseDto> {
+  async getMessage(
+    @Param('messageId') messageId: string,
+  ): Promise<MessageResponseDto> {
     const message = this.chatService.getMessage(messageId);
     return message as MessageResponseDto;
   }
@@ -119,8 +151,16 @@ export class ChatController {
   @Get('rooms/:roomId/messages/stats')
   @ApiOperation({ summary: '채팅방 메시지 통계 조회' })
   @ApiParam({ name: 'roomId', description: '채팅방 ID' })
-  @ApiQuery({ name: 'fromDate', required: false, description: '통계 조회 시작 일시 (ISO 8601)' })
-  @ApiQuery({ name: 'toDate', required: false, description: '통계 조회 종료 일시 (ISO 8601)' })
+  @ApiQuery({
+    name: 'fromDate',
+    required: false,
+    description: '통계 조회 시작 일시 (ISO 8601)',
+  })
+  @ApiQuery({
+    name: 'toDate',
+    required: false,
+    description: '통계 조회 종료 일시 (ISO 8601)',
+  })
   @ApiResponse({
     status: 200,
     description: '메시지 통계 조회 성공',
@@ -146,7 +186,12 @@ export class ChatController {
   @Get('rooms/:roomId/recent-messages')
   @ApiOperation({ summary: '채팅방 최근 메시지 조회' })
   @ApiParam({ name: 'roomId', description: '채팅방 ID' })
-  @ApiQuery({ name: 'limit', required: false, description: '조회할 메시지 수', example: 50 })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: '조회할 메시지 수',
+    example: 50,
+  })
   @ApiResponse({
     status: 200,
     description: '최근 메시지 목록',

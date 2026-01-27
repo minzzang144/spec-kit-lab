@@ -12,7 +12,7 @@ export enum MessageType {
   /** 시스템 메시지 (사용자 입장/퇴장 등) */
   SYSTEM = 'system',
   /** 공지 메시지 */
-  ANNOUNCEMENT = 'announcement'
+  ANNOUNCEMENT = 'announcement',
 }
 
 /**
@@ -24,7 +24,7 @@ export enum MessageStatus {
   /** 전달됨 */
   DELIVERED = 'delivered',
   /** 읽음 */
-  READ = 'read'
+  READ = 'read',
 }
 
 /**
@@ -65,7 +65,10 @@ export interface Message {
 /**
  * 사용자 메시지 인터페이스 (일반 채팅 메시지)
  */
-export interface UserMessage extends Omit<Message, 'senderId' | 'senderNickname' | 'type'> {
+export interface UserMessage extends Omit<
+  Message,
+  'senderId' | 'senderNickname' | 'type'
+> {
   senderId: string;
   senderNickname: string;
   type: MessageType.USER;
@@ -74,12 +77,20 @@ export interface UserMessage extends Omit<Message, 'senderId' | 'senderNickname'
 /**
  * 시스템 메시지 인터페이스 (입장/퇴장 알림 등)
  */
-export interface SystemMessage extends Omit<Message, 'senderId' | 'senderNickname' | 'type'> {
+export interface SystemMessage extends Omit<
+  Message,
+  'senderId' | 'senderNickname' | 'type'
+> {
   senderId: null;
   senderNickname: null;
   type: MessageType.SYSTEM;
   /** 시스템 메시지 세부 타입 */
-  systemMessageType: 'user_joined' | 'user_left' | 'room_created' | 'room_deleted' | 'other';
+  systemMessageType:
+    | 'user_joined'
+    | 'user_left'
+    | 'room_created'
+    | 'room_deleted'
+    | 'other';
 }
 
 /**
@@ -92,7 +103,12 @@ export interface CreateMessageInput {
   content: string;
   type: MessageType;
   metadata?: Record<string, any>;
-  systemMessageType?: 'user_joined' | 'user_left' | 'room_created' | 'room_deleted' | 'other';
+  systemMessageType?:
+    | 'user_joined'
+    | 'user_left'
+    | 'room_created'
+    | 'room_deleted'
+    | 'other';
 }
 
 /**

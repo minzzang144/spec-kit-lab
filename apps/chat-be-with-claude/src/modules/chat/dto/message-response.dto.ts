@@ -1,5 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Message, MessageType, MessageStatus, MessagesResult, MessageStats } from '../interfaces/message.interface';
+import {
+  Message,
+  MessageType,
+  MessageStatus,
+  MessagesResult,
+  MessageStats,
+} from '../interfaces/message.interface';
 
 /**
  * 메시지 응답 DTO

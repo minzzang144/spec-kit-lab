@@ -23,10 +23,7 @@ import { MemoryStore } from '../../storage/memory-store';
     // 현재는 MemoryStore를 직접 의존성으로 사용
   ],
   controllers: [RoomsController],
-  providers: [
-    RoomsService,
-    MemoryStore,
-  ],
+  providers: [RoomsService, MemoryStore],
   exports: [
     RoomsService,
     // 다른 모듈에서 RoomsService를 사용할 수 있도록 내보냄

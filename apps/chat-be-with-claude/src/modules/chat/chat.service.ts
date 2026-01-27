@@ -1,4 +1,9 @@
-import { Injectable, Logger, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { MemoryStore } from '../../storage/memory-store';
 import { RoomsService } from '../rooms/rooms.service';
 import { UsersService } from '../users/users.service';
@@ -9,7 +14,7 @@ import {
   CreateMessageInput,
   MessageQueryOptions,
   MessagesResult,
-  MessageStats
+  MessageStats,
 } from './interfaces/message.interface';
 import { SendMessageDto } from './dto/send-message.dto';
 import { GetMessagesDto, GetMessageStatsDto } from './dto/get-messages.dto';
@@ -47,7 +52,7 @@ export class ChatService {
     return {
       roomId: room.id,
       roomName: room.name,
-      participants: room.participants.map(p => ({
+      participants: room.participants.map((p) => ({
         id: p.id,
         nickname: p.nickname,
         connectedAt: p.connectedAt,
@@ -74,9 +79,11 @@ export class ChatService {
       throw new NotFoundException(`방을 찾을 수 없습니다. (ID: ${roomId})`);
     }
 
-    const participant = room.participants.find(p => p.id === userId);
+    const participant = room.participants.find((p) => p.id === userId);
     if (!participant) {
-      throw new NotFoundException(`방에서 해당 사용자를 찾을 수 없습니다. (사용자 ID: ${userId})`);
+      throw new NotFoundException(
+        `방에서 해당 사용자를 찾을 수 없습니다. (사용자 ID: ${userId})`,
+      );
     }
 
     return {
@@ -106,9 +113,12 @@ export class ChatService {
         return false;
       }
 
-      return room.participants.some(p => p.id === userId);
+      return room.participants.some((p) => p.id === userId);
     } catch (error) {
-      this.logger.warn(`Error checking if user ${userId} is in room ${roomId}:`, error);
+      this.logger.warn(
+        `Error checking if user ${userId} is in room ${roomId}:`,
+        error,
+      );
       return false;
     }
   }
@@ -118,7 +128,10 @@ export class ChatService {
    * @param roomId 방 ID
    * @param excludeSocketId 제외할 Socket ID (선택적)
    */
-  getRoomConnectedSocketIds(roomId: string, excludeSocketId?: string): string[] {
+  getRoomConnectedSocketIds(
+    roomId: string,
+    excludeSocketId?: string,
+  ): string[] {
     try {
       const room = this.memoryStore.getRoom(roomId);
       if (!room) {
@@ -126,10 +139,13 @@ export class ChatService {
       }
 
       return room.participants
-        .filter(p => p.socketId && p.socketId !== excludeSocketId)
-        .map(p => p.socketId as string);
+        .filter((p) => p.socketId && p.socketId !== excludeSocketId)
+        .map((p) => p.socketId as string);
     } catch (error) {
-      this.logger.error(`Error getting connected socket IDs for room ${roomId}:`, error);
+      this.logger.error(
+        `Error getting connected socket IDs for room ${roomId}:`,
+        error,
+      );
       return [];
     }
   }
@@ -145,8 +161,12 @@ export class ChatService {
         throw new NotFoundException(`방을 찾을 수 없습니다. (ID: ${roomId})`);
       }
 
-      const connectedParticipants = room.participants.filter(p => !!p.socketId);
-      const disconnectedParticipants = room.participants.filter(p => !p.socketId);
+      const connectedParticipants = room.participants.filter(
+        (p) => !!p.socketId,
+      );
+      const disconnectedParticipants = room.participants.filter(
+        (p) => !p.socketId,
+      );
 
       return {
         roomId: room.id,
@@ -156,12 +176,18 @@ export class ChatService {
         disconnectedParticipants: disconnectedParticipants.length,
         maxParticipants: 5, // RoomsService.MAX_PARTICIPANTS와 동기화
         isFull: room.participants.length >= 5,
-        connectionRate: room.participants.length > 0
-          ? Math.round((connectedParticipants.length / room.participants.length) * 100)
-          : 0,
+        connectionRate:
+          room.participants.length > 0
+            ? Math.round(
+                (connectedParticipants.length / room.participants.length) * 100,
+              )
+            : 0,
       };
     } catch (error) {
-      this.logger.error(`Error getting participant stats for room ${roomId}:`, error);
+      this.logger.error(
+        `Error getting participant stats for room ${roomId}:`,
+        error,
+      );
       throw error;
     }
   }
@@ -175,7 +201,9 @@ export class ChatService {
     try {
       const user = this.memoryStore.getUser(userId);
       if (!user) {
-        this.logger.warn(`Cannot update socket connection for non-existent user: ${userId}`);
+        this.logger.warn(
+          `Cannot update socket connection for non-existent user: ${userId}`,
+        );
         return;
       }
 
@@ -188,17 +216,20 @@ export class ChatService {
 
       // 참여 중인 방들에서도 Socket ID 업데이트
       const rooms = this.memoryStore.getAllRooms();
-      rooms.forEach(room => {
-        const participant = room.participants.find(p => p.id === userId);
+      rooms.forEach((room) => {
+        const participant = room.participants.find((p) => p.id === userId);
         if (participant) {
           participant.socketId = socketId || undefined;
           this.logger.debug(
-            `Updated socket ID for user ${user.nickname} in room ${room.name}: ${socketId || 'disconnected'}`
+            `Updated socket ID for user ${user.nickname} in room ${room.name}: ${socketId || 'disconnected'}`,
           );
         }
       });
     } catch (error) {
-      this.logger.error(`Error updating socket connection for user ${userId}:`, error);
+      this.logger.error(
+        `Error updating socket connection for user ${userId}:`,
+        error,
+      );
     }
   }
 
@@ -213,21 +244,32 @@ export class ChatService {
       const rooms = this.memoryStore.getAllRooms();
 
       for (const room of rooms) {
-        const isParticipant = room.participants.some(p => p.id === userId);
+        const isParticipant = room.participants.some((p) => p.id === userId);
         if (isParticipant) {
           try {
-            const success = this.roomsService.removeUserFromRoom(room.id, userId);
+            const success = this.roomsService.removeUserFromRoom(
+              room.id,
+              userId,
+            );
             if (success) {
               removedFromRooms.push(room.name);
-              this.logger.log(`Removed disconnected user ${userId} from room ${room.name}`);
+              this.logger.log(
+                `Removed disconnected user ${userId} from room ${room.name}`,
+              );
             }
           } catch (error) {
-            this.logger.error(`Failed to remove user ${userId} from room ${room.id}:`, error);
+            this.logger.error(
+              `Failed to remove user ${userId} from room ${room.id}:`,
+              error,
+            );
           }
         }
       }
     } catch (error) {
-      this.logger.error(`Error removing disconnected user ${userId} from rooms:`, error);
+      this.logger.error(
+        `Error removing disconnected user ${userId} from rooms:`,
+        error,
+      );
     }
 
     return removedFromRooms;
@@ -257,7 +299,11 @@ export class ChatService {
    * @param senderId 발신자 사용자 ID
    * @param senderNickname 발신자 닉네임
    */
-  createMessage(sendMessageDto: SendMessageDto, senderId: string, senderNickname: string): Message {
+  createMessage(
+    sendMessageDto: SendMessageDto,
+    senderId: string,
+    senderNickname: string,
+  ): Message {
     if (!sendMessageDto.roomId || !sendMessageDto.content.trim()) {
       throw new BadRequestException('방 ID와 메시지 내용이 필요합니다.');
     }
@@ -265,13 +311,17 @@ export class ChatService {
     // 방 존재 여부 확인
     const room = this.memoryStore.getRoom(sendMessageDto.roomId);
     if (!room) {
-      throw new NotFoundException(`방을 찾을 수 없습니다. (ID: ${sendMessageDto.roomId})`);
+      throw new NotFoundException(
+        `방을 찾을 수 없습니다. (ID: ${sendMessageDto.roomId})`,
+      );
     }
 
     // 사용자가 방에 참여 중인지 확인
     const isUserInRoom = this.isUserInRoom(sendMessageDto.roomId, senderId);
     if (!isUserInRoom) {
-      throw new BadRequestException('방에 참여한 후 메시지를 전송할 수 있습니다.');
+      throw new BadRequestException(
+        '방에 참여한 후 메시지를 전송할 수 있습니다.',
+      );
     }
 
     // 메시지 생성
@@ -285,7 +335,9 @@ export class ChatService {
     };
 
     const message = this.memoryStore.createMessage(messageInput);
-    this.logger.log(`Message created by ${senderNickname} in room ${room.name}: ${message.content.substring(0, 50)}...`);
+    this.logger.log(
+      `Message created by ${senderNickname} in room ${room.name}: ${message.content.substring(0, 50)}...`,
+    );
 
     return message;
   }
@@ -299,7 +351,12 @@ export class ChatService {
   createSystemMessage(
     roomId: string,
     content: string,
-    systemMessageType: 'user_joined' | 'user_left' | 'room_created' | 'room_deleted' | 'other' = 'other'
+    systemMessageType:
+      | 'user_joined'
+      | 'user_left'
+      | 'room_created'
+      | 'room_deleted'
+      | 'other' = 'other',
   ): Message {
     const room = this.memoryStore.getRoom(roomId);
     if (!room) {
@@ -316,7 +373,9 @@ export class ChatService {
     };
 
     const message = this.memoryStore.createMessage(messageInput);
-    this.logger.debug(`System message created in room ${room.name}: ${content}`);
+    this.logger.debug(
+      `System message created in room ${room.name}: ${content}`,
+    );
 
     return message;
   }
@@ -332,20 +391,28 @@ export class ChatService {
 
     const room = this.memoryStore.getRoom(getMessagesDto.roomId);
     if (!room) {
-      throw new NotFoundException(`방을 찾을 수 없습니다. (ID: ${getMessagesDto.roomId})`);
+      throw new NotFoundException(
+        `방을 찾을 수 없습니다. (ID: ${getMessagesDto.roomId})`,
+      );
     }
 
     const queryOptions: MessageQueryOptions = {
       roomId: getMessagesDto.roomId,
-      fromDate: getMessagesDto.fromDate ? new Date(getMessagesDto.fromDate) : undefined,
-      toDate: getMessagesDto.toDate ? new Date(getMessagesDto.toDate) : undefined,
+      fromDate: getMessagesDto.fromDate
+        ? new Date(getMessagesDto.fromDate)
+        : undefined,
+      toDate: getMessagesDto.toDate
+        ? new Date(getMessagesDto.toDate)
+        : undefined,
       limit: getMessagesDto.limit || 50,
       offset: getMessagesDto.offset || 0,
       messageTypes: getMessagesDto.messageTypes,
     };
 
     const result = this.memoryStore.queryMessages(queryOptions);
-    this.logger.debug(`Retrieved ${result.messages.length} messages from room ${room.name}`);
+    this.logger.debug(
+      `Retrieved ${result.messages.length} messages from room ${room.name}`,
+    );
 
     return result;
   }
@@ -361,7 +428,9 @@ export class ChatService {
 
     const message = this.memoryStore.getMessage(messageId);
     if (!message) {
-      throw new NotFoundException(`메시지를 찾을 수 없습니다. (ID: ${messageId})`);
+      throw new NotFoundException(
+        `메시지를 찾을 수 없습니다. (ID: ${messageId})`,
+      );
     }
 
     return message;
@@ -378,12 +447,16 @@ export class ChatService {
 
     const room = this.memoryStore.getRoom(getMessageStatsDto.roomId);
     if (!room) {
-      throw new NotFoundException(`방을 찾을 수 없습니다. (ID: ${getMessageStatsDto.roomId})`);
+      throw new NotFoundException(
+        `방을 찾을 수 없습니다. (ID: ${getMessageStatsDto.roomId})`,
+      );
     }
 
     const stats = this.memoryStore.getMessageStats(getMessageStatsDto.roomId);
     if (!stats) {
-      throw new NotFoundException(`방의 메시지 통계를 조회할 수 없습니다. (ID: ${getMessageStatsDto.roomId})`);
+      throw new NotFoundException(
+        `방의 메시지 통계를 조회할 수 없습니다. (ID: ${getMessageStatsDto.roomId})`,
+      );
     }
 
     return stats;
@@ -401,7 +474,9 @@ export class ChatService {
 
     const success = this.memoryStore.updateMessageStatus(messageId, status);
     if (!success) {
-      throw new NotFoundException(`메시지를 찾을 수 없습니다. (ID: ${messageId})`);
+      throw new NotFoundException(
+        `메시지를 찾을 수 없습니다. (ID: ${messageId})`,
+      );
     }
 
     this.logger.debug(`Message ${messageId} status updated to: ${status}`);
@@ -419,7 +494,9 @@ export class ChatService {
 
     const message = this.memoryStore.getMessage(messageId);
     if (!message) {
-      throw new NotFoundException(`메시지를 찾을 수 없습니다. (ID: ${messageId})`);
+      throw new NotFoundException(
+        `메시지를 찾을 수 없습니다. (ID: ${messageId})`,
+      );
     }
 
     const success = this.memoryStore.deleteMessage(messageId);
@@ -446,7 +523,9 @@ export class ChatService {
     }
 
     const messages = this.memoryStore.getRoomMessages(roomId, limit);
-    this.logger.debug(`Retrieved ${messages.length} recent messages from room ${room.name}`);
+    this.logger.debug(
+      `Retrieved ${messages.length} recent messages from room ${room.name}`,
+    );
 
     return messages;
   }
@@ -462,7 +541,9 @@ export class ChatService {
     const deletedCount = this.memoryStore.cleanOldMessages(olderThan);
 
     if (deletedCount > 0) {
-      this.logger.log(`Cleaned up ${deletedCount} messages older than ${olderThanDays} days`);
+      this.logger.log(
+        `Cleaned up ${deletedCount} messages older than ${olderThanDays} days`,
+      );
     }
 
     return deletedCount;
