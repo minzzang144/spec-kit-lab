@@ -317,12 +317,8 @@ export class RoomsService {
           `User ${user?.nickname || userId} left room ${room.name}`,
         );
 
-        // 방이 비어있으면 자동 삭제 (User Story 6 구현 예정이지만 기본 로직 추가)
-        const updatedRoom = this.memoryStore.getRoom(roomId);
-        if (updatedRoom && updatedRoom.participants.length === 0) {
-          this.memoryStore.deleteRoom(roomId);
-          this.logger.log(`Empty room deleted: ${room.name} (${roomId})`);
-        }
+        // 빈 방 자동 삭제 검사 (User Story 6)
+        this.checkAndDeleteEmptyRoom(roomId, room.name);
       }
       return success;
     } catch (error) {
@@ -331,6 +327,105 @@ export class RoomsService {
         error,
       );
       throw error;
+    }
+  }
+
+  /**
+   * 빈 방 자동 삭제 처리 (User Story 6)
+   * @param roomId 검사할 방 ID
+   * @param roomName 방 이름 (로깅용)
+   * @returns 방이 삭제되었으면 true, 아니면 false
+   */
+  private checkAndDeleteEmptyRoom(roomId: string, roomName: string): boolean {
+    try {
+      const updatedRoom = this.memoryStore.getRoom(roomId);
+
+      // 방이 이미 삭제되었거나 존재하지 않으면 true 반환
+      if (!updatedRoom) {
+        return true;
+      }
+
+      // 방이 비어있으면 자동 삭제
+      if (updatedRoom.participants.length === 0) {
+        const deleteSuccess = this.memoryStore.deleteRoom(roomId);
+
+        if (deleteSuccess) {
+          this.logger.log(`Empty room auto-deleted: ${roomName} (${roomId})`);
+          return true;
+        } else {
+          this.logger.warn(
+            `Failed to delete empty room: ${roomName} (${roomId})`,
+          );
+          return false;
+        }
+      }
+
+      return false; // 방이 비어있지 않음
+    } catch (error) {
+      this.logger.error(
+        `Error checking/deleting empty room ${roomId}:`,
+        error instanceof Error ? error.message : String(error),
+      );
+      return false;
+    }
+  }
+
+  /**
+   * 빈 방들을 일괄 삭제합니다 (User Story 6)
+   * @param notifyCallback 방 삭제 시 호출할 콜백 함수 (선택적)
+   * @returns 삭제된 방 정보 배열
+   */
+  deleteEmptyRooms(
+    notifyCallback?: (roomId: string, roomName: string) => void,
+  ): Array<{ roomId: string; roomName: string }> {
+    const deletedRooms: Array<{ roomId: string; roomName: string }> = [];
+
+    try {
+      const rooms = this.memoryStore.getAllRooms();
+      const emptyRooms = rooms.filter((room) => room.participants.length === 0);
+
+      this.logger.debug(`Found ${emptyRooms.length} empty rooms to delete`);
+
+      for (const room of emptyRooms) {
+        try {
+          const deleteSuccess = this.memoryStore.deleteRoom(room.id);
+
+          if (deleteSuccess) {
+            deletedRooms.push({ roomId: room.id, roomName: room.name });
+            this.logger.log(
+              `Batch deleted empty room: ${room.name} (${room.id})`,
+            );
+
+            // 콜백 함수가 있으면 호출 (Gateway에서 브로드캐스트용)
+            if (notifyCallback) {
+              notifyCallback(room.id, room.name);
+            }
+          } else {
+            this.logger.warn(
+              `Failed to delete empty room during batch: ${room.name} (${room.id})`,
+            );
+          }
+        } catch (error) {
+          this.logger.error(
+            `Error deleting empty room ${room.name} (${room.id}):`,
+            error instanceof Error ? error.message : String(error),
+          );
+        }
+      }
+
+      if (deletedRooms.length > 0) {
+        this.logger.log(
+          `Batch deletion completed: ${deletedRooms.length} empty rooms deleted`,
+        );
+      }
+
+      return deletedRooms;
+    } catch (error) {
+      this.logger.error(
+        'Error during batch empty room deletion:',
+        error instanceof Error ? error.message : String(error),
+      );
+      return deletedRooms;
     }
   }
 

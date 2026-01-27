@@ -73,7 +73,7 @@ export class ChatGateway
   }
 
   /**
-   * 클라이언트 연결 해제 처리
+   * 클라이언트 연결 해제 처리 (User Story 6)
    */
   handleDisconnect(@ConnectedSocket() client: Socket) {
     this.logger.debug(`Client disconnecting: ${client.id}`);
@@ -85,18 +85,155 @@ export class ChatGateway
       if (user) {
         this.logger.log(`User ${user.nickname} (${user.id}) disconnected`);
 
-        // Socket 연결 해제
+        // 사용자의 현재 참여 방 조회 (삭제 전에)
+        let currentRoom: any = null;
+        try {
+          currentRoom = this.roomsService.getUserCurrentRoom(user.id);
+        } catch (error) {
+          this.logger.warn(
+            `Could not get current room for user ${user.id}:`,
+            error,
+          );
+        }
+
+        // Socket 연결 해제 (사용자 상태 업데이트)
         this.usersService.disconnectUser(client.id);
 
-        // TODO: 방에서도 제거해야 함 (추후 구현)
-        // TODO: 로비 사용자들에게 알림 (추후 구현)
+        // 30초 후 연결 해제 감지 및 정리 스케줄링 (User Story 6)
+        setTimeout(() => {
+          this.handleConnectionTimeout(user.id, user.nickname);
+        }, 30000); // 30초 타임아웃
 
-        // 시스템 메시지 브로드캐스트 (현재는 로그만)
-        this.logger.debug(`Broadcasting user disconnect: ${user.nickname}`);
+        // 현재 참여 중인 방이 있다면 연결 해제 알림
+        if (currentRoom) {
+          // 방의 다른 참여자들에게 연결 해제 알림
+          this.notifyRoomParticipants(
+            currentRoom.id,
+            'user-connection-lost',
+            {
+              user: {
+                id: user.id,
+                nickname: user.nickname,
+              },
+              roomId: currentRoom.id,
+              roomName: currentRoom.name,
+              message: `${user.nickname}님의 연결이 끊어졌습니다 (30초 후 방에서 제거됩니다)`,
+              timeoutSeconds: 30,
+              timestamp: new Date().toISOString(),
+            },
+            client.id,
+          );
+
+          // 시스템 메시지 브로드캐스트
+          this.broadcastSystemMessageToRoom(
+            currentRoom.id,
+            `${user.nickname}님의 연결이 끊어졌습니다`,
+            'other',
+          );
+
+          this.logger.debug(
+            `Connection lost notification sent for user ${user.nickname} in room ${currentRoom.name}`,
+          );
+        }
+
+        // 로비 사용자들에게 연결 해제 알림
+        this.server.emit('user-connection-lost', {
+          user: {
+            id: user.id,
+            nickname: user.nickname,
+          },
+          message: `${user.nickname}님의 연결이 끊어졌습니다`,
+          timestamp: new Date().toISOString(),
+        });
       }
     } catch (error) {
       this.logger.error(
         `Error handling disconnect for ${client.id}:`,
+        error instanceof Error ? error.message : String(error),
+      );
+    }
+  }
+
+  /**
+   * 30초 연결 해제 타임아웃 후 정리 처리 (User Story 6)
+   * @private
+   */
+  private handleConnectionTimeout(userId: string, nickname: string): void {
+    try {
+      // 사용자가 다시 연결되었는지 확인
+      const user = this.usersService.findById(userId);
+      if (user?.socketId) {
+        this.logger.debug(
+          `User ${nickname} reconnected before timeout, skipping cleanup`,
+        );
+        return;
+      }
+
+      this.logger.log(
+        `Connection timeout reached for user ${nickname} (${userId}), starting cleanup`,
+      );
+
+      // 사용자가 참여 중인 방에서 제거 (ChatService 이용)
+      const removedFromRooms =
+        this.chatService.removeDisconnectedUserFromAllRooms(userId);
+
+      // 각 방에서 제거 알림 및 시스템 메시지
+      for (const roomName of removedFromRooms) {
+        try {
+          // 방이 여전히 존재하는지 확인하고 알림 전송
+          const rooms = this.roomsService.getAllRooms();
+          const room = rooms.rooms.find((r) => r.name === roomName);
+          if (room) {
+            // 방의 참여자들에게 사용자 제거 알림
+            this.notifyRoomParticipants(room.id, 'user-removed-timeout', {
+              user: {
+                id: userId,
+                nickname,
+              },
+              roomId: room.id,
+              roomName: room.name,
+              message: `${nickname}님이 연결 해제로 인해 방에서 제거되었습니다`,
+              timestamp: new Date().toISOString(),
+            });
+
+            // 시스템 메시지 브로드캐스트
+            this.broadcastSystemMessageToRoom(
+              room.id,
+              `${nickname}님이 연결 해제로 인해 방을 나갔습니다`,
+              'user_left',
+            );
+          }
+        } catch (error) {
+          this.logger.error(
+            `Error notifying room ${roomName} about user ${nickname} removal:`,
+            error,
+          );
+        }
+      }
+
+      // 사용자 완전 제거 (30초 후)
+      this.usersService.removeUser(userId);
+
+      // 로비 업데이트 브로드캐스트 (방 목록이 변경되었을 수 있음)
+      void this.broadcastLobbyUpdate();
+
+      // 로비 사용자들에게 사용자 제거 알림
+      this.server.emit('user-removed-timeout', {
+        user: {
+          id: userId,
+          nickname,
+        },
+        message: `${nickname}님이 연결 해제로 인해 제거되었습니다`,
+        removedFromRooms,
+        timestamp: new Date().toISOString(),
+      });
+
+      this.logger.log(
+        `User ${nickname} cleanup completed after connection timeout`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Error during connection timeout cleanup for user ${userId}:`,
         error instanceof Error ? error.message : String(error),
       );
     }

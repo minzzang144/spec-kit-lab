@@ -3,6 +3,7 @@ import {
   Logger,
   BadRequestException,
   NotFoundException,
+  OnModuleInit,
 } from '@nestjs/common';
 import { MemoryStore } from '../../storage/memory-store';
 import { RoomsService } from '../rooms/rooms.service';
@@ -26,7 +27,7 @@ import { GetMessagesDto, GetMessageStatsDto } from './dto/get-messages.dto';
  * User Story 5: 기존 채팅방 참여 기능의 참여자 관리를 구현합니다.
  */
 @Injectable()
-export class ChatService {
+export class ChatService implements OnModuleInit {
   private readonly logger = new Logger(ChatService.name);
 
   constructor(
@@ -34,6 +35,13 @@ export class ChatService {
     private readonly roomsService: RoomsService,
     private readonly usersService: UsersService,
   ) {}
+
+  /**
+   * 모듈 초기화 시 연결 타임아웃 모니터 시작
+   */
+  onModuleInit() {
+    this.startConnectionTimeoutMonitor();
+  }
 
   /**
    * 방 참여자 목록을 조회합니다.
@@ -273,6 +281,141 @@ export class ChatService {
     }
 
     return removedFromRooms;
+  }
+
+  /**
+   * 30초 연결 해제 감지 시스템 (User Story 6)
+   * 주기적으로 비활성 사용자들을 체크하고 정리합니다.
+   */
+  startConnectionTimeoutMonitor(): void {
+    const TIMEOUT_CHECK_INTERVAL = 10000; // 10초마다 체크
+    const CONNECTION_TIMEOUT = 30000; // 30초 타임아웃
+
+    setInterval(() => {
+      this.checkAndCleanupInactiveUsers(CONNECTION_TIMEOUT);
+    }, TIMEOUT_CHECK_INTERVAL);
+
+    this.logger.log(
+      `Connection timeout monitor started (${CONNECTION_TIMEOUT / 1000}s timeout)`,
+    );
+  }
+
+  /**
+   * 비활성 사용자들을 체크하고 정리합니다.
+   * @param timeoutMs 타임아웃 시간 (밀리초)
+   * @private
+   */
+  private checkAndCleanupInactiveUsers(timeoutMs: number): void {
+    try {
+      const now = new Date();
+      const stats = this.usersService.getStats();
+      const allUsers = this.usersService.findAll();
+
+      this.logger.debug(
+        `Checking ${allUsers.length} users for connection timeout...`,
+      );
+
+      const timedOutUsers: Array<{ id: string; nickname: string }> = [];
+
+      for (const user of allUsers) {
+        // 연결된 사용자는 건너뛰기
+        if (user.socketId) {
+          continue;
+        }
+
+        // 마지막 활동 시간 확인
+        const lastActivity = user.lastSeen || user.createdAt;
+        const timeSinceLastActivity = now.getTime() - lastActivity.getTime();
+
+        if (timeSinceLastActivity > timeoutMs) {
+          timedOutUsers.push({ id: user.id, nickname: user.nickname });
+        }
+      }
+
+      // 타임아웃된 사용자들 정리
+      for (const { id, nickname } of timedOutUsers) {
+        this.logger.log(
+          `User ${nickname} (${id}) timed out after ${timeoutMs / 1000}s, removing...`,
+        );
+
+        try {
+          // 모든 방에서 제거
+          const removedFromRooms = this.removeDisconnectedUserFromAllRooms(id);
+
+          // 사용자 완전 제거
+          this.usersService.removeUser(id);
+
+          this.logger.log(
+            `Cleaned up timed out user ${nickname}, removed from ${removedFromRooms.length} rooms`,
+          );
+        } catch (error) {
+          this.logger.error(
+            `Failed to cleanup timed out user ${nickname}:`,
+            error,
+          );
+        }
+      }
+
+      if (timedOutUsers.length > 0) {
+        this.logger.log(
+          `Connection timeout check completed: ${timedOutUsers.length} users cleaned up`,
+        );
+      } else {
+        this.logger.debug(
+          `Connection timeout check completed: no users timed out`,
+        );
+      }
+    } catch (error) {
+      this.logger.error('Error during connection timeout check:', error);
+    }
+  }
+
+  /**
+   * 연결 상태 통계를 조회합니다.
+   * @returns 연결 상태별 사용자 수
+   */
+  getConnectionStats(): {
+    totalUsers: number;
+    connectedUsers: number;
+    disconnectedUsers: number;
+    roomParticipants: number;
+    lobbyOnlyUsers: number;
+  } {
+    try {
+      const allUsers = this.usersService.findAll();
+      const connectedUsers = allUsers.filter((u) => !!u.socketId);
+      const disconnectedUsers = allUsers.filter((u) => !u.socketId);
+
+      // 방에 참여 중인 사용자 수 계산
+      const rooms = this.memoryStore.getAllRooms();
+      const allRoomParticipants = new Set<string>();
+
+      rooms.forEach((room) => {
+        room.participants.forEach((p) => {
+          allRoomParticipants.add(p.id);
+        });
+      });
+
+      const roomParticipants = allRoomParticipants.size;
+      const lobbyOnlyUsers = allUsers.length - roomParticipants;
+
+      return {
+        totalUsers: allUsers.length,
+        connectedUsers: connectedUsers.length,
+        disconnectedUsers: disconnectedUsers.length,
+        roomParticipants,
+        lobbyOnlyUsers,
+      };
+    } catch (error) {
+      this.logger.error('Error getting connection stats:', error);
+      return {
+        totalUsers: 0,
+        connectedUsers: 0,
+        disconnectedUsers: 0,
+        roomParticipants: 0,
+        lobbyOnlyUsers: 0,
+      };
+    }
   }
 
   /**
