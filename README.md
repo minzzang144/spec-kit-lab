@@ -52,12 +52,14 @@ pnpm turbo type-check
 ### Applications
 
 #### `@repo/sample-web` (Next.js 14)
+
 - **Location**: `apps/sample-web/`
 - **Tech Stack**: Next.js 14 + React 18 + TypeScript
 - **Scripts**: `dev`, `build`, `start`, `lint`, `type-check`
 - **Port**: `3000` (development)
 
 #### `@repo/sample-api` (Node.js)
+
 - **Location**: `apps/sample-api/`
 - **Tech Stack**: Express + TypeScript + tsup
 - **Scripts**: `dev`, `build`, `start`, `lint`, `type-check`
@@ -66,19 +68,24 @@ pnpm turbo type-check
 ### Shared Packages
 
 #### `@repo/typescript-config`
+
 Shared TypeScript configurations:
+
 - `base.json` - Base TypeScript config
 - `react.json` - React-specific config
 - `nextjs.json` - Next.js-specific config
 
 #### `@repo/eslint-config`
+
 Shared ESLint configurations:
+
 - `index.js` - Base ESLint config for TypeScript
 - `react.js` - React-specific ESLint rules
 
 ## 🎯 Key Features Demonstrated
 
 ### ✅ User Story 1: Multi-Project Management
+
 - [x] **Independent builds**: Each app builds separately
 - [x] **Shared configurations**: TypeScript & ESLint configs reused
 - [x] **Workspace linking**: Packages reference each other via `workspace:*`
@@ -87,6 +94,7 @@ Shared ESLint configurations:
 ## 🛠 Development Workflows
 
 ### Adding a New App
+
 ```bash
 # Create new app directory
 mkdir apps/my-new-app
@@ -104,6 +112,7 @@ pnpm add -D @repo/typescript-config @repo/eslint-config
 ```
 
 ### Adding a New Package
+
 ```bash
 # Create new package directory
 mkdir packages/my-shared-package
@@ -122,6 +131,7 @@ pnpm add @repo/my-shared-package --workspace-root
 ## 🚀 Build & Development
 
 ### Individual Project Commands
+
 ```bash
 # Build specific project
 pnpm turbo build --filter=@repo/sample-web
@@ -134,6 +144,7 @@ cd apps/sample-api && pnpm lint
 ```
 
 ### Workspace-wide Commands
+
 ```bash
 # Install all dependencies
 pnpm install
@@ -185,6 +196,7 @@ pnpm list --filter @repo/sample-web
 4. **Type Errors**: Ensure all `tsconfig.json` files extend shared configs
 
 ### Reset Workspace
+
 ```bash
 # Full reset
 rm -rf node_modules apps/*/node_modules packages/*/node_modules
