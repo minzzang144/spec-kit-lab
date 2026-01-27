@@ -1,4 +1,5 @@
-import { ReactNode } from 'react'
+/* eslint-disable react-refresh/only-export-components */
+import type { ReactNode } from 'react'
 import { MessageSquare, Users, Search, Inbox } from 'lucide-react'
 
 interface EmptyStateProps {
@@ -49,20 +50,13 @@ interface EmptyStateProps {
   className?: string
 }
 
-const getIconByType = (type: EmptyStateProps['iconType']) => {
-  switch (type) {
-    case 'messages':
-      return MessageSquare
-    case 'users':
-      return Users
-    case 'search':
-      return Search
-    case 'inbox':
-      return Inbox
-    default:
-      return MessageSquare
-  }
-}
+const iconComponents = {
+  messages: MessageSquare,
+  users: Users,
+  search: Search,
+  inbox: Inbox,
+  custom: MessageSquare,
+} as const
 
 const sizeStyles = {
   sm: {
@@ -99,7 +93,7 @@ export function EmptyState({
   className = '',
 }: EmptyStateProps) {
   const styles = sizeStyles[size]
-  const IconComponent = getIconByType(iconType)
+  const IconComponent = iconComponents[iconType]
 
   return (
     <div className={`flex flex-col items-center justify-center text-center ${styles.container} ${className}`}>

@@ -6,6 +6,7 @@ export { ToastProvider, useToast } from './Toast'
 export type { Toast, ToastType } from './Toast'
 export { LoadingButton } from './LoadingButton'
 export { EmptyState, EmptyStates } from './EmptyState'
+export { NetworkStatusIndicator } from './NetworkStatus'
 
 // Legacy exports (to be deprecated)
 export const UI_COMPONENTS = {

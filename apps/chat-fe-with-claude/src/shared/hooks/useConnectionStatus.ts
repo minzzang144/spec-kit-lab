@@ -81,8 +81,8 @@ export function useConnectionStatus(options: ConnectionMonitorOptions = {}): Con
     error: null,
   })
 
-  const reconnectTimeoutRef = useRef<number | undefined>(undefined)
-  const longDisconnectTimeoutRef = useRef<number | undefined>(undefined)
+  const reconnectTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined)
+  const longDisconnectTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined)
   const disconnectStartTimeRef = useRef<number | null>(null)
 
   // Update connection state when socket connection changes

@@ -1,4 +1,6 @@
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react'
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useContext, useState, useCallback } from 'react'
+import type { ReactNode } from 'react'
 import { CheckCircle, AlertCircle, XCircle, Info, X } from 'lucide-react'
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info'
@@ -30,6 +32,10 @@ const ToastContext = createContext<ToastContextType | null>(null)
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([])
 
+  const removeToast = useCallback((id: string) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id))
+  }, [])
+
   const addToast = useCallback((toast: Omit<Toast, 'id'>) => {
     const id = Math.random().toString(36).substr(2, 9)
     const newToast: Toast = {
@@ -41,16 +47,12 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     setToasts(prev => [...prev, newToast])
 
     // Auto-remove after duration
-    if (newToast.duration > 0) {
+    if (newToast.duration && newToast.duration > 0) {
       setTimeout(() => {
         removeToast(id)
       }, newToast.duration)
     }
-  }, [])
-
-  const removeToast = useCallback((id: string) => {
-    setToasts(prev => prev.filter(toast => toast.id !== id))
-  }, [])
+  }, [removeToast])
 
   const success = useCallback((message: string, title?: string) => {
     addToast({ type: 'success', message, title })
@@ -144,22 +146,16 @@ const toastStyles = {
   },
 }
 
-const getToastIcon = (type: ToastType) => {
-  switch (type) {
-    case 'success':
-      return CheckCircle
-    case 'error':
-      return XCircle
-    case 'warning':
-      return AlertCircle
-    case 'info':
-      return Info
-  }
-}
+const toastIcons = {
+  success: CheckCircle,
+  error: XCircle,
+  warning: AlertCircle,
+  info: Info,
+} as const
 
 function ToastItem({ toast, onClose }: ToastItemProps) {
   const style = toastStyles[toast.type]
-  const Icon = getToastIcon(toast.type)
+  const Icon = toastIcons[toast.type]
 
   return (
     <div

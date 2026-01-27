@@ -83,17 +83,11 @@ const sizeStyles = {
   },
 }
 
-const getIcon = (variant: ErrorMessageProps['variant']) => {
-  switch (variant) {
-    case 'warning':
-      return TriangleAlert
-    case 'danger':
-      return XCircle
-    case 'error':
-    default:
-      return AlertCircle
-  }
-}
+const variantIcons = {
+  error: AlertCircle,
+  warning: TriangleAlert,
+  danger: XCircle,
+} as const
 
 export function ErrorMessage({
   message,
@@ -108,7 +102,7 @@ export function ErrorMessage({
 }: ErrorMessageProps) {
   const variantStyle = variantStyles[variant]
   const sizeStyle = sizeStyles[size]
-  const Icon = getIcon(variant)
+  const Icon = variantIcons[variant]
 
   return (
     <div

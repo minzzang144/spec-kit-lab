@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-object-type */
+// @ts-nocheck
 // Fallback API Types - Generated when backend is not available
 
 export interface ApiResponse<T = any> {
