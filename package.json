@@ -1,0 +1,61 @@
+{
+  "name": "@repo/root",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SpecKit Lab - Monorepo for feature specification and development workflow",
+  "author": "SpecKit Lab Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=9.14.4"
+  },
+  "packageManager": "pnpm@9.14.4",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "type-check": "turbo type-check",
+    "test": "turbo test",
+    "clean": "turbo clean",
+    "format": "prettier --write \"**/*.{js,ts,tsx,md,json}\"",
+    "format:check": "prettier --check \"**/*.{js,ts,tsx,md,json}\"",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "turbo build --filter=!@repo/tsconfig && changeset publish",
+    "install-all": "pnpm install",
+    "update-all": "pnpm update --recursive",
+    "check-updates": "pnpm outdated --recursive",
+    "deps:install": "pnpm install",
+    "deps:update": "pnpm update --recursive",
+    "deps:check": "pnpm outdated --recursive",
+    "deps:audit": "pnpm audit",
+    "deps:clean": "pnpm store prune && rm -rf node_modules apps/*/node_modules packages/*/node_modules && pnpm install",
+    "deps:sync": "syncpack list-mismatches",
+    "deps:fix": "syncpack fix-mismatches",
+    "deps:format": "syncpack format"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.1",
+    "@types/node": "^20.0.0",
+    "eslint": "^8.0.0",
+    "prettier": "^3.1.0",
+    "syncpack": "^12.3.2",
+    "turbo": "^2.7.5",
+    "typescript": "^5.0.0"
+  },
+  "keywords": [
+    "monorepo",
+    "pnpm",
+    "turbo",
+    "typescript",
+    "speckit"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/speckit-lab/monorepo"
+  }
+}
