@@ -1,5 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
-import { MessageType, MessageStatus } from '../../modules/chat/interfaces/message.interface';
+import {
+  MessageType,
+  MessageStatus,
+} from '../../modules/chat/interfaces/message.interface';
 
 /**
  * 시스템 메시지 생성 유틸리티
@@ -21,12 +24,18 @@ export enum SystemMessageTemplate {
 /**
  * 시스템 메시지 템플릿별 내용
  */
-const SYSTEM_MESSAGE_TEMPLATES: Record<SystemMessageTemplate, (params: any) => string> = {
+const SYSTEM_MESSAGE_TEMPLATES: Record<
+  SystemMessageTemplate,
+  (params: any) => string
+> = {
   [SystemMessageTemplate.USER_JOINED]: (params: { nickname: string }) =>
     `${params.nickname}님이 채팅방에 참여했습니다.`,
   [SystemMessageTemplate.USER_LEFT]: (params: { nickname: string }) =>
     `${params.nickname}님이 채팅방을 나갔습니다.`,
-  [SystemMessageTemplate.ROOM_CREATED]: (params: { roomName: string; creatorNickname: string }) =>
+  [SystemMessageTemplate.ROOM_CREATED]: (params: {
+    roomName: string;
+    creatorNickname: string;
+  }) =>
     `채팅방 '${params.roomName}'이 ${params.creatorNickname}님에 의해 생성되었습니다.`,
   [SystemMessageTemplate.ROOM_CLOSED]: (params: { roomName: string }) =>
     `채팅방 '${params.roomName}'이 자동으로 삭제되었습니다. (모든 사용자 퇴장)`,
@@ -62,7 +71,7 @@ export class SystemMessageGenerator {
     roomId: string,
     template: SystemMessageTemplate,
     params: any,
-    metadata?: Record<string, any>
+    metadata?: Record<string, any>,
   ): SystemMessageData {
     const messageTemplate = SYSTEM_MESSAGE_TEMPLATES[template];
     if (!messageTemplate) {
@@ -85,72 +94,91 @@ export class SystemMessageGenerator {
   /**
    * 사용자 입장 메시지
    */
-  static createUserJoinedMessage(roomId: string, nickname: string): SystemMessageData {
+  static createUserJoinedMessage(
+    roomId: string,
+    nickname: string,
+  ): SystemMessageData {
     return this.createSystemMessage(
       roomId,
       SystemMessageTemplate.USER_JOINED,
       { nickname },
-      { eventType: 'user_joined', userNickname: nickname }
+      { eventType: 'user_joined', userNickname: nickname },
     );
   }
 
   /**
    * 사용자 퇴장 메시지
    */
-  static createUserLeftMessage(roomId: string, nickname: string): SystemMessageData {
+  static createUserLeftMessage(
+    roomId: string,
+    nickname: string,
+  ): SystemMessageData {
     return this.createSystemMessage(
       roomId,
       SystemMessageTemplate.USER_LEFT,
       { nickname },
-      { eventType: 'user_left', userNickname: nickname }
+      { eventType: 'user_left', userNickname: nickname },
     );
   }
 
   /**
    * 방 생성 메시지
    */
-  static createRoomCreatedMessage(roomId: string, roomName: string, creatorNickname: string): SystemMessageData {
+  static createRoomCreatedMessage(
+    roomId: string,
+    roomName: string,
+    creatorNickname: string,
+  ): SystemMessageData {
     return this.createSystemMessage(
       roomId,
       SystemMessageTemplate.ROOM_CREATED,
       { roomName, creatorNickname },
-      { eventType: 'room_created', roomName, creatorNickname }
+      { eventType: 'room_created', roomName, creatorNickname },
     );
   }
 
   /**
    * 방 삭제 메시지
    */
-  static createRoomClosedMessage(roomId: string, roomName: string): SystemMessageData {
+  static createRoomClosedMessage(
+    roomId: string,
+    roomName: string,
+  ): SystemMessageData {
     return this.createSystemMessage(
       roomId,
       SystemMessageTemplate.ROOM_CLOSED,
       { roomName },
-      { eventType: 'room_closed', roomName }
+      { eventType: 'room_closed', roomName },
     );
   }
 
   /**
    * 연결 끊어짐 메시지
    */
-  static createConnectionLostMessage(roomId: string, nickname: string): SystemMessageData {
+  static createConnectionLostMessage(
+    roomId: string,
+    nickname: string,
+  ): SystemMessageData {
     return this.createSystemMessage(
       roomId,
       SystemMessageTemplate.CONNECTION_LOST,
       { nickname },
-      { eventType: 'connection_lost', userNickname: nickname }
+      { eventType: 'connection_lost', userNickname: nickname },
     );
   }
 
   /**
    * 연결 복구 메시지
    */
-  static createConnectionRestoredMessage(roomId: string, nickname: string): SystemMessageData {
+  static createConnectionRestoredMessage(
+    roomId: string,
+    nickname: string,
+  ): SystemMessageData {
     return this.createSystemMessage(
       roomId,
       SystemMessageTemplate.CONNECTION_RESTORED,
       { nickname },
-      { eventType: 'connection_restored', userNickname: nickname }
+      { eventType: 'connection_restored', userNickname: nickname },
     );
   }
 
@@ -158,7 +186,9 @@ export class SystemMessageGenerator {
    * 유효한 시스템 메시지 템플릿인지 확인
    */
   static isValidTemplate(template: string): template is SystemMessageTemplate {
-    return Object.values(SystemMessageTemplate).includes(template as SystemMessageTemplate);
+    return Object.values(SystemMessageTemplate).includes(
+      template as SystemMessageTemplate,
+    );
   }
 
   /**
@@ -172,9 +202,38 @@ export class SystemMessageGenerator {
 /**
  * 편의를 위한 단축 함수들
  */
-export const createUserJoinedMessage = SystemMessageGenerator.createUserJoinedMessage.bind(SystemMessageGenerator);
-export const createUserLeftMessage = SystemMessageGenerator.createUserLeftMessage.bind(SystemMessageGenerator);
-export const createRoomCreatedMessage = SystemMessageGenerator.createRoomCreatedMessage.bind(SystemMessageGenerator);
-export const createRoomClosedMessage = SystemMessageGenerator.createRoomClosedMessage.bind(SystemMessageGenerator);
-export const createConnectionLostMessage = SystemMessageGenerator.createConnectionLostMessage.bind(SystemMessageGenerator);
-export const createConnectionRestoredMessage = SystemMessageGenerator.createConnectionRestoredMessage.bind(SystemMessageGenerator);
+export const createUserJoinedMessage = (
+  roomId: string,
+  nickname: string,
+): SystemMessageData =>
+  SystemMessageGenerator.createUserJoinedMessage(roomId, nickname);
+export const createUserLeftMessage = (
+  roomId: string,
+  nickname: string,
+): SystemMessageData =>
+  SystemMessageGenerator.createUserLeftMessage(roomId, nickname);
+export const createRoomCreatedMessage = (
+  roomId: string,
+  roomName: string,
+  creatorNickname: string,
+): SystemMessageData =>
+  SystemMessageGenerator.createRoomCreatedMessage(
+    roomId,
+    roomName,
+    creatorNickname,
+  );
+export const createRoomClosedMessage = (
+  roomId: string,
+  roomName: string,
+): SystemMessageData =>
+  SystemMessageGenerator.createRoomClosedMessage(roomId, roomName);
+export const createConnectionLostMessage = (
+  roomId: string,
+  nickname: string,
+): SystemMessageData =>
+  SystemMessageGenerator.createConnectionLostMessage(roomId, nickname);
+export const createConnectionRestoredMessage = (
+  roomId: string,
+  nickname: string,
+): SystemMessageData =>
+  SystemMessageGenerator.createConnectionRestoredMessage(roomId, nickname);
