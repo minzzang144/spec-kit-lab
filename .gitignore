@@ -7,6 +7,9 @@ node_modules/
 # pnpm
 .pnpm/
 
+# vite
+.vite/
+
 # Build outputs
 dist/
 build/
