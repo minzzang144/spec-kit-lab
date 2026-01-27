@@ -1,0 +1,113 @@
+@import 'tailwindcss';
+
+/* Base styles */
+html {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: #f9fafb; /* gray-50 */
+  color: #111827; /* gray-900 */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Component styles */
+.btn {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: colors 200ms;
+  outline: none;
+}
+
+.btn:focus {
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+.btn-primary {
+  background-color: #2563eb; /* blue-600 */
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #1d4ed8; /* blue-700 */
+}
+
+.btn-secondary {
+  background-color: #e5e7eb; /* gray-200 */
+  color: #111827; /* gray-900 */
+}
+
+.btn-secondary:hover {
+  background-color: #d1d5db; /* gray-300 */
+}
+
+.btn-ghost {
+  background-color: transparent;
+  color: #374151; /* gray-700 */
+}
+
+.btn-ghost:hover {
+  background-color: #f3f4f6; /* gray-100 */
+}
+
+.input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db; /* gray-300 */
+  border-radius: 0.5rem;
+  outline: none;
+}
+
+.input:focus {
+  border-color: #2563eb; /* blue-600 */
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+.card {
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb; /* gray-200 */
+}
+
+.message-bubble {
+  max-width: 20rem;
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+}
+
+@media (min-width: 1024px) {
+  .message-bubble {
+    max-width: 28rem;
+  }
+}
+
+.message-bubble-own {
+  background-color: #2563eb; /* blue-600 */
+  color: white;
+  margin-left: auto;
+}
+
+.message-bubble-other {
+  background-color: white;
+  border: 1px solid #e5e7eb; /* gray-200 */
+  color: #111827; /* gray-900 */
+}
+
+/* Utility styles */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.text-balance {
+  text-wrap: balance;
+}

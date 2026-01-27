@@ -1,0 +1,63 @@
+{
+  "extends": [
+    "config:base",
+    "group:monorepos",
+    "group:recommended"
+  ],
+  "schedule": ["before 6am on Monday"],
+  "timezone": "Asia/Seoul",
+  "assignees": ["@speckit-lab/maintainers"],
+  "reviewers": ["@speckit-lab/maintainers"],
+  "prConcurrentLimit": 5,
+  "prHourlyLimit": 1,
+  "semanticCommits": "enabled",
+  "semanticCommitType": "chore",
+  "semanticCommitScope": "deps",
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 6am on Monday"]
+  },
+  "packageRules": [
+    {
+      "description": "Group all workspace packages together",
+      "matchPackagePatterns": ["@repo/"],
+      "groupName": "workspace packages"
+    },
+    {
+      "description": "Group TypeScript and ESLint packages",
+      "matchPackageNames": [
+        "typescript",
+        "eslint",
+        "@types/node",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser"
+      ],
+      "groupName": "TypeScript and linting"
+    },
+    {
+      "description": "Group React packages",
+      "matchPackageNames": [
+        "react",
+        "react-dom",
+        "@types/react",
+        "@types/react-dom"
+      ],
+      "groupName": "React"
+    },
+    {
+      "description": "Group Next.js packages",
+      "matchPackageNames": [
+        "next",
+        "eslint-config-next"
+      ],
+      "groupName": "Next.js"
+    },
+    {
+      "description": "Pin Node.js to LTS versions only",
+      "matchDepTypes": ["engines"],
+      "matchPackageNames": ["node"],
+      "allowedVersions": "/^18\\.|^20\\.|^22\\./",
+      "schedule": ["before 6am on first day of month"]
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "versionGroups": [
+    {
+      "label": "Use workspace protocol for local packages",
+      "packages": ["**"],
+      "dependencies": ["@repo/**"],
+      "dependencyTypes": ["dev", "prod", "peer"],
+      "pinVersion": "workspace:*"
+    }
+  ],
+  "semverGroups": [
+    {
+      "label": "Use consistent semver ranges",
+      "packages": ["**"],
+      "dependencies": ["**"],
+      "dependencyTypes": ["dev", "prod"],
+      "range": "^"
+    }
+  ],
+  "formatBugs": true,
+  "formatRepository": true,
+  "indent": "  ",
+  "sortAz": [
+    "contributors",
+    "dependencies",
+    "devDependencies",
+    "keywords",
+    "peerDependencies",
+    "resolutions"
+  ],
+  "sortFirst": [
+    "name",
+    "description",
+    "version",
+    "private",
+    "type",
+    "main",
+    "module",
+    "exports",
+    "files",
+    "scripts"
+  ]
+}

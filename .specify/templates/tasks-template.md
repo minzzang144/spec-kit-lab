@@ -8,9 +8,17 @@ description: "Task list template for feature implementation"
 **Input**: Design documents from `/specs/[###-feature-name]/`
 **Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/
 
-**Tests**: The examples below include test tasks. Tests are OPTIONAL - only include them if explicitly requested in the feature specification.
+**Tests**: Following constitution TDD requirements, tests are MANDATORY for business logic. All test tasks MUST be completed BEFORE implementation tasks.
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
+
+**Constitution Requirements**: All tasks must follow the constitution v2.1.0:
+- One task = one commit (commit immediately after each task)
+- Use conventional commits format: `<type>(<scope>): <description>`
+- TDD approach: write failing tests first, then implement
+- Follow FSD architecture (frontend) and NestJS modular architecture (backend)
+- Frontend: verify with pnpm run type-check, lint, test, build
+- Backend: verify with pnpm run type-check, lint, test, test:e2e, build
 
 ## Format: `[ID] [P?] [Story] Description`
 
@@ -21,9 +29,11 @@ description: "Task list template for feature implementation"
 ## Path Conventions
 
 - **Single project**: `src/`, `tests/` at repository root
-- **Web app**: `backend/src/`, `frontend/src/`
+- **Web app**: `backend/src/`, `frontend/src/` (recommended for full-stack)
 - **Mobile**: `api/src/`, `ios/src/` or `android/src/`
-- Paths shown below assume single project - adjust based on plan.md structure
+- **Frontend paths**: Follow FSD structure (`src/app/`, `src/features/`, `src/entities/`, `src/shared/`)
+- **Backend paths**: Follow NestJS structure (`src/modules/[feature]/`, `src/common/`, `src/database/`)
+- Paths shown below assume web app structure - adjust based on plan.md structure
 
 <!-- 
   ============================================================================
@@ -62,12 +72,24 @@ description: "Task list template for feature implementation"
 
 Examples of foundational tasks (adjust based on your project):
 
-- [ ] T004 Setup database schema and migrations framework
-- [ ] T005 [P] Implement authentication/authorization framework
-- [ ] T006 [P] Setup API routing and middleware structure
-- [ ] T007 Create base models/entities that all stories depend on
-- [ ] T008 Configure error handling and logging infrastructure
-- [ ] T009 Setup environment configuration management
+Frontend & Backend Shared:
+- [ ] T004 Setup database schema and migrations (Prisma/TypeORM)
+- [ ] T005 [P] Configure environment variables and configuration management
+- [ ] T006 [P] Setup shared TypeScript types between frontend and backend
+
+Backend Foundational:
+- [ ] T007 [P] Create NestJS app structure with modules, guards, interceptors
+- [ ] T008 [P] Implement JWT authentication service with Passport
+- [ ] T009 [P] Setup global exception filters and validation pipes
+- [ ] T010 [P] Configure Swagger/OpenAPI documentation
+- [ ] T011 [P] Setup database connection and base entities
+- [ ] T012 [P] Implement security middleware (CORS, rate limiting, helmet)
+
+Frontend Foundational:
+- [ ] T013 [P] Setup React app with FSD structure and routing
+- [ ] T014 [P] Configure TanStack Query with proper error handling
+- [ ] T015 [P] Setup Zustand stores for global UI state
+- [ ] T016 [P] Create base components and shared utilities
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -79,21 +101,43 @@ Examples of foundational tasks (adjust based on your project):
 
 **Independent Test**: [How to verify this story works on its own]
 
-### Tests for User Story 1 (OPTIONAL - only if tests requested) ⚠️
+### Tests for User Story 1 (MANDATORY - TDD Required) ⚠️
 
-> **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
+> **CONSTITUTION REQUIREMENT: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T010 [P] [US1] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T011 [P] [US1] Integration test for [user journey] in tests/integration/test_[name].py
+Frontend Tests:
+- [ ] T017 [P] [US1] Unit test for [Entity] in frontend/src/entities/[entity]/[entity].test.ts (Vitest + Testing Library)
+- [ ] T018 [P] [US1] Integration test for [Feature] in frontend/src/features/[feature]/[feature].test.tsx
+- [ ] T019 [P] [US1] E2E test for user flow in frontend/tests/e2e/[story].spec.ts (Playwright)
 
-### Implementation for User Story 1
+Backend Tests:
+- [ ] T020 [P] [US1] Unit test for [Service] in backend/src/modules/[module]/tests/[module].service.spec.ts (Jest)
+- [ ] T021 [P] [US1] Controller test for [API endpoints] in backend/src/modules/[module]/tests/[module].controller.spec.ts
+- [ ] T022 [P] [US1] E2E API test for [endpoints] in backend/src/modules/[module]/tests/[module].e2e.spec.ts (Supertest)
 
-- [ ] T012 [P] [US1] Create [Entity1] model in src/models/[entity1].py
-- [ ] T013 [P] [US1] Create [Entity2] model in src/models/[entity2].py
-- [ ] T014 [US1] Implement [Service] in src/services/[service].py (depends on T012, T013)
-- [ ] T015 [US1] Implement [endpoint/feature] in src/[location]/[file].py
-- [ ] T016 [US1] Add validation and error handling
-- [ ] T017 [US1] Add logging for user story 1 operations
+### Implementation for User Story 1 (After Tests Pass)
+
+Backend Implementation:
+- [ ] T023 [P] [US1] Create [Entity] Prisma model in backend/src/database/schema.prisma
+- [ ] T024 [P] [US1] Create [Entity] DTO classes in backend/src/modules/[module]/dto/
+- [ ] T025 [US1] Implement [Module] service in backend/src/modules/[module]/[module].service.ts
+- [ ] T026 [US1] Implement [Module] controller in backend/src/modules/[module]/[module].controller.ts
+- [ ] T027 [US1] Create [Module] module in backend/src/modules/[module]/[module].module.ts
+- [ ] T028 [US1] Add Swagger decorators and API documentation
+
+Frontend Implementation:
+- [ ] T029 [P] [US1] Create [Entity] model in frontend/src/entities/[entity]/model/[entity].ts
+- [ ] T030 [P] [US1] Create [Entity] API client in frontend/src/entities/[entity]/api/[entity].api.ts (TanStack Query)
+- [ ] T031 [US1] Create [Feature] hook in frontend/src/features/[feature]/model/use[Feature].ts
+- [ ] T032 [US1] Create [Component] presenter in frontend/src/features/[feature]/ui/[Component].presenter.tsx
+- [ ] T033 [US1] Create [Component] container in frontend/src/features/[feature]/ui/[Component].container.tsx
+- [ ] T034 [US1] Add [Feature] public API in frontend/src/features/[feature]/index.ts
+
+Integration & Quality:
+- [ ] T035 [US1] Add error boundaries and loading states (React Query + Error Boundaries)
+- [ ] T036 [US1] Verify accessibility compliance (WCAG 2.1 AA)
+- [ ] T037 [US1] Run frontend verification (typecheck, lint, test, build)
+- [ ] T038 [US1] Run backend verification (typecheck, lint, test, test:e2e, build)
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 

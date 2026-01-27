@@ -1,0 +1,13 @@
+packages:
+  # Applications
+  - 'apps/*'
+
+  # Shared packages and configurations
+  - 'packages/*'
+
+  # Exclude test, build, and dist directories
+  - '!**/node_modules'
+  - '!**/dist'
+  - '!**/build'
+  - '!**/.next'
+  - '!**/.turbo'

@@ -29,9 +29,89 @@
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+_GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
-[Gates determined based on constitution file]
+**Technology Stack (I)**:
+
+Frontend:
+- [ ] TypeScript strict mode used
+- [ ] React 18+ as framework
+- [ ] Vite as build tool
+- [ ] TailwindCSS for styling (utility-first only)
+- [ ] shadcn/ui as component library
+- [ ] TanStack Query for server state
+- [ ] Zustand for client state (UI state only)
+- [ ] React Hook Form for all forms
+
+Backend:
+- [ ] TypeScript strict mode used
+- [ ] NestJS framework used
+- [ ] PostgreSQL (production) / SQLite (dev/test) databases
+- [ ] Prisma or TypeORM as ORM
+- [ ] class-validator + class-transformer for validation
+- [ ] JWT + Passport for authentication
+- [ ] Swagger/OpenAPI documentation enabled
+
+**Architecture Principles (II)**:
+
+Frontend (FSD):
+- [ ] FSD (Feature-Sliced Design) architecture used
+- [ ] Layer hierarchy respected: `app` → `pages` → `widgets` → `features` → `entities` → `shared`
+- [ ] Higher layers only import from lower layers (no reverse imports)
+- [ ] Each slice has Public API via `index.ts`
+- [ ] Container/Presenter pattern used for complex components
+- [ ] Custom hooks extract business logic from components
+
+Backend (NestJS Modular):
+- [ ] NestJS modular architecture followed
+- [ ] Each module follows standard structure (controller, service, entity, dto, tests)
+- [ ] Controllers only handle HTTP requests/responses
+- [ ] Services contain all business logic
+- [ ] DTOs handle validation and transformation
+- [ ] No circular dependencies between modules
+
+**Code Quality Rules (III)**:
+
+Testing:
+- [ ] TDD approach: tests written before implementation
+- [ ] Frontend: 80%+ test coverage planned for `/features` and `/entities` (Vitest + Testing Library + Playwright)
+- [ ] Backend: 80%+ test coverage planned for services and controllers (Jest + Supertest)
+- [ ] Backend: separate test database for integration tests
+
+Frontend Quality:
+- [ ] WCAG 2.1 AA compliance planned for all UI components
+- [ ] Error boundaries planned (no try-catch in route handlers)
+- [ ] React Query handles server state (no manual fetching)
+- [ ] Container/Presenter pattern for complex components
+
+Backend Quality:
+- [ ] Global exception filters for error handling
+- [ ] DTOs with class-validator for all input validation
+- [ ] JWT authentication with secure HttpOnly cookies
+- [ ] API endpoints documented with Swagger/OpenAPI
+- [ ] Rate limiting and CORS configured
+- [ ] Database queries optimized (no N+1 problems)
+
+General:
+- [ ] Magic numbers replaced with named constants
+- [ ] Functions under 50 lines, files under 300 lines
+- [ ] Proper naming conventions (PascalCase components/services, camelCase hooks, UPPER_SNAKE_CASE constants)
+
+**Documentation Rules (IV)**:
+
+- [ ] spec.md is technology-agnostic (no React, NestJS, Prisma, etc. mentioned)
+- [ ] plan.md contains all technical implementation details (frameworks, libraries, architecture)
+- [ ] Clear separation between WHAT/WHY (spec) and HOW (plan)
+- [ ] API documentation generated via Swagger/OpenAPI decorators
+
+**Development Workflow (V)**:
+
+- [ ] One task = one commit strategy planned
+- [ ] Conventional commits format to be used
+- [ ] Plan Mode workflow to be followed for implementation
+- [ ] Frontend verification: pnpm run type-check, lint, test, build
+- [ ] Backend verification: pnpm run type-check, lint, test, test:e2e, build
+- [ ] Manual review checklist includes backend API documentation and database optimization
 
 ## Project Structure
 
@@ -48,6 +128,7 @@ specs/[###-feature]/
 ```
 
 ### Source Code (repository root)
+
 <!--
   ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
   for this feature. Delete unused options and expand the chosen structure with
@@ -78,9 +159,12 @@ backend/
 
 frontend/
 ├── src/
-│   ├── components/
-│   ├── pages/
-│   └── services/
+│   ├── app/            # Application initialization, providers, routing
+│   ├── pages/          # Full pages (e.g., home/, profile/)
+│   ├── widgets/        # Independent UI blocks (e.g., header/, sidebar/)
+│   ├── features/       # User interactions (e.g., auth/login/, cart/add-item/)
+│   ├── entities/       # Business entities (e.g., user/, product/)
+│   └── shared/         # Reusable code (ui/, lib/, api/, types/)
 └── tests/
 
 # [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
@@ -98,7 +182,7 @@ directories captured above]
 
 > **Fill ONLY if Constitution Check has violations that must be justified**
 
-| Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
-| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
-| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |
+| Violation                  | Why Needed         | Simpler Alternative Rejected Because |
+| -------------------------- | ------------------ | ------------------------------------ |
+| [e.g., 4th project]        | [current need]     | [why 3 projects insufficient]        |
+| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient]  |

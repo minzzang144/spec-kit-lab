@@ -8,10 +8,26 @@
 ## User Scenarios & Testing *(mandatory)*
 
 <!--
+  CRITICAL CONSTITUTION RULE: This spec.md file MUST be technology-agnostic.
+
+  ❌ FORBIDDEN - DO NOT INCLUDE:
+  - Framework names (React, Vue, Angular, etc.)
+  - Library names (TanStack Query, Zustand, Redux, etc.)
+  - Architecture patterns (FSD, MVC, MVP, etc.)
+  - Technical implementation details
+  - Specific technology choices
+
+  ✅ ALLOWED - FOCUS ON:
+  - User problems and desired outcomes
+  - Business requirements and constraints
+  - UI/UX behavior descriptions
+  - Success criteria and acceptance tests
+  - User workflows and journeys
+
   IMPORTANT: User stories should be PRIORITIZED as user journeys ordered by importance.
   Each user story/journey must be INDEPENDENTLY TESTABLE - meaning if you implement just ONE of them,
   you should still have a viable MVP (Minimum Viable Product) that delivers value.
-  
+
   Assign priorities (P1, P2, P3, etc.) to each story, where P1 is the most critical.
   Think of each story as a standalone slice of functionality that can be:
   - Developed independently
