@@ -14,6 +14,8 @@ import { UsersService } from '../users/users.service';
 import { CreateUserDto } from '../users/dto';
 import { RoomsService } from '../rooms/rooms.service';
 import { ChatService } from './chat.service';
+import { SocketSendMessageDto } from './dto/send-message.dto';
+import { MessageBroadcastData } from './interfaces/message.interface';
 
 /**
  * 실시간 채팅 Socket.IO Gateway
@@ -422,6 +424,13 @@ export class ChatGateway
         client.id,
       );
 
+      // 시스템 메시지 브로드캐스트 (User Story 2)
+      this.broadcastSystemMessageToRoom(
+        data.roomId,
+        `${user.nickname}님이 방에 참여했습니다`,
+        'user_joined'
+      );
+
       // 모든 로비 사용자에게 방 목록 업데이트
       void this.broadcastLobbyUpdate();
     } catch (error) {
@@ -489,6 +498,13 @@ export class ChatGateway
           timestamp: new Date().toISOString(),
         },
         client.id,
+      );
+
+      // 시스템 메시지 브로드캐스트 (User Story 2)
+      this.broadcastSystemMessageToRoom(
+        data.roomId,
+        `${user.nickname}님이 방을 나갔습니다`,
+        'user_left'
       );
 
       // 방에서 사용자 제거
@@ -625,6 +641,257 @@ export class ChatGateway
     } catch (error) {
       this.logger.error(
         `Error notifying room participants: ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
+  }
+
+  // === 메시지 관련 이벤트들 (User Story 2) ===
+
+  /**
+   * 채팅 메시지 전송
+   */
+  @SubscribeMessage('send-message')
+  async handleSendMessage(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: SocketSendMessageDto,
+  ) {
+    try {
+      this.logger.debug(`Send message request from ${client.id}:`, data);
+
+      // 현재 사용자 확인
+      const user = this.usersService.findBySocketId(client.id);
+      if (!user) {
+        client.emit('error', {
+          event: 'send-message',
+          message: '로비에 입장한 후 메시지를 전송할 수 있습니다',
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
+      if (!data.roomId || !data.content.trim()) {
+        client.emit('error', {
+          event: 'send-message',
+          message: '방 ID와 메시지 내용이 필요합니다',
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
+      // 방 정보 확인
+      let room: any;
+      try {
+        room = this.roomsService.getRoomById(data.roomId);
+      } catch (error) {
+        client.emit('error', {
+          event: 'send-message',
+          message: '방을 찾을 수 없습니다',
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
+      // 사용자가 해당 방에 참여 중인지 확인
+      const isUserInRoom = this.chatService.isUserInRoom(data.roomId, user.id);
+      if (!isUserInRoom) {
+        client.emit('error', {
+          event: 'send-message',
+          message: '방에 참여한 후 메시지를 전송할 수 있습니다',
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
+      // 메시지 생성
+      const message = this.chatService.createMessage(
+        {
+          roomId: data.roomId,
+          content: data.content,
+          metadata: data.metadata
+        },
+        user.id,
+        user.nickname
+      );
+
+      this.logger.log(`Message sent by ${user.nickname} in room ${room.name}: ${data.content.substring(0, 50)}...`);
+
+      // 발신자에게 성공 응답
+      client.emit('message-sent', {
+        message,
+        roomId: data.roomId,
+        roomName: room.name,
+        timestamp: new Date().toISOString(),
+      });
+
+      // 방의 다른 참여자들에게 메시지 브로드캐스트
+      this.broadcastMessageToRoom(data.roomId, message, room.name, client.id);
+
+    } catch (error) {
+      this.logger.error(
+        `Error sending message from ${client.id}:`,
+        error instanceof Error ? error.message : String(error),
+      );
+
+      client.emit('error', {
+        event: 'send-message',
+        message:
+          (error instanceof Error ? error.message : String(error)) ||
+          '메시지 전송에 실패했습니다',
+        timestamp: new Date().toISOString(),
+      });
+    }
+  }
+
+  /**
+   * 특정 방의 메시지 히스토리 요청
+   */
+  @SubscribeMessage('get-message-history')
+  async handleGetMessageHistory(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { roomId: string; limit?: number; offset?: number },
+  ) {
+    try {
+      this.logger.debug(`Get message history request from ${client.id}:`, data);
+
+      // 현재 사용자 확인
+      const user = this.usersService.findBySocketId(client.id);
+      if (!user) {
+        client.emit('error', {
+          event: 'get-message-history',
+          message: '로비에 입장한 후 메시지 히스토리를 조회할 수 있습니다',
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
+      if (!data.roomId) {
+        client.emit('error', {
+          event: 'get-message-history',
+          message: '방 ID가 필요합니다',
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
+      // 사용자가 해당 방에 참여 중인지 확인
+      const isUserInRoom = this.chatService.isUserInRoom(data.roomId, user.id);
+      if (!isUserInRoom) {
+        client.emit('error', {
+          event: 'get-message-history',
+          message: '방에 참여한 후 메시지 히스토리를 조회할 수 있습니다',
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
+      // 메시지 히스토리 조회
+      const messages = this.chatService.getRecentMessages(
+        data.roomId,
+        data.limit || 50
+      );
+
+      // 방 정보 가져오기
+      let roomName = '채팅방';
+      try {
+        const room = this.roomsService.getRoomById(data.roomId);
+        roomName = room.name;
+      } catch (error) {
+        // 방 이름을 가져올 수 없어도 메시지는 반환
+      }
+
+      // 클라이언트에게 메시지 히스토리 전송
+      client.emit('message-history', {
+        roomId: data.roomId,
+        roomName,
+        messages,
+        totalCount: messages.length,
+        timestamp: new Date().toISOString(),
+      });
+
+      this.logger.debug(`Sent ${messages.length} messages to ${user.nickname} for room ${roomName}`);
+
+    } catch (error) {
+      this.logger.error(
+        `Error getting message history for ${client.id}:`,
+        error instanceof Error ? error.message : String(error),
+      );
+
+      client.emit('error', {
+        event: 'get-message-history',
+        message:
+          (error instanceof Error ? error.message : String(error)) ||
+          '메시지 히스토리 조회에 실패했습니다',
+        timestamp: new Date().toISOString(),
+      });
+    }
+  }
+
+  // === 메시지 브로드캐스트 헬퍼 메서드들 ===
+
+  /**
+   * 특정 방의 모든 참여자에게 메시지 브로드캐스트
+   */
+  private broadcastMessageToRoom(
+    roomId: string,
+    message: any,
+    roomName: string,
+    excludeSocketId?: string,
+  ) {
+    try {
+      // 브로드캐스트 데이터 구성
+      const broadcastData: MessageBroadcastData = {
+        message,
+        roomId,
+        roomName,
+        timestamp: new Date().toISOString(),
+      };
+
+      // 방 참여자들의 소켓 ID 수집 및 메시지 전송
+      this.notifyRoomParticipants(
+        roomId,
+        'new-message',
+        broadcastData,
+        excludeSocketId,
+      );
+
+      this.logger.debug(
+        `Broadcasted message to room ${roomName}: ${message.content.substring(0, 50)}...`
+      );
+    } catch (error) {
+      this.logger.error(
+        `Error broadcasting message to room ${roomId}: ${error instanceof Error ? error.message : String(error)}`
+      );
+    }
+  }
+
+  /**
+   * 방에 시스템 메시지 브로드캐스트 (사용자 입장/퇴장 등)
+   */
+  broadcastSystemMessageToRoom(
+    roomId: string,
+    content: string,
+    systemMessageType: 'user_joined' | 'user_left' | 'room_created' | 'room_deleted' | 'other' = 'other',
+  ) {
+    try {
+      // 시스템 메시지 생성
+      const systemMessage = this.chatService.createSystemMessage(roomId, content, systemMessageType);
+
+      // 방 정보 가져오기
+      let roomName = '채팅방';
+      try {
+        const room = this.roomsService.getRoomById(roomId);
+        roomName = room.name;
+      } catch (error) {
+        // 방 이름을 가져올 수 없어도 시스템 메시지는 브로드캐스트
+      }
+
+      // 모든 참여자에게 시스템 메시지 브로드캐스트
+      this.broadcastMessageToRoom(roomId, systemMessage, roomName);
+
+      this.logger.debug(`Broadcasted system message to room ${roomName}: ${content}`);
+    } catch (error) {
+      this.logger.error(
+        `Error broadcasting system message to room ${roomId}: ${error instanceof Error ? error.message : String(error)}`
       );
     }
   }

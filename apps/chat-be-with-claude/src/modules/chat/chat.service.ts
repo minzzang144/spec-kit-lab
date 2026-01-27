@@ -2,6 +2,17 @@ import { Injectable, Logger, BadRequestException, NotFoundException } from '@nes
 import { MemoryStore } from '../../storage/memory-store';
 import { RoomsService } from '../rooms/rooms.service';
 import { UsersService } from '../users/users.service';
+import {
+  Message,
+  MessageType,
+  MessageStatus,
+  CreateMessageInput,
+  MessageQueryOptions,
+  MessagesResult,
+  MessageStats
+} from './interfaces/message.interface';
+import { SendMessageDto } from './dto/send-message.dto';
+import { GetMessagesDto, GetMessageStatsDto } from './dto/get-messages.dto';
 
 /**
  * 채팅 관련 비즈니스 로직 서비스
@@ -236,5 +247,224 @@ export class ChatService {
     } catch (error) {
       this.logger.warn(`Failed to update room activity for ${roomId}:`, error);
     }
+  }
+
+  // === 메시지 관련 메서드들 (User Story 2) ===
+
+  /**
+   * 새 메시지를 생성합니다.
+   * @param sendMessageDto 메시지 전송 데이터
+   * @param senderId 발신자 사용자 ID
+   * @param senderNickname 발신자 닉네임
+   */
+  createMessage(sendMessageDto: SendMessageDto, senderId: string, senderNickname: string): Message {
+    if (!sendMessageDto.roomId || !sendMessageDto.content.trim()) {
+      throw new BadRequestException('방 ID와 메시지 내용이 필요합니다.');
+    }
+
+    // 방 존재 여부 확인
+    const room = this.memoryStore.getRoom(sendMessageDto.roomId);
+    if (!room) {
+      throw new NotFoundException(`방을 찾을 수 없습니다. (ID: ${sendMessageDto.roomId})`);
+    }
+
+    // 사용자가 방에 참여 중인지 확인
+    const isUserInRoom = this.isUserInRoom(sendMessageDto.roomId, senderId);
+    if (!isUserInRoom) {
+      throw new BadRequestException('방에 참여한 후 메시지를 전송할 수 있습니다.');
+    }
+
+    // 메시지 생성
+    const messageInput: CreateMessageInput = {
+      roomId: sendMessageDto.roomId,
+      senderId,
+      senderNickname,
+      content: sendMessageDto.content.trim(),
+      type: MessageType.USER,
+      metadata: sendMessageDto.metadata,
+    };
+
+    const message = this.memoryStore.createMessage(messageInput);
+    this.logger.log(`Message created by ${senderNickname} in room ${room.name}: ${message.content.substring(0, 50)}...`);
+
+    return message;
+  }
+
+  /**
+   * 시스템 메시지를 생성합니다 (사용자 입장/퇴장 알림 등).
+   * @param roomId 방 ID
+   * @param content 시스템 메시지 내용
+   * @param systemMessageType 시스템 메시지 세부 타입
+   */
+  createSystemMessage(
+    roomId: string,
+    content: string,
+    systemMessageType: 'user_joined' | 'user_left' | 'room_created' | 'room_deleted' | 'other' = 'other'
+  ): Message {
+    const room = this.memoryStore.getRoom(roomId);
+    if (!room) {
+      throw new NotFoundException(`방을 찾을 수 없습니다. (ID: ${roomId})`);
+    }
+
+    const messageInput: CreateMessageInput = {
+      roomId,
+      senderId: null,
+      senderNickname: null,
+      content: content.trim(),
+      type: MessageType.SYSTEM,
+      systemMessageType,
+    };
+
+    const message = this.memoryStore.createMessage(messageInput);
+    this.logger.debug(`System message created in room ${room.name}: ${content}`);
+
+    return message;
+  }
+
+  /**
+   * 방의 메시지 목록을 조회합니다.
+   * @param getMessagesDto 메시지 조회 옵션
+   */
+  getMessages(getMessagesDto: GetMessagesDto): MessagesResult {
+    if (!getMessagesDto.roomId) {
+      throw new BadRequestException('방 ID가 필요합니다.');
+    }
+
+    const room = this.memoryStore.getRoom(getMessagesDto.roomId);
+    if (!room) {
+      throw new NotFoundException(`방을 찾을 수 없습니다. (ID: ${getMessagesDto.roomId})`);
+    }
+
+    const queryOptions: MessageQueryOptions = {
+      roomId: getMessagesDto.roomId,
+      fromDate: getMessagesDto.fromDate ? new Date(getMessagesDto.fromDate) : undefined,
+      toDate: getMessagesDto.toDate ? new Date(getMessagesDto.toDate) : undefined,
+      limit: getMessagesDto.limit || 50,
+      offset: getMessagesDto.offset || 0,
+      messageTypes: getMessagesDto.messageTypes,
+    };
+
+    const result = this.memoryStore.queryMessages(queryOptions);
+    this.logger.debug(`Retrieved ${result.messages.length} messages from room ${room.name}`);
+
+    return result;
+  }
+
+  /**
+   * 특정 메시지를 조회합니다.
+   * @param messageId 메시지 ID
+   */
+  getMessage(messageId: string): Message {
+    if (!messageId) {
+      throw new BadRequestException('메시지 ID가 필요합니다.');
+    }
+
+    const message = this.memoryStore.getMessage(messageId);
+    if (!message) {
+      throw new NotFoundException(`메시지를 찾을 수 없습니다. (ID: ${messageId})`);
+    }
+
+    return message;
+  }
+
+  /**
+   * 방의 메시지 통계를 조회합니다.
+   * @param getMessageStatsDto 메시지 통계 조회 옵션
+   */
+  getMessageStats(getMessageStatsDto: GetMessageStatsDto): MessageStats {
+    if (!getMessageStatsDto.roomId) {
+      throw new BadRequestException('방 ID가 필요합니다.');
+    }
+
+    const room = this.memoryStore.getRoom(getMessageStatsDto.roomId);
+    if (!room) {
+      throw new NotFoundException(`방을 찾을 수 없습니다. (ID: ${getMessageStatsDto.roomId})`);
+    }
+
+    const stats = this.memoryStore.getMessageStats(getMessageStatsDto.roomId);
+    if (!stats) {
+      throw new NotFoundException(`방의 메시지 통계를 조회할 수 없습니다. (ID: ${getMessageStatsDto.roomId})`);
+    }
+
+    return stats;
+  }
+
+  /**
+   * 메시지 상태를 업데이트합니다 (읽음 확인 등).
+   * @param messageId 메시지 ID
+   * @param status 새로운 메시지 상태
+   */
+  updateMessageStatus(messageId: string, status: MessageStatus): boolean {
+    if (!messageId) {
+      throw new BadRequestException('메시지 ID가 필요합니다.');
+    }
+
+    const success = this.memoryStore.updateMessageStatus(messageId, status);
+    if (!success) {
+      throw new NotFoundException(`메시지를 찾을 수 없습니다. (ID: ${messageId})`);
+    }
+
+    this.logger.debug(`Message ${messageId} status updated to: ${status}`);
+    return true;
+  }
+
+  /**
+   * 메시지를 삭제합니다 (관리자 기능).
+   * @param messageId 메시지 ID
+   */
+  deleteMessage(messageId: string): boolean {
+    if (!messageId) {
+      throw new BadRequestException('메시지 ID가 필요합니다.');
+    }
+
+    const message = this.memoryStore.getMessage(messageId);
+    if (!message) {
+      throw new NotFoundException(`메시지를 찾을 수 없습니다. (ID: ${messageId})`);
+    }
+
+    const success = this.memoryStore.deleteMessage(messageId);
+    if (success) {
+      this.logger.log(`Message deleted: ${messageId}`);
+    }
+
+    return success;
+  }
+
+  /**
+   * 방의 최근 메시지 목록을 간단히 조회합니다 (빠른 조회용).
+   * @param roomId 방 ID
+   * @param limit 조회할 메시지 수 (기본: 50)
+   */
+  getRecentMessages(roomId: string, limit: number = 50): Message[] {
+    if (!roomId) {
+      throw new BadRequestException('방 ID가 필요합니다.');
+    }
+
+    const room = this.memoryStore.getRoom(roomId);
+    if (!room) {
+      throw new NotFoundException(`방을 찾을 수 없습니다. (ID: ${roomId})`);
+    }
+
+    const messages = this.memoryStore.getRoomMessages(roomId, limit);
+    this.logger.debug(`Retrieved ${messages.length} recent messages from room ${room.name}`);
+
+    return messages;
+  }
+
+  /**
+   * 오래된 메시지들을 정리합니다 (메모리 관리).
+   * @param olderThanDays 몇 일 이전 메시지를 삭제할지 (기본: 30일)
+   */
+  cleanOldMessages(olderThanDays: number = 30): number {
+    const olderThan = new Date();
+    olderThan.setDate(olderThan.getDate() - olderThanDays);
+
+    const deletedCount = this.memoryStore.cleanOldMessages(olderThan);
+
+    if (deletedCount > 0) {
+      this.logger.log(`Cleaned up ${deletedCount} messages older than ${olderThanDays} days`);
+    }
+
+    return deletedCount;
   }
 }
