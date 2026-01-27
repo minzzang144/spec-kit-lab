@@ -269,12 +269,12 @@
 **Goal**: Backend에서 연결 해제 감지, 30초 타임아웃, 빈 방 자동 삭제
 
 ### BE User Story 6 Implementation
-- [ ] T083 [P] [US6] 연결 해제 감지 및 정리 기능 추가 in apps/chat-be-with-claude/src/modules/chat/chat.gateway.ts
-- [ ] T084 [US6] 빈 방 자동 삭제 기능 구현 in apps/chat-be-with-claude/src/modules/rooms/rooms.service.ts
-- [ ] T085 [US6] 30초 연결 해제 감지 시스템 구현 in apps/chat-be-with-claude/src/modules/chat/chat.service.ts
+- [x] T083 [P] [US6] 연결 해제 감지 및 정리 기능 추가 in apps/chat-be-with-claude/src/modules/chat/chat.gateway.ts
+- [x] T084 [US6] 빈 방 자동 삭제 기능 구현 in apps/chat-be-with-claude/src/modules/rooms/rooms.service.ts
+- [x] T085 [US6] 30초 연결 해제 감지 시스템 구현 in apps/chat-be-with-claude/src/modules/chat/chat.service.ts
 
 ### BE US6 검증
-- [ ] T086 [US6] Backend 검증 실행 (typecheck, lint, test, build) in apps/chat-be-with-claude/
+- [x] T086 [US6] Backend 검증 실행 (typecheck, lint, test, build) in apps/chat-be-with-claude/
 
 **Checkpoint**: BE US6 완료 - 자동 방 삭제 시스템 구현
 
