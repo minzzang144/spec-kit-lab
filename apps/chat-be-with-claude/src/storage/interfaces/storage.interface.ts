@@ -1,4 +1,5 @@
-import { User, ChatRoom, Message } from '../memory-store';
+import { User, ChatRoom } from '../memory-store';
+import { Message } from '../../modules/chat/interfaces/message.interface';
 
 export interface IUserStorage {
   createUser(user: User): User;

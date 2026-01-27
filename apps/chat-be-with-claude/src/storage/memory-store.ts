@@ -1,5 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { IStorage } from './interfaces/storage.interface';
+import {
+  Message,
+  MessageType,
+  MessageStatus,
+  CreateMessageInput,
+  MessageQueryOptions,
+  MessagesResult,
+  MessageStats
+} from '../modules/chat/interfaces/message.interface';
 
 export interface User {
   id: string;
@@ -15,16 +24,6 @@ export interface ChatRoom {
   lastActivity: Date;
   participants: User[];
   messages: Message[];
-}
-
-export interface Message {
-  id: string;
-  roomId: string;
-  senderId: string;
-  senderNickname: string;
-  content: string;
-  type: 'user' | 'system';
-  createdAt: Date;
 }
 
 @Injectable()
@@ -171,7 +170,19 @@ export class MemoryStore implements IStorage {
   }
 
   // Message operations
-  createMessage(message: Message): Message {
+  createMessage(input: CreateMessageInput): Message {
+    const message: Message = {
+      id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      roomId: input.roomId,
+      senderId: input.senderId,
+      senderNickname: input.senderNickname,
+      content: input.content,
+      type: input.type,
+      status: MessageStatus.SENT,
+      createdAt: new Date(),
+      metadata: input.metadata,
+    };
+
     this.messages.set(message.id, message);
 
     // Add message to room
@@ -202,6 +213,143 @@ export class MemoryStore implements IStorage {
       (a, b) => a.createdAt.getTime() - b.createdAt.getTime(),
     );
     return limit ? messages.slice(-limit) : messages;
+  }
+
+  // Enhanced message query with filters
+  queryMessages(options: MessageQueryOptions): MessagesResult {
+    const room = this.getRoom(options.roomId);
+    if (!room) {
+      return {
+        messages: [],
+        totalCount: 0,
+        hasNext: false,
+        hasPrevious: false,
+        queryOptions: options,
+      };
+    }
+
+    let messages = room.messages.slice();
+
+    // Filter by date range
+    if (options.fromDate) {
+      messages = messages.filter(msg => msg.createdAt >= options.fromDate!);
+    }
+    if (options.toDate) {
+      messages = messages.filter(msg => msg.createdAt <= options.toDate!);
+    }
+
+    // Filter by message types
+    if (options.messageTypes && options.messageTypes.length > 0) {
+      messages = messages.filter(msg => options.messageTypes!.includes(msg.type));
+    }
+
+    // Sort by creation time (newest first for typical chat display)
+    messages.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+    const totalCount = messages.length;
+    const offset = options.offset || 0;
+    const limit = options.limit || 50;
+
+    // Apply pagination
+    const paginatedMessages = messages.slice(offset, offset + limit);
+
+    return {
+      messages: paginatedMessages,
+      totalCount,
+      hasNext: offset + limit < totalCount,
+      hasPrevious: offset > 0,
+      queryOptions: options,
+    };
+  }
+
+  // Get message statistics for a room
+  getMessageStats(roomId: string): MessageStats | null {
+    const room = this.getRoom(roomId);
+    if (!room) {
+      return null;
+    }
+
+    const messages = room.messages;
+    const userMessages = messages.filter(msg => msg.type === MessageType.USER).length;
+    const systemMessages = messages.filter(msg => msg.type === MessageType.SYSTEM).length;
+
+    const timestamps = messages.map(msg => msg.createdAt.getTime()).sort();
+    const lastMessageAt = timestamps.length > 0 ? new Date(timestamps[timestamps.length - 1]) : null;
+    const firstMessageAt = timestamps.length > 0 ? new Date(timestamps[0]) : null;
+
+    return {
+      roomId,
+      totalMessages: messages.length,
+      userMessages,
+      systemMessages,
+      lastMessageAt,
+      firstMessageAt,
+    };
+  }
+
+  // Delete messages (for cleanup or moderation)
+  deleteMessage(messageId: string): boolean {
+    const message = this.messages.get(messageId);
+    if (!message) return false;
+
+    // Remove from global messages map
+    this.messages.delete(messageId);
+
+    // Remove from room messages
+    const room = this.getRoom(message.roomId);
+    if (room) {
+      room.messages = room.messages.filter(msg => msg.id !== messageId);
+      this.updateRoom(message.roomId, { messages: room.messages });
+    }
+
+    this.logger.debug(`Message deleted: ${messageId}`);
+    return true;
+  }
+
+  // Update message status (for read receipts, etc.)
+  updateMessageStatus(messageId: string, status: MessageStatus): boolean {
+    const message = this.messages.get(messageId);
+    if (!message) return false;
+
+    message.status = status;
+    message.updatedAt = new Date();
+
+    // Also update in room messages array
+    const room = this.getRoom(message.roomId);
+    if (room) {
+      const roomMessage = room.messages.find(msg => msg.id === messageId);
+      if (roomMessage) {
+        roomMessage.status = status;
+        roomMessage.updatedAt = new Date();
+      }
+    }
+
+    this.logger.debug(`Message ${messageId} status updated to: ${status}`);
+    return true;
+  }
+
+  // Clean old messages (for memory management)
+  cleanOldMessages(olderThan: Date): number {
+    let deletedCount = 0;
+    const messagesToDelete: string[] = [];
+
+    for (const [messageId, message] of this.messages) {
+      if (message.createdAt < olderThan) {
+        messagesToDelete.push(messageId);
+      }
+    }
+
+    for (const messageId of messagesToDelete) {
+      if (this.deleteMessage(messageId)) {
+        deletedCount++;
+      }
+    }
+
+    if (deletedCount > 0) {
+      this.logger.log(`Cleaned ${deletedCount} old messages older than ${olderThan.toISOString()}`);
+    }
+
+    return deletedCount;
   }
 
   // Cleanup operations

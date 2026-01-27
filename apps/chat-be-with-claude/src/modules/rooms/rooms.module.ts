@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { RoomsController } from './rooms.controller';
 import { RoomsService } from './rooms.service';
+import { MemoryStore } from '../../storage/memory-store';
 
 /**
  * 채팅방 관리 모듈
@@ -24,8 +25,7 @@ import { RoomsService } from './rooms.service';
   controllers: [RoomsController],
   providers: [
     RoomsService,
-    // MemoryStore는 이미 전역적으로 제공되므로 별도 등록 불필요
-    // (app.module.ts에서 전역 모듈로 등록됨)
+    MemoryStore,
   ],
   exports: [
     RoomsService,
