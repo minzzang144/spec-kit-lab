@@ -8,3 +8,5 @@ test-results/
 *.log
 .DS_Store
 .turbo/
+.pnpm/
+.vite/
