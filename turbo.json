@@ -3,26 +3,12 @@
   "remoteCache": {
     "signature": true
   },
-  "globalDependencies": [
-    "**/.env.*local",
-    "**/.env.local",
-    "**/.env"
-  ],
-  "globalEnv": [
-    "NODE_ENV",
-    "CI"
-  ],
+  "globalDependencies": ["**/.env.*local", "**/.env.local", "**/.env"],
+  "globalEnv": ["NODE_ENV", "CI"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [
-        "dist/**",
-        "build/**",
-        ".next/**",
-        "!.next/cache/**",
-        "lib/**",
-        "*.tsbuildinfo"
-      ],
+      "outputs": ["dist/**", "build/**", ".next/**", "!.next/cache/**", "lib/**", "*.tsbuildinfo"],
       "env": ["NODE_ENV"],
       "persistent": false
     },
@@ -33,9 +19,7 @@
     },
     "test": {
       "dependsOn": ["^build"],
-      "outputs": [
-        "coverage/**"
-      ],
+      "outputs": ["coverage/**"],
       "inputs": [
         "src/**/*.tsx",
         "src/**/*.ts",
@@ -47,47 +31,22 @@
     },
     "lint": {
       "dependsOn": ["^build"],
-      "inputs": [
-        "src/**/*.tsx",
-        "src/**/*.ts",
-        "**/*.js",
-        "**/*.jsx"
-      ]
+      "inputs": ["src/**/*.tsx", "src/**/*.ts", "**/*.js", "**/*.jsx"]
     },
     "type-check": {
       "dependsOn": ["^build"],
       "outputs": ["*.tsbuildinfo"],
-      "inputs": [
-        "src/**/*.tsx",
-        "src/**/*.ts",
-        "**/*.ts",
-        "**/*.tsx",
-        "tsconfig.json"
-      ]
+      "inputs": ["src/**/*.tsx", "src/**/*.ts", "**/*.ts", "**/*.tsx", "tsconfig.json"]
     },
     "clean": {
       "cache": false
     },
     "format": {
-      "inputs": [
-        "**/*.ts",
-        "**/*.tsx",
-        "**/*.js",
-        "**/*.jsx",
-        "**/*.json",
-        "**/*.md"
-      ],
+      "inputs": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.json", "**/*.md"],
       "cache": false
     },
     "format:check": {
-      "inputs": [
-        "**/*.ts",
-        "**/*.tsx",
-        "**/*.js",
-        "**/*.jsx",
-        "**/*.json",
-        "**/*.md"
-      ]
+      "inputs": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.json", "**/*.md"]
     }
   }
 }
