@@ -234,13 +234,13 @@
 **Goal**: Backend에서 메시지 관리, Socket 브로드캐스팅, 시스템 메시지
 
 ### BE User Story 2 Implementation
-- [ ] T072 [P] [US2] Message 엔티티 DTO 클래스 생성 in apps/chat-be-with-claude/src/modules/chat/dto/
-- [ ] T073 [US2] Chat 서비스에 메시지 관리 기능 추가 in apps/chat-be-with-claude/src/modules/chat/chat.service.ts
-- [ ] T074 [US2] Socket Gateway에 메시지 송수신 이벤트 추가 in apps/chat-be-with-claude/src/modules/chat/chat.gateway.ts
-- [ ] T075 [US2] 시스템 메시지 생성 기능 구현 in apps/chat-be-with-claude/src/common/utils/system-message.ts
+- [x] T072 [P] [US2] Message 엔티티 DTO 클래스 생성 in apps/chat-be-with-claude/src/modules/chat/dto/
+- [x] T073 [US2] Chat 서비스에 메시지 관리 기능 추가 in apps/chat-be-with-claude/src/modules/chat/chat.service.ts
+- [x] T074 [US2] Socket Gateway에 메시지 송수신 이벤트 추가 in apps/chat-be-with-claude/src/modules/chat/chat.gateway.ts
+- [x] T075 [US2] 시스템 메시지 생성 기능 구현 in apps/chat-be-with-claude/src/common/utils/system-message.ts
 
 ### BE US2 검증
-- [ ] T076 [US2] Backend 검증 실행 (typecheck, lint, test, build) in apps/chat-be-with-claude/
+- [x] T076 [US2] Backend 검증 실행 (typecheck, lint, test, build) in apps/chat-be-with-claude/
 
 **Checkpoint**: BE US2 완료 - 실시간 메시지 송수신 처리
 
