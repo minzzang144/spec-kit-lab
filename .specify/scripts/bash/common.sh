@@ -78,88 +78,161 @@ check_feature_branch() {
         return 0
     fi
 
-    # Support both new ticket-based pattern (spec/#ticket-*) and legacy pattern (###-*)
-    if [[ ! "$branch" =~ ^spec/#[a-zA-Z0-9]+- ]] && [[ ! "$branch" =~ ^[0-9]{3}- ]]; then
-        echo "ERROR: Not on a feature branch. Current branch: $branch" >&2
-        echo "Feature branches should be named like: spec/#ticket-feature-name (or legacy: 001-feature-name)" >&2
-        return 1
+    # Support all valid workflow branch patterns:
+    # - spec/#ticket-* (specification phase)
+    # - feature/#ticket-* (implementation phase - single mode)
+    # - feature/#ticket-us{N}-* (implementation phase - parallel mode)
+    # - feature/#ticket-foundation-* (implementation phase - foundation)
+    # - ###-* (legacy pattern)
+    if [[ "$branch" =~ ^spec/#[a-zA-Z0-9]+- ]] || \
+       [[ "$branch" =~ ^feature/#[a-zA-Z0-9]+- ]] || \
+       [[ "$branch" =~ ^[0-9]{3}- ]]; then
+        return 0
     fi
 
-    return 0
+    echo "ERROR: Not on a valid workflow branch. Current branch: $branch" >&2
+    echo "Valid branch patterns:" >&2
+    echo "  - spec/#ticket-feature-name (specification phase)" >&2
+    echo "  - feature/#ticket-feature-name (implementation phase)" >&2
+    echo "  - feature/#ticket-us1-feature-name (parallel mode)" >&2
+    echo "  - 001-feature-name (legacy)" >&2
+    return 1
 }
 
 get_feature_dir() { echo "$1/specs/$2"; }
 
 # Find feature directory by ticket ID or numeric prefix
-# Supports both new ticket-based (spec/#ticket-*) and legacy (###-*) patterns
+# Supports all branch patterns:
+#   - spec/#ticket-* (spec branch)
+#   - feature/#ticket-* (single mode feature branch)
+#   - feature/#ticket-us{N}-* (parallel mode user story branch)
+#   - feature/#ticket-foundation-* (foundation branch)
+#   - feature/#ticket-us{N}-be-* or -fe-* (BE/FE sub-branches)
+#   - ###-* (legacy pattern)
+# Note: Uses parameter expansion for Bash 3.2 compatibility
 find_feature_dir_by_prefix() {
     local repo_root="$1"
     local branch_name="$2"
     local specs_dir="$repo_root/specs"
 
-    # Check for new ticket-based pattern (spec/#ticket-feature)
-    if [[ "$branch_name" =~ ^spec/#([a-zA-Z0-9]+)- ]]; then
-        local ticket_id="${BASH_REMATCH[1]}"
+    # Helper function: find specs directory by ticket ID
+    _find_specs_by_ticket() {
+        local ticket_id="$1"
+        local first_match=""
+        local match_count=0
 
-        # Search for directories in specs/ that start with #ticket-
-        local matches=()
         if [[ -d "$specs_dir" ]]; then
-            for dir in "$specs_dir"/#"$ticket_id"-*; do
+            # Check if any matching directory exists first
+            local pattern="$specs_dir/#${ticket_id}-"*
+            for dir in $pattern; do
+                # Check if glob expanded (file/dir exists)
                 if [[ -d "$dir" ]]; then
-                    matches+=("$(basename "$dir")")
+                    if [[ $match_count -eq 0 ]]; then
+                        first_match="$(basename "$dir")"
+                    fi
+                    match_count=$((match_count + 1))
+                fi
+            done
+        fi
+
+        if [[ $match_count -eq 1 ]]; then
+            echo "$specs_dir/$first_match"
+            return 0
+        elif [[ $match_count -gt 1 ]]; then
+            echo "ERROR: Multiple spec directories found with ticket '$ticket_id'" >&2
+            echo "Please ensure only one spec directory exists per ticket ID." >&2
+            echo "$specs_dir/$first_match"  # Return first match
+            return 0
+        fi
+        return 1
+    }
+
+    # Extract ticket ID from spec or feature branch using parameter expansion
+    # Patterns: spec/#ticket-* or feature/#ticket-*
+    _extract_ticket_id() {
+        local branch="$1"
+        local rest=""
+
+        if [[ "$branch" == spec/#* ]]; then
+            rest="${branch#spec/#}"
+        elif [[ "$branch" == feature/#* ]]; then
+            rest="${branch#feature/#}"
+        else
+            return 1
+        fi
+
+        # Extract ticket ID (everything before first hyphen)
+        local ticket="${rest%%-*}"
+        if [[ -n "$ticket" ]]; then
+            echo "$ticket"
+            return 0
+        fi
+        return 1
+    }
+
+    # 1. Check for spec or feature branch patterns: (spec|feature)/#ticket-*
+    if [[ "$branch_name" == spec/#* ]] || [[ "$branch_name" == feature/#* ]]; then
+        local ticket_id
+        ticket_id=$(_extract_ticket_id "$branch_name")
+
+        if [[ -n "$ticket_id" ]]; then
+            # Try to find existing specs directory
+            local found_dir
+            found_dir=$(_find_specs_by_ticket "$ticket_id")
+            if [[ $? -eq 0 ]]; then
+                echo "$found_dir"
+                return
+            fi
+
+            # No match found - derive directory name from branch name
+            if [[ "$branch_name" == spec/* ]]; then
+                # spec/#ticket-feature -> #ticket-feature
+                local dir_name="${branch_name#spec/}"
+                echo "$specs_dir/$dir_name"
+            else
+                # For feature branches without existing spec dir, construct from ticket
+                echo "$specs_dir/#${ticket_id}-unknown"
+            fi
+            return
+        fi
+    fi
+
+    # 2. Legacy: Extract numeric prefix from branch (e.g., "004" from "004-whatever")
+    # Check if starts with 3 digits followed by hyphen
+    local first_four="${branch_name:0:4}"
+    if [[ "$first_four" =~ ^[0-9]{3}- ]]; then
+        local prefix="${branch_name:0:3}"
+
+        # Search for directories in specs/ that start with this prefix
+        local first_match=""
+        local match_count=0
+        if [[ -d "$specs_dir" ]]; then
+            local pattern="$specs_dir/${prefix}-"*
+            for dir in $pattern; do
+                if [[ -d "$dir" ]]; then
+                    if [[ $match_count -eq 0 ]]; then
+                        first_match="$(basename "$dir")"
+                    fi
+                    match_count=$((match_count + 1))
                 fi
             done
         fi
 
         # Handle results
-        if [[ ${#matches[@]} -eq 0 ]]; then
-            # No match found - derive directory name from branch name
-            # spec/#ticket-feature -> #ticket-feature
-            local dir_name="${branch_name#spec/}"
-            echo "$specs_dir/$dir_name"
-        elif [[ ${#matches[@]} -eq 1 ]]; then
-            echo "$specs_dir/${matches[0]}"
+        if [[ $match_count -eq 0 ]]; then
+            echo "$specs_dir/$branch_name"
+        elif [[ $match_count -eq 1 ]]; then
+            echo "$specs_dir/$first_match"
         else
-            echo "ERROR: Multiple spec directories found with ticket '$ticket_id': ${matches[*]}" >&2
-            echo "Please ensure only one spec directory exists per ticket ID." >&2
-            local dir_name="${branch_name#spec/}"
-            echo "$specs_dir/$dir_name"
+            echo "ERROR: Multiple spec directories found with prefix '$prefix'" >&2
+            echo "Please ensure only one spec directory exists per numeric prefix." >&2
+            echo "$specs_dir/$branch_name"
         fi
         return
     fi
 
-    # Legacy: Extract numeric prefix from branch (e.g., "004" from "004-whatever")
-    if [[ ! "$branch_name" =~ ^([0-9]{3})- ]]; then
-        # If branch doesn't have numeric prefix, fall back to exact match
-        echo "$specs_dir/$branch_name"
-        return
-    fi
-
-    local prefix="${BASH_REMATCH[1]}"
-
-    # Search for directories in specs/ that start with this prefix
-    local matches=()
-    if [[ -d "$specs_dir" ]]; then
-        for dir in "$specs_dir"/"$prefix"-*; do
-            if [[ -d "$dir" ]]; then
-                matches+=("$(basename "$dir")")
-            fi
-        done
-    fi
-
-    # Handle results
-    if [[ ${#matches[@]} -eq 0 ]]; then
-        # No match found - return the branch name path (will fail later with clear error)
-        echo "$specs_dir/$branch_name"
-    elif [[ ${#matches[@]} -eq 1 ]]; then
-        # Exactly one match - perfect!
-        echo "$specs_dir/${matches[0]}"
-    else
-        # Multiple matches - this shouldn't happen with proper naming convention
-        echo "ERROR: Multiple spec directories found with prefix '$prefix': ${matches[*]}" >&2
-        echo "Please ensure only one spec directory exists per numeric prefix." >&2
-        echo "$specs_dir/$branch_name"  # Return something to avoid breaking the script
-    fi
+    # 3. Fallback: exact match
+    echo "$specs_dir/$branch_name"
 }
 
 get_feature_paths() {
@@ -207,5 +280,89 @@ extract_ticket_id() {
 # Check if branch uses the new ticket-based naming convention
 is_ticket_based_branch() {
     [[ "$1" =~ ^spec/#[a-zA-Z0-9]+- ]]
+}
+
+# ============================================================================
+# Feature Branch Utilities
+# ============================================================================
+
+# Check if branch is a feature branch
+# Supports: feature/#ticket-*, feature/#ticket-us{N}-*, feature/#ticket-foundation-*
+is_feature_branch() {
+    [[ "$1" == feature/#* ]]
+}
+
+# Extract ticket ID from feature branch name
+# Examples:
+#   feature/#abc123-user-auth -> abc123
+#   feature/#abc123-us1-user-auth -> abc123
+#   feature/#abc123-foundation-user-auth -> abc123
+# Note: Uses parameter expansion for Bash 3.2 compatibility (macOS default)
+extract_ticket_from_feature() {
+    local branch_name="$1"
+    # Check if it's a feature branch
+    if [[ "$branch_name" != feature/#* ]]; then
+        return 1
+    fi
+    # Remove 'feature/#' prefix
+    local rest="${branch_name#feature/#}"
+    # Extract up to first hyphen (ticket ID)
+    local ticket_id="${rest%%-*}"
+    # Validate it's alphanumeric
+    if [[ "$ticket_id" =~ ^[a-zA-Z0-9]+$ ]]; then
+        echo "$ticket_id"
+    fi
+}
+
+# Extract User Story from feature branch name (if present)
+# Examples:
+#   feature/#abc123-us1-user-auth -> us1
+#   feature/#abc123-us2-be-user-auth -> us2
+#   feature/#abc123-user-auth -> (empty)
+# Note: Uses parameter expansion for Bash 3.2 compatibility
+extract_user_story() {
+    local branch_name="$1"
+    # Check if it's a feature branch
+    if [[ "$branch_name" != feature/#* ]]; then
+        return 1
+    fi
+    # Remove 'feature/#' prefix and ticket ID
+    local rest="${branch_name#feature/#}"
+    rest="${rest#*-}"  # Remove ticket ID (before first -)
+
+    # Check if next part starts with 'us' followed by number
+    if [[ "$rest" == us[0-9]* ]]; then
+        # Extract 'usN' part
+        local us_part="${rest%%-*}"
+        echo "$us_part"
+    fi
+}
+
+# Get corresponding spec branch from feature branch
+# Examples:
+#   feature/#abc123-user-auth -> spec/#abc123-user-auth
+#   feature/#abc123-us1-user-auth -> spec/#abc123-user-auth
+get_spec_branch_from_feature() {
+    local feature_branch="$1"
+    local repo_root="${2:-$(get_repo_root)}"
+    local ticket_id=$(extract_ticket_from_feature "$feature_branch")
+
+    if [ -n "$ticket_id" ]; then
+        # Search specs/ directory for matching spec
+        for dir in "$repo_root/specs/#${ticket_id}-"*; do
+            if [ -d "$dir" ]; then
+                local dirname=$(basename "$dir")
+                echo "spec/$dirname"
+                return 0
+            fi
+        done
+    fi
+    return 1
+}
+
+# Check if current branch is valid for workflow (spec or feature branch)
+is_valid_workflow_branch() {
+    local branch="$1"
+    is_ticket_based_branch "$branch" || is_feature_branch "$branch" || [[ "$branch" =~ ^[0-9]{3}- ]]
 }
 

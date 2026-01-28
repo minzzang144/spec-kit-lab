@@ -293,3 +293,82 @@ With multiple developers:
 - Commit after each task or logical group
 - Stop at any checkpoint to validate story independently
 - Avoid: vague tasks, same file conflicts, cross-story dependencies that break independence
+
+---
+
+## Implementation Branches
+
+When running `/speckit.implement`, feature branches are created from the spec branch.
+
+### Branch Flow
+
+```
+develop (stable - production ready)
+  │
+  └── spec/#ticket-feature-name (verification - spec + implementation integration)
+       │                        ↑
+       │                        │ PR: feature → spec
+       │                        │
+       ├── [Single Mode]        │
+       │   └── feature/#ticket-feature-name ──────┘
+       │
+       └── [Parallel Mode]
+           ├── feature/#ticket-us1-feature-name ──┐
+           ├── feature/#ticket-us2-feature-name ──┼── PR → spec
+           └── feature/#ticket-us3-feature-name ──┘
+
+Final: spec/#ticket-feature-name → PR → develop (release)
+```
+
+### Single Mode
+
+For smaller features (1-2 User Stories) or single developer work:
+
+```
+feature/#ticket-feature-name
+```
+
+- All tasks executed in one branch
+- One PR for entire feature implementation
+- Simpler workflow, less branch management
+
+### Parallel Mode (User Story Branches)
+
+For larger features (3+ User Stories) or team collaboration:
+
+| User Story | Branch Pattern | PR Target |
+|------------|----------------|-----------|
+| Foundation (Phase 1-2) | `feature/#ticket-feature-name` | spec branch |
+| US1 | `feature/#ticket-us1-feature-name` | spec branch |
+| US2 | `feature/#ticket-us2-feature-name` | spec branch |
+| US3 | `feature/#ticket-us3-feature-name` | spec branch |
+
+**Execution Strategy (Option C: Sequential-Parallel Hybrid)**:
+
+1. **Phase 1-2 (Foundation)**: Complete in `feature/#ticket-feature-name`
+   - Setup + Foundational infrastructure (shared code)
+   - MUST complete before User Story branches start
+
+2. **Phase 3+ (User Stories)**: Can proceed in parallel after Foundation
+   - Each User Story gets its own branch (if needed)
+   - Or continue in single branch for smaller stories
+
+**Merge Order**:
+1. Each `feature` branch → `spec` branch (implementation integration)
+2. Review and test in `spec` branch
+3. `spec` branch → `develop` (release)
+
+### Choosing a Mode
+
+| Criteria | Single Mode | Parallel Mode |
+|----------|-------------|---------------|
+| Feature size | Small-Medium | Large |
+| User Stories | 1-2 | 3+ |
+| Team size | 1 developer | Multiple developers |
+| PR review preference | One large PR | Multiple smaller PRs |
+| Complexity | Low | Higher (more branches) |
+
+**Recommendation**: Start with Single Mode. Switch to Parallel Mode if:
+- Feature grows larger than expected
+- Team wants to parallelize work
+- Stakeholders prefer incremental PR reviews
