@@ -37,7 +37,13 @@ get_current_branch() {
         for dir in "$specs_dir"/*; do
             if [[ -d "$dir" ]]; then
                 local dirname=$(basename "$dir")
-                if [[ "$dirname" =~ ^([0-9]{3})- ]]; then
+                # Support both new ticket-based pattern (spec/#ticket-*) and legacy pattern (###-*)
+                if [[ "$dirname" =~ ^#[a-zA-Z0-9]+- ]]; then
+                    # New ticket-based pattern - use as latest if found
+                    # (prioritize by modification time if needed)
+                    latest_feature=$dirname
+                elif [[ "$dirname" =~ ^([0-9]{3})- ]]; then
+                    # Legacy pattern - track highest number
                     local number=${BASH_REMATCH[1]}
                     number=$((10#$number))
                     if [[ "$number" -gt "$highest" ]]; then
@@ -72,9 +78,10 @@ check_feature_branch() {
         return 0
     fi
 
-    if [[ ! "$branch" =~ ^[0-9]{3}- ]]; then
+    # Support both new ticket-based pattern (spec/#ticket-*) and legacy pattern (###-*)
+    if [[ ! "$branch" =~ ^spec/#[a-zA-Z0-9]+- ]] && [[ ! "$branch" =~ ^[0-9]{3}- ]]; then
         echo "ERROR: Not on a feature branch. Current branch: $branch" >&2
-        echo "Feature branches should be named like: 001-feature-name" >&2
+        echo "Feature branches should be named like: spec/#ticket-feature-name (or legacy: 001-feature-name)" >&2
         return 1
     fi
 
@@ -83,14 +90,45 @@ check_feature_branch() {
 
 get_feature_dir() { echo "$1/specs/$2"; }
 
-# Find feature directory by numeric prefix instead of exact branch match
-# This allows multiple branches to work on the same spec (e.g., 004-fix-bug, 004-add-feature)
+# Find feature directory by ticket ID or numeric prefix
+# Supports both new ticket-based (spec/#ticket-*) and legacy (###-*) patterns
 find_feature_dir_by_prefix() {
     local repo_root="$1"
     local branch_name="$2"
     local specs_dir="$repo_root/specs"
 
-    # Extract numeric prefix from branch (e.g., "004" from "004-whatever")
+    # Check for new ticket-based pattern (spec/#ticket-feature)
+    if [[ "$branch_name" =~ ^spec/#([a-zA-Z0-9]+)- ]]; then
+        local ticket_id="${BASH_REMATCH[1]}"
+
+        # Search for directories in specs/ that start with #ticket-
+        local matches=()
+        if [[ -d "$specs_dir" ]]; then
+            for dir in "$specs_dir"/#"$ticket_id"-*; do
+                if [[ -d "$dir" ]]; then
+                    matches+=("$(basename "$dir")")
+                fi
+            done
+        fi
+
+        # Handle results
+        if [[ ${#matches[@]} -eq 0 ]]; then
+            # No match found - derive directory name from branch name
+            # spec/#ticket-feature -> #ticket-feature
+            local dir_name="${branch_name#spec/}"
+            echo "$specs_dir/$dir_name"
+        elif [[ ${#matches[@]} -eq 1 ]]; then
+            echo "$specs_dir/${matches[0]}"
+        else
+            echo "ERROR: Multiple spec directories found with ticket '$ticket_id': ${matches[*]}" >&2
+            echo "Please ensure only one spec directory exists per ticket ID." >&2
+            local dir_name="${branch_name#spec/}"
+            echo "$specs_dir/$dir_name"
+        fi
+        return
+    fi
+
+    # Legacy: Extract numeric prefix from branch (e.g., "004" from "004-whatever")
     if [[ ! "$branch_name" =~ ^([0-9]{3})- ]]; then
         # If branch doesn't have numeric prefix, fall back to exact match
         echo "$specs_dir/$branch_name"
@@ -153,4 +191,21 @@ EOF
 
 check_file() { [[ -f "$1" ]] && echo "  ✓ $2" || echo "  ✗ $2"; }
 check_dir() { [[ -d "$1" && -n $(ls -A "$1" 2>/dev/null) ]] && echo "  ✓ $2" || echo "  ✗ $2"; }
+
+# Extract ticket ID from branch name
+# Supports both new ticket-based (spec/#ticket-*) and legacy (###-*) patterns
+extract_ticket_id() {
+    local branch_name="$1"
+    if [[ "$branch_name" =~ ^spec/#([a-zA-Z0-9]+)- ]]; then
+        echo "${BASH_REMATCH[1]}"
+    elif [[ "$branch_name" =~ ^([0-9]{3})- ]]; then
+        # Legacy pattern: return the numeric prefix
+        echo "${BASH_REMATCH[1]}"
+    fi
+}
+
+# Check if branch uses the new ticket-based naming convention
+is_ticket_based_branch() {
+    [[ "$1" =~ ^spec/#[a-zA-Z0-9]+- ]]
+}
 

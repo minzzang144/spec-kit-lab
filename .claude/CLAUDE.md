@@ -65,9 +65,14 @@ All commands follow pattern `speckit.[phase]` and are available in both `.claude
 
 ## Feature Branch Naming Convention
 
-- Format: `###-feature-name` (e.g., `001-user-auth`, `042-payment-flow`)
-- Three-digit prefix allows multiple branches per feature number
-- Generated specs use same numbering in `specs/###-feature-name/`
+- **Current Format**: `spec/#ticket-feature-name` (e.g., `spec/#13272f64-user-auth`, `spec/#PROJ123-payment-flow`)
+- Ticket ID links the branch to an external issue tracker
+- Generated specs use ticket ID in `specs/#ticket-feature-name/`
+- **Ticket ID Requirements**:
+  - Must be alphanumeric only (a-z, A-Z, 0-9)
+  - No hyphens, spaces, or special characters
+  - Examples: `13272f64`, `PROJ123`, `abc456`
+- **Legacy Support**: Format `###-feature-name` (e.g., `001-user-auth`) is still recognized for backward compatibility
 
 ## Specification Templates
 
@@ -116,10 +121,11 @@ The system enforces quality through:
 
 ## Working with Features
 
-- Each feature gets isolated directory in `specs/###-feature-name/`
+- Each feature gets isolated directory in `specs/#ticket-feature-name/`
 - Contains: `spec.md`, `plan.md`, `tasks.md`, `research.md`, `data-model.md`
 - Branch-based isolation allows parallel feature development
-- Numeric prefixes enable feature history tracking
+- Ticket ID enables traceability to external issue trackers
+- Legacy specs with `###-` prefix are still supported
 
 ## Error Handling
 
