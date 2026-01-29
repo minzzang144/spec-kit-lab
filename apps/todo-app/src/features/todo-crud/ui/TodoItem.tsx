@@ -1,6 +1,6 @@
 import type { TodoItem as TodoItemType } from '@entities/todo'
 import { useTodoStore } from '@entities/todo'
-import { cn } from '@shared/index'
+import { Button, cn } from '@shared/index'
 
 interface TodoItemProps {
   todo: TodoItemType
@@ -8,9 +8,14 @@ interface TodoItemProps {
 
 export function TodoItem({ todo }: TodoItemProps) {
   const toggleTodo = useTodoStore((state) => state.toggleTodo)
+  const deleteTodo = useTodoStore((state) => state.deleteTodo)
 
   const handleToggle = () => {
     toggleTodo(todo.id)
+  }
+
+  const handleDelete = () => {
+    deleteTodo(todo.id)
   }
 
   return (
@@ -32,6 +37,14 @@ export function TodoItem({ todo }: TodoItemProps) {
       >
         {todo.text}
       </label>
+      <Button
+        variant="destructive"
+        size="sm"
+        onClick={handleDelete}
+        aria-label="삭제"
+      >
+        삭제
+      </Button>
     </div>
   )
 }
