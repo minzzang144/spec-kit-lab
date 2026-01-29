@@ -36,12 +36,12 @@
 
 **Purpose**: Create React project with Vite and configure build tools
 
-- [ ] T001 Create Vite + React + TypeScript project in `apps/todo-app/`
-- [ ] T002 Configure TypeScript strict mode in `apps/todo-app/tsconfig.json`
-- [ ] T003 [P] Configure ESLint in `apps/todo-app/eslint.config.js`
-- [ ] T004 [P] Configure TailwindCSS in `apps/todo-app/tailwind.config.js` and `apps/todo-app/postcss.config.js`
-- [ ] T005 [P] Configure Vitest in `apps/todo-app/vitest.config.ts`
-- [ ] T006 Create FSD directory structure in `apps/todo-app/src/` (app, pages, features, entities, shared)
+- [x] T001 Create Vite + React + TypeScript project in `apps/todo-app/`
+- [x] T002 Configure TypeScript strict mode in `apps/todo-app/tsconfig.json`
+- [x] T003 [P] Configure ESLint in `apps/todo-app/eslint.config.js`
+- [x] T004 [P] Configure TailwindCSS in `apps/todo-app/tailwind.config.js` and `apps/todo-app/postcss.config.js`
+- [x] T005 [P] Configure Vitest in `apps/todo-app/vitest.config.ts`
+- [x] T006 Create FSD directory structure in `apps/todo-app/src/` (app, pages, features, entities, shared)
 
 ---
 
@@ -53,23 +53,23 @@
 
 ### Shared UI Components
 
-- [ ] T007 [P] Create cn() utility in `apps/todo-app/src/shared/lib/utils.ts`
-- [ ] T008 [P] Create Button component in `apps/todo-app/src/shared/ui/button.tsx`
-- [ ] T009 [P] Create Input component in `apps/todo-app/src/shared/ui/input.tsx`
-- [ ] T010 [P] Create Checkbox component in `apps/todo-app/src/shared/ui/checkbox.tsx`
-- [ ] T011 Create shared index.ts exports in `apps/todo-app/src/shared/index.ts`
+- [x] T007 [P] Create cn() utility in `apps/todo-app/src/shared/lib/utils.ts`
+- [x] T008 [P] Create Button component in `apps/todo-app/src/shared/ui/button.tsx`
+- [x] T009 [P] Create Input component in `apps/todo-app/src/shared/ui/input.tsx`
+- [x] T010 [P] Create Checkbox component in `apps/todo-app/src/shared/ui/checkbox.tsx`
+- [x] T011 Create shared index.ts exports in `apps/todo-app/src/shared/index.ts`
 
 ### Entity Types & Constants
 
-- [ ] T012 [P] Create TodoItem type in `apps/todo-app/src/entities/todo/types/todo.types.ts`
-- [ ] T013 [P] Create todo constants (MAX_TEXT_LENGTH, STORAGE_KEY) in `apps/todo-app/src/entities/todo/config/constants.ts`
+- [x] T012 [P] Create TodoItem type in `apps/todo-app/src/entities/todo/types/todo.types.ts`
+- [x] T013 [P] Create todo constants (MAX_TEXT_LENGTH, STORAGE_KEY) in `apps/todo-app/src/entities/todo/config/constants.ts`
 
 ### App Shell
 
-- [ ] T014 Create App component in `apps/todo-app/src/App.tsx`
-- [ ] T015 Create main entry point in `apps/todo-app/src/main.tsx`
-- [ ] T016 Create base styles in `apps/todo-app/src/index.css`
-- [ ] T017 Update index.html title in `apps/todo-app/index.html`
+- [x] T014 Create App component in `apps/todo-app/src/App.tsx`
+- [x] T015 Create main entry point in `apps/todo-app/src/main.tsx`
+- [x] T016 Create base styles in `apps/todo-app/src/index.css`
+- [x] T017 Update index.html title in `apps/todo-app/index.html`
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
 
@@ -85,28 +85,28 @@
 
 > **CONSTITUTION REQUIREMENT: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T018 [P] [US1] Unit test for todoStore addTodo action in `apps/todo-app/src/entities/todo/model/__tests__/todoStore.test.ts`
-- [ ] T019 [P] [US1] Unit test for TodoInput component in `apps/todo-app/src/features/todo-crud/ui/__tests__/TodoInput.test.tsx`
-- [ ] T020 [P] [US1] Unit test for TodoList component in `apps/todo-app/src/features/todo-crud/ui/__tests__/TodoList.test.tsx`
+- [x] T018 [P] [US1] Unit test for todoStore addTodo action in `apps/todo-app/src/entities/todo/model/__tests__/todoStore.test.ts`
+- [x] T019 [P] [US1] Unit test for TodoInput component in `apps/todo-app/src/features/todo-crud/ui/__tests__/TodoInput.test.tsx`
+- [x] T020 [P] [US1] Unit test for TodoList component in `apps/todo-app/src/features/todo-crud/ui/__tests__/TodoList.test.tsx`
 
 ### Implementation for User Story 1 (After Tests Pass)
 
 Entity Layer:
-- [ ] T021 [US1] Implement todoStore with addTodo action and LocalStorage persist in `apps/todo-app/src/entities/todo/model/todoStore.ts`
-- [ ] T022 [US1] Create todo entity public API in `apps/todo-app/src/entities/todo/index.ts`
+- [x] T021 [US1] Implement todoStore with addTodo action and LocalStorage persist in `apps/todo-app/src/entities/todo/model/todoStore.ts`
+- [x] T022 [US1] Create todo entity public API in `apps/todo-app/src/entities/todo/index.ts`
 
 Feature Layer:
-- [ ] T023 [US1] Create TodoInput component (text input + add button) in `apps/todo-app/src/features/todo-crud/ui/TodoInput.tsx`
-- [ ] T024 [US1] Create TodoList component (display todos) in `apps/todo-app/src/features/todo-crud/ui/TodoList.tsx`
-- [ ] T025 [US1] Create todo-crud feature public API in `apps/todo-app/src/features/todo-crud/index.ts`
+- [x] T023 [US1] Create TodoInput component (text input + add button) in `apps/todo-app/src/features/todo-crud/ui/TodoInput.tsx`
+- [x] T024 [US1] Create TodoList component (display todos) in `apps/todo-app/src/features/todo-crud/ui/TodoList.tsx`
+- [x] T025 [US1] Create todo-crud feature public API in `apps/todo-app/src/features/todo-crud/index.ts`
 
 Page Layer:
-- [ ] T026 [US1] Create TodoPage composing TodoInput and TodoList in `apps/todo-app/src/pages/todo/TodoPage.tsx`
-- [ ] T027 [US1] Create pages public API in `apps/todo-app/src/pages/todo/index.ts`
-- [ ] T028 [US1] Integrate TodoPage into App.tsx
+- [x] T026 [US1] Create TodoPage composing TodoInput and TodoList in `apps/todo-app/src/pages/todo/TodoPage.tsx`
+- [x] T027 [US1] Create pages public API in `apps/todo-app/src/pages/todo/index.ts`
+- [x] T028 [US1] Integrate TodoPage into App.tsx
 
 Verification:
-- [ ] T029 [US1] Run verification (pnpm run type-check && pnpm run lint && pnpm run test && pnpm run build)
+- [x] T029 [US1] Run verification (pnpm run type-check && pnpm run lint && pnpm run test && pnpm run build)
 
 **Checkpoint**: User Story 1 완료 - 할 일 추가 및 목록 표시 기능 동작, 새로고침 후 데이터 유지
 
@@ -120,20 +120,20 @@ Verification:
 
 ### Tests for User Story 2 (TDD Required) ⚠️
 
-- [ ] T030 [P] [US2] Unit test for todoStore toggleTodo action in `apps/todo-app/src/entities/todo/model/__tests__/todoStore.test.ts` (extend existing)
-- [ ] T031 [P] [US2] Unit test for TodoItem component toggle behavior in `apps/todo-app/src/features/todo-crud/ui/__tests__/TodoItem.test.tsx`
+- [x] T030 [P] [US2] Unit test for todoStore toggleTodo action in `apps/todo-app/src/entities/todo/model/__tests__/todoStore.test.ts` (extend existing)
+- [x] T031 [P] [US2] Unit test for TodoItem component toggle behavior in `apps/todo-app/src/features/todo-crud/ui/__tests__/TodoItem.test.tsx`
 
 ### Implementation for User Story 2 (After Tests Pass)
 
 Entity Layer:
-- [ ] T032 [US2] Add toggleTodo action to todoStore in `apps/todo-app/src/entities/todo/model/todoStore.ts`
+- [x] T032 [US2] Add toggleTodo action to todoStore in `apps/todo-app/src/entities/todo/model/todoStore.ts`
 
 Feature Layer:
-- [ ] T033 [US2] Create TodoItem component with toggle and visual feedback in `apps/todo-app/src/features/todo-crud/ui/TodoItem.tsx`
-- [ ] T034 [US2] Update TodoList to use TodoItem component in `apps/todo-app/src/features/todo-crud/ui/TodoList.tsx`
+- [x] T033 [US2] Create TodoItem component with toggle and visual feedback in `apps/todo-app/src/features/todo-crud/ui/TodoItem.tsx`
+- [x] T034 [US2] Update TodoList to use TodoItem component in `apps/todo-app/src/features/todo-crud/ui/TodoList.tsx`
 
 Verification:
-- [ ] T035 [US2] Run verification (pnpm run type-check && pnpm run lint && pnpm run test && pnpm run build)
+- [x] T035 [US2] Run verification (pnpm run type-check && pnpm run lint && pnpm run test && pnpm run build)
 
 **Checkpoint**: User Story 2 완료 - 할 일 완료/미완료 토글 기능 동작
 
@@ -147,19 +147,19 @@ Verification:
 
 ### Tests for User Story 3 (TDD Required) ⚠️
 
-- [ ] T036 [P] [US3] Unit test for todoStore deleteTodo action in `apps/todo-app/src/entities/todo/model/__tests__/todoStore.test.ts` (extend existing)
-- [ ] T037 [P] [US3] Unit test for TodoItem component delete behavior in `apps/todo-app/src/features/todo-crud/ui/__tests__/TodoItem.test.tsx` (extend existing)
+- [x] T036 [P] [US3] Unit test for todoStore deleteTodo action in `apps/todo-app/src/entities/todo/model/__tests__/todoStore.test.ts` (extend existing)
+- [x] T037 [P] [US3] Unit test for TodoItem component delete behavior in `apps/todo-app/src/features/todo-crud/ui/__tests__/TodoItem.test.tsx` (extend existing)
 
 ### Implementation for User Story 3 (After Tests Pass)
 
 Entity Layer:
-- [ ] T038 [US3] Add deleteTodo action to todoStore in `apps/todo-app/src/entities/todo/model/todoStore.ts`
+- [x] T038 [US3] Add deleteTodo action to todoStore in `apps/todo-app/src/entities/todo/model/todoStore.ts`
 
 Feature Layer:
-- [ ] T039 [US3] Add delete button to TodoItem component in `apps/todo-app/src/features/todo-crud/ui/TodoItem.tsx`
+- [x] T039 [US3] Add delete button to TodoItem component in `apps/todo-app/src/features/todo-crud/ui/TodoItem.tsx`
 
 Verification:
-- [ ] T040 [US3] Run verification (pnpm run type-check && pnpm run lint && pnpm run test && pnpm run build)
+- [x] T040 [US3] Run verification (pnpm run type-check && pnpm run lint && pnpm run test && pnpm run build)
 
 **Checkpoint**: User Story 3 완료 - 모든 CRUD 기능 동작
 
@@ -169,11 +169,11 @@ Verification:
 
 **Purpose**: UI/UX 개선 및 접근성
 
-- [ ] T041 [P] Add empty state UI when no todos in `apps/todo-app/src/features/todo-crud/ui/TodoList.tsx`
-- [ ] T042 [P] Add keyboard accessibility (Enter to submit) in `apps/todo-app/src/features/todo-crud/ui/TodoInput.tsx`
-- [ ] T043 [P] Add ARIA labels for accessibility in all components
-- [ ] T044 Add responsive styling for mobile/desktop in `apps/todo-app/src/index.css`
-- [ ] T045 Run final verification (pnpm run type-check && pnpm run lint && pnpm run test && pnpm run build)
+- [x] T041 [P] Add empty state UI when no todos in `apps/todo-app/src/features/todo-crud/ui/TodoList.tsx`
+- [x] T042 [P] Add keyboard accessibility (Enter to submit) in `apps/todo-app/src/features/todo-crud/ui/TodoInput.tsx`
+- [x] T043 [P] Add ARIA labels for accessibility in all components
+- [x] T044 Add responsive styling for mobile/desktop in `apps/todo-app/src/index.css`
+- [x] T045 Run final verification (pnpm run type-check && pnpm run lint && pnpm run test && pnpm run build)
 
 ---
 
