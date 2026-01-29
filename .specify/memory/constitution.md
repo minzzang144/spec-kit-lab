@@ -1,14 +1,16 @@
 <!--
 Sync Impact Report:
-Version change: 2.1.0 → 2.1.1 (Architecture structure clarity improvement)
+Version change: 2.1.1 → 2.1.2 (E2E testing requirements generalization)
 Modified sections:
-  - Architecture Principles: Added clarification that [APP_NAME] is defined during /speckit.plan
+  - Code Quality Rules > Frontend Testing: Generalized E2E requirements
+    - Changed from "E2E tests for critical flows: Checkout, auth, payment"
+    - To "E2E tests for all user stories" with specific requirements
 Removed sections: None
 Added sections: None
 Templates requiring updates:
-  - ⚠ spec-template.md: Should mention app naming convention
-  - ⚠ plan-template.md: Should reference app name selection
-Follow-up TODOs: None - app naming process clarified
+  - ✅ spec-template.md: E2E Test Scenarios section added
+  - ⚠ tasks-template.md: Should include E2E test phase
+Follow-up TODOs: Update tasks-template.md with mandatory E2E phase
 -->
 
 # Spec Kit Lab Constitution
@@ -174,7 +176,10 @@ modules/[feature]/
 - **TDD for business logic**: Write tests BEFORE implementation
 - **Test Coverage**: Minimum 80% for `/features`, `/entities`
 - **Integration tests for happy paths**: Focus on user journeys
-- **E2E tests for critical flows**: Checkout, auth, payment
+- **E2E tests for all user stories**: Each user story MUST have E2E tests covering:
+  - 핵심 사용자 시나리오 (complete user journey from start to finish)
+  - 데이터 persistence (if applicable)
+  - Happy path + critical error scenarios
 
 #### Backend Testing
 - **Unit Tests**: All services and utilities (Jest)
@@ -431,4 +436,4 @@ Use Cursor's **Agent Review** feature:
 - Agent must refuse work that violates Constitution
 - Pre-commit hooks enforce code quality rules
 
-**Version**: 2.1.1 | **Ratified**: 2025-01-20 | **Last Amended**: 2025-01-21
+**Version**: 2.1.2 | **Ratified**: 2025-01-20 | **Last Amended**: 2026-01-29
