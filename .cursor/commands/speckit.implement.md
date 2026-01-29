@@ -146,6 +146,32 @@ You **MUST** consider the user input before proceeding (if not empty).
    - **File-based coordination**: Tasks affecting the same files must run sequentially
    - **Validation checkpoints**: Verify each phase completion before proceeding
 
+   **🔍 Code Review Checkpoint (Per User Story)**:
+   After completing each User Story phase (e.g., Phase 3: US1, Phase 4: US2, Phase 5: US3):
+
+   a. **Announce completion**: "User Story [N] 구현이 완료되었습니다. 코드 리뷰를 진행합니다."
+
+   b. **Run code review**: Execute `@code-review` command (if MCP server configured)
+      - If the command is not available, inform the user:
+        ```
+        ⚠️ code-review MCP 서버가 설정되어 있지 않습니다.
+        Cursor Settings > Features > MCP Servers에서 다음을 추가해주세요:
+
+        Name: everything-claude-code
+        Type: command
+        Command: npx -y @anthropic-ai/claude-code-mcp@latest
+
+        설정 후 다시 시도하거나, 수동으로 코드를 리뷰해주세요.
+        ```
+      - Wait for user to confirm setup and retry, or skip review
+
+   c. **Address findings**: If review identifies issues:
+      - Critical/High issues: Fix before proceeding to next User Story
+      - Medium/Low issues: Document for later or fix if time permits
+
+   d. **Commit review fixes**: Any fixes from code review should be committed separately:
+      - Commit message format: `fix(<scope>): address code review feedback for US[N]`
+
 8. Implementation execution rules:
    - **Setup first**: Initialize project structure, dependencies, configuration
    - **Tests before code**: If you need to write tests for contracts, entities, and integration scenarios
@@ -162,10 +188,94 @@ You **MUST** consider the user input before proceeding (if not empty).
    - **IMPORTANT** For completed tasks, make sure to mark the task off as [X] in the tasks file.
 
 10. Completion validation:
-   - Verify all required tasks are completed
-   - Check that implemented features match the original specification
-   - Validate that tests pass and coverage meets requirements
-   - Confirm the implementation follows the technical plan
-   - Report final status with summary of completed work
+    - Verify all required tasks are completed
+    - Check that implemented features match the original specification
+    - Validate that tests pass and coverage meets requirements
+    - Confirm the implementation follows the technical plan
+    - Report final status with summary of completed work
+
+11. **🔍 PR Review (Pre-PR Quality Gate)**:
+
+    After all implementation is complete and validated:
+
+    a. **Announce PR review**: "모든 구현이 완료되었습니다. PR 생성 전 종합 리뷰를 진행합니다."
+
+    b. **Run comprehensive PR review**: Execute `@pr-review` command (if MCP server configured)
+       - If the command is not available, inform the user:
+         ```
+         ⚠️ pr-review-toolkit MCP 서버가 설정되어 있지 않습니다.
+         Cursor Settings > Features > MCP Servers에서 다음을 추가해주세요:
+
+         Name: pr-review-toolkit
+         Type: command
+         Command: npx -y @anthropic-ai/pr-review-toolkit-mcp@latest
+
+         설정 후 다시 시도하거나, 기본 코드 리뷰로 대체할 수 있습니다.
+         ```
+       - If MCP unavailable, offer alternative: Run `@code-review` on full changeset
+
+    c. **Review findings**: The PR review provides multi-agent analysis covering:
+       - Code quality and standards compliance
+       - Security vulnerabilities
+       - Performance issues
+       - Test coverage gaps
+
+    d. **Address critical issues**: Fix any Critical/High severity issues before PR creation
+
+12. **📤 PR Creation**:
+
+    a. **Determine base branch**:
+       - **IMPORTANT**: Base branch is NOT always `develop`!
+       - Parse the original spec branch from which feature branch was created
+       - Run: `git log --oneline --decorate | head -20` to identify branch relationships
+       - Or check: The spec branch pattern `spec/#ticket-*` should be the base for feature branches
+       - **Default hierarchy**:
+         - `feature/#ticket-*` → base: `spec/#ticket-*` (same ticket)
+         - `spec/#ticket-*` → base: `develop` or `main` (depends on project)
+
+    b. **Ask user for base branch confirmation** using AskUserQuestion:
+       - Question: "PR의 base 브랜치를 확인해주세요."
+       - Header: "Base 브랜치"
+       - Options:
+         1. Label: "[detected-base-branch]", Description: "자동 감지된 브랜치 (권장)"
+         2. Label: "develop", Description: "develop 브랜치로 병합"
+         3. Label: "main", Description: "main 브랜치로 병합"
+         4. (Option to enter custom branch via "Other")
+
+    c. **Push and create PR**:
+       - Push current branch: `git push -u origin [current-branch]`
+       - Create PR with detailed description:
+         ```bash
+         gh pr create --base [base-branch] --title "[PR title]" --body "$(cat <<'EOF'
+         ## Summary
+         [Brief description of changes from tasks.md]
+
+         ## Changes
+         [List of completed User Stories and key changes]
+
+         ## Test Plan
+         - [ ] Unit tests pass
+         - [ ] Integration tests pass
+         - [ ] E2E tests pass (if applicable)
+         - [ ] Manual testing completed
+
+         ## Code Review
+         - [x] Per-User-Story code review completed
+         - [x] Pre-PR comprehensive review completed
+
+         🤖 Generated with [Cursor](https://cursor.sh) using SpecKit workflow
+         EOF
+         )"
+         ```
+
+    d. **Post review summary to PR** (optional):
+       - If comprehensive review was performed, post summary as PR comment:
+         ```bash
+         gh pr comment [PR_NUMBER] --body "[Review summary from step 11]"
+         ```
+
+    e. **Report completion**:
+       - Display PR URL
+       - Summarize: tasks completed, review status, any remaining items
 
 Note: This command assumes a complete task breakdown exists in tasks.md. If tasks are incomplete or missing, suggest running `/speckit.tasks` first to regenerate the task list.
