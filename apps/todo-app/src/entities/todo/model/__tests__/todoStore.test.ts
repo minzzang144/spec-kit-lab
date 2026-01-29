@@ -77,4 +77,41 @@ describe('todoStore', () => {
       expect(todos[0].id).not.toBe(todos[1].id)
     })
   })
+
+  describe('toggleTodo', () => {
+    it('should toggle todo from incomplete to complete', () => {
+      const { addTodo, toggleTodo } = useTodoStore.getState()
+      addTodo('Test todo')
+
+      const { todos: initialTodos } = useTodoStore.getState()
+      expect(initialTodos[0].completed).toBe(false)
+
+      toggleTodo(initialTodos[0].id)
+
+      const { todos } = useTodoStore.getState()
+      expect(todos[0].completed).toBe(true)
+    })
+
+    it('should toggle todo from complete to incomplete', () => {
+      useTodoStore.setState({
+        todos: [{ id: '1', text: 'Test', completed: true, createdAt: Date.now() }],
+      })
+
+      const { toggleTodo } = useTodoStore.getState()
+      toggleTodo('1')
+
+      const { todos } = useTodoStore.getState()
+      expect(todos[0].completed).toBe(false)
+    })
+
+    it('should do nothing when id not found', () => {
+      const { addTodo, toggleTodo } = useTodoStore.getState()
+      addTodo('Test todo')
+
+      toggleTodo('non-existent-id')
+
+      const { todos } = useTodoStore.getState()
+      expect(todos[0].completed).toBe(false)
+    })
+  })
 })
