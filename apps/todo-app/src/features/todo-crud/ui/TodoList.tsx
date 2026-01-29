@@ -1,4 +1,5 @@
 import { useTodoStore } from '@entities/todo'
+import { TodoItem } from './TodoItem'
 
 export function TodoList() {
   const todos = useTodoStore((state) => state.todos)
@@ -14,14 +15,8 @@ export function TodoList() {
   return (
     <ul className="space-y-2" role="list">
       {todos.map((todo) => (
-        <li
-          key={todo.id}
-          role="listitem"
-          className="p-4 bg-white rounded-lg shadow-sm border border-gray-200"
-        >
-          <span className={todo.completed ? 'line-through text-gray-400' : ''}>
-            {todo.text}
-          </span>
+        <li key={todo.id} role="listitem">
+          <TodoItem todo={todo} />
         </li>
       ))}
     </ul>
