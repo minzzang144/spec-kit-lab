@@ -114,4 +114,46 @@ describe('todoStore', () => {
       expect(todos[0].completed).toBe(false)
     })
   })
+
+  describe('deleteTodo', () => {
+    it('should delete todo by id', () => {
+      useTodoStore.setState({
+        todos: [
+          { id: '1', text: 'First', completed: false, createdAt: Date.now() },
+          { id: '2', text: 'Second', completed: false, createdAt: Date.now() - 1000 },
+        ],
+      })
+
+      const { deleteTodo } = useTodoStore.getState()
+      deleteTodo('1')
+
+      const { todos } = useTodoStore.getState()
+      expect(todos).toHaveLength(1)
+      expect(todos[0].text).toBe('Second')
+    })
+
+    it('should do nothing when id not found', () => {
+      useTodoStore.setState({
+        todos: [{ id: '1', text: 'Test', completed: false, createdAt: Date.now() }],
+      })
+
+      const { deleteTodo } = useTodoStore.getState()
+      deleteTodo('non-existent-id')
+
+      const { todos } = useTodoStore.getState()
+      expect(todos).toHaveLength(1)
+    })
+
+    it('should delete last remaining todo', () => {
+      useTodoStore.setState({
+        todos: [{ id: '1', text: 'Only todo', completed: false, createdAt: Date.now() }],
+      })
+
+      const { deleteTodo } = useTodoStore.getState()
+      deleteTodo('1')
+
+      const { todos } = useTodoStore.getState()
+      expect(todos).toHaveLength(0)
+    })
+  })
 })

@@ -63,4 +63,21 @@ describe('TodoItem', () => {
     const checkbox = screen.getByRole('checkbox', { name: /Test todo/i })
     expect(checkbox).toBeInTheDocument()
   })
+
+  it('should render delete button', () => {
+    render(<TodoItem todo={mockTodo} />)
+
+    expect(screen.getByRole('button', { name: '삭제' })).toBeInTheDocument()
+  })
+
+  it('should delete todo when delete button clicked', async () => {
+    const user = userEvent.setup()
+    render(<TodoItem todo={mockTodo} />)
+
+    const deleteButton = screen.getByRole('button', { name: '삭제' })
+    await user.click(deleteButton)
+
+    const { todos } = useTodoStore.getState()
+    expect(todos).toHaveLength(0)
+  })
 })
