@@ -37,3 +37,4 @@ export {
 export { Label } from './Shadcn/label';
 export { Badge, badgeVariants } from './Shadcn/badge';
 export { Separator } from './Shadcn/separator';
+export { ErrorBoundary } from './ErrorBoundary';

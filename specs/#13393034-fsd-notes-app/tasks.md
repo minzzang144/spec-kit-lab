@@ -51,10 +51,10 @@
 ### Shared Layer (Non-domain)
 
 - [x] T008 Create `apps/notes-app/src/Shared/Type/Common.ts` with shared API response types (`ApiResponse<T>`, `ApiError`) and `apps/notes-app/src/Shared/Type/index.ts` barrel export
-- [ ] T009 [P] Create `apps/notes-app/src/Shared/Api/httpClient.ts` with custom fetch wrapper (BASE_URL `/api`, GET/POST/PUT/DELETE methods, error handling) and `apps/notes-app/src/Shared/Api/index.ts` barrel export
-- [ ] T010 [P] Create `apps/notes-app/src/Shared/Config/Routes.ts` with route path constants (`/`, `/notes/new`, `/notes/:id`, `/categories`) and `apps/notes-app/src/Shared/Config/index.ts` barrel export
-- [ ] T011 [P] Create `apps/notes-app/src/Shared/Lib/DateFormat.ts` with date formatting utility (ISO string → human-readable) and `apps/notes-app/src/Shared/Lib/index.ts` barrel export
-- [ ] T012 [P] Create `apps/notes-app/src/Shared/Ui/ErrorBoundary/ErrorBoundary.tsx` + `index.ts` with React Error Boundary component, and `apps/notes-app/src/Shared/Ui/index.ts` barrel export
+- [x] T009 [P] Create `apps/notes-app/src/Shared/Api/httpClient.ts` with custom fetch wrapper (BASE_URL `/api`, GET/POST/PUT/DELETE methods, error handling) and `apps/notes-app/src/Shared/Api/index.ts` barrel export
+- [x] T010 [P] Create `apps/notes-app/src/Shared/Config/Routes.ts` with route path constants (`/`, `/notes/new`, `/notes/:id`, `/categories`) and `apps/notes-app/src/Shared/Config/index.ts` barrel export
+- [x] T011 [P] Create `apps/notes-app/src/Shared/Lib/DateFormat.ts` with date formatting utility (ISO string → human-readable) and `apps/notes-app/src/Shared/Lib/index.ts` barrel export
+- [x] T012 [P] Create `apps/notes-app/src/Shared/Ui/ErrorBoundary/ErrorBoundary.tsx` + `index.ts` with React Error Boundary component, and `apps/notes-app/src/Shared/Ui/index.ts` barrel export
 
 ### Entities Layer (Domain - read-oriented)
 
