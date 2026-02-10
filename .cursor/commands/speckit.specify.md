@@ -31,14 +31,18 @@ Given that feature description, do this:
       - `13272f64 Add user auth` → ticket: `13272f64` (if starts with alphanumeric ID)
       - `[PROJ123] Add user auth` → ticket: `PROJ123`
 
-   b. If NO ticket ID found in input, **ASK the user interactively**:
-      - Use the AskUserQuestion tool to request the ticket ID
-      - Question: "Please provide a ticket ID for this feature (e.g., 13272f64, PROJ123)"
-      - Header: "Ticket ID"
-      - Options:
-        - Option A: "I'll provide the ticket ID" (with description asking to enter alphanumeric ID)
-        - Option B: "Skip for now" (explain this will fail the script)
-      - Wait for user response before proceeding
+   b. If NO ticket ID found in input, **사용자에게 티켓 ID를 요청합니다**:
+
+      > **이 기능의 티켓 ID를 입력해주세요.**
+      >
+      > | 옵션 | 설명 |
+      > |------|------|
+      > | 티켓 ID 입력 | 영숫자로만 구성된 ID를 입력해주세요 (예: `13272f64`, `PROJ123`) |
+      > | 건너뛰기 | 티켓 ID 없이는 스크립트가 실패합니다 |
+      >
+      > 티켓 ID를 입력해주세요.
+
+      - 사용자 응답을 대기한 후 진행합니다
 
    c. Validate the ticket ID:
       - Must be alphanumeric only (a-z, A-Z, 0-9)
