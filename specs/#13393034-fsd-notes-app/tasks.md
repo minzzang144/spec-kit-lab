@@ -65,8 +65,8 @@
 - [x] T017 [P] Create `apps/notes-app/src/Entities/Category/__Mock__/categoryMockData.ts` with initial mock categories data (default + 3 custom categories) — NOT exported from index.ts
 - [x] T018 Create `apps/notes-app/src/Entities/Note/Api/Get.ts` with getNotes (list with filters), getNote (by id) HTTP functions and `apps/notes-app/src/Entities/Note/Api/Query.ts` with noteQueryOptions factory + noteQueryKeys. Update `apps/notes-app/src/Entities/Note/index.ts` barrel export
 - [x] T019 Create `apps/notes-app/src/Entities/Category/Api/Get.ts` with getCategories HTTP function and `apps/notes-app/src/Entities/Category/Api/Query.ts` with categoryQueryOptions factory + categoryQueryKeys. Update `apps/notes-app/src/Entities/Category/index.ts` barrel export
-- [ ] T020 Create `apps/notes-app/src/Entities/Note/Model/Hook/useNotes.ts` (list query hook with categoryId/keyword/sort params) and `apps/notes-app/src/Entities/Note/Model/Hook/useNote.ts` (single note query hook). Update barrel export
-- [ ] T021 [P] Create `apps/notes-app/src/Entities/Category/Model/Hook/useCategories.ts` (categories list query hook). Update barrel export
+- [x] T020 Create `apps/notes-app/src/Entities/Note/Model/Hook/useNoteList.ts` (list query hook with categoryId/keyword/sort params) and `apps/notes-app/src/Entities/Note/Model/Hook/useNote.ts` (single note query hook). Update barrel export
+- [x] T021 [P] Create `apps/notes-app/src/Entities/Category/Model/Hook/useCategoryList.ts` (categories list query hook). Update barrel export
 
 ### MSW Mock API Setup
 

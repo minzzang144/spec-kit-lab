@@ -6,3 +6,4 @@ export {
 } from './Config/CategoryConfig';
 export { getCategoryList } from './Api/Get';
 export { categoryQueryKey, categoryQueryOption } from './Api/Query';
+export { useCategoryList } from './Model/Hook/useCategoryList';
