@@ -262,6 +262,28 @@ import { httpClient } from '#/Shared/Api';
 
 절대 경로 형식: **`#/Layer/Slice`** (항상 2-depth)
 
+### Non-domain 레이어 내부: 상대 경로
+
+Non-domain 레이어(App, Shared)는 슬라이스가 세그먼트 역할을 하므로, **레이어 내부 슬라이스 간 import는 상대 경로**를 사용한다:
+
+```typescript
+// Shared/Ui/Shadcn/button.tsx → Shared/Model 참조
+import { cn } from '../../Model/Shadcn/Utils';
+```
+
+단, **shadcn CLI 생성 코드는 예외**로 `components.json` aliases에 정의된 절대 경로(index.ts 경유)를 허용한다:
+
+```typescript
+// shadcn CLI가 자동 생성하는 코드 (예외 허용)
+import { cn } from '#/Shared/Model';
+```
+
+| 상황 | 경로 방식 | 예시 |
+|------|----------|------|
+| Non-domain 내부 (직접 작성) | 상대 경로 | `import { cn } from '../../Model/Shadcn/Utils'` |
+| Non-domain 내부 (shadcn 생성) | 절대 경로 예외 (index.ts 경유) | `import { cn } from '#/Shared/Model'` |
+| 외부 → Non-domain | 절대 경로 + index.ts | `import { Button } from '#/Shared/Ui'` |
+
 ### 순환 참조 해결
 
 1. **공통 코드를 하위 레이어로 추출**: 순환 원인이 되는 공통 코드를 Entities나 Shared로 이동
@@ -558,7 +580,8 @@ Shared/
 **규칙**:
 - `Shadcn/` 그룹 내 파일은 shadcn CLI가 생성하므로 **소문자 파일명 허용** (유일한 예외)
 - 커스텀 컴포넌트는 `Shadcn/` 그룹 밖에서 PascalCase 폴더 구조를 유지
-- `components.json`의 `ui` alias를 `#/Shared/Ui/Shadcn`, `utils` alias를 `#/Shared/Model/Shadcn/Utils`로 설정
+- `components.json`의 `ui` alias를 `#/Shared/Ui/Shadcn`, `utils` alias를 `#/Shared/Model`(index.ts 경유)로 설정
+- shadcn CLI 생성 코드 내 import는 `#/Shared/Model`(절대 경로, index.ts 경유) 예외 허용 (Section 7 참조)
 
 ---
 

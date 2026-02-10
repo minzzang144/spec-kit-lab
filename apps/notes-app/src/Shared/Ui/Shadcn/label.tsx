@@ -1,7 +1,7 @@
 import * as React from "react"
 import { Label as LabelPrimitive } from "radix-ui"
 
-import { cn } from "#/Shared/Model/Shadcn/Utils"
+import { cn } from "#/Shared/Model"
 
 function Label({
   className,
