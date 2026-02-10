@@ -58,9 +58,9 @@
 
 ### Entities Layer (Domain - read-oriented)
 
-- [ ] T013 [P] Create `apps/notes-app/src/Entities/Note/Type/Note.ts` with Note type definition (id, title, content, categoryId, createdAt, updatedAt) and `apps/notes-app/src/Entities/Note/index.ts` initial barrel export
-- [ ] T014 [P] Create `apps/notes-app/src/Entities/Category/Type/Category.ts` with Category type definition (id, name, isDefault) and `apps/notes-app/src/Entities/Category/index.ts` initial barrel export
-- [ ] T015 [P] Create `apps/notes-app/src/Entities/Category/Config/CategoryConfig.ts` with DEFAULT_CATEGORIES, ALL_CATEGORY_ID, UNCATEGORIZED_CATEGORY_ID constants
+- [x] T013 [P] Create `apps/notes-app/src/Entities/Note/Type/Note.ts` with Note type definition (id, title, content, categoryId, createdAt, updatedAt) and `apps/notes-app/src/Entities/Note/index.ts` initial barrel export
+- [x] T014 [P] Create `apps/notes-app/src/Entities/Category/Type/Category.ts` with Category type definition (id, name, isDefault) and `apps/notes-app/src/Entities/Category/index.ts` initial barrel export
+- [x] T015 [P] Create `apps/notes-app/src/Entities/Category/Config/CategoryConfig.ts` with DEFAULT_CATEGORIES, ALL_CATEGORY_ID, UNCATEGORIZED_CATEGORY_ID constants
 - [ ] T016 Create `apps/notes-app/src/Entities/Note/__Mock__/noteMockData.ts` with initial mock notes data (5+ notes across categories) — NOT exported from index.ts
 - [ ] T017 [P] Create `apps/notes-app/src/Entities/Category/__Mock__/categoryMockData.ts` with initial mock categories data (default + 3 custom categories) — NOT exported from index.ts
 - [ ] T018 Create `apps/notes-app/src/Entities/Note/Api/Get.ts` with getNotes (list with filters), getNote (by id) HTTP functions and `apps/notes-app/src/Entities/Note/Api/Query.ts` with noteQueryOptions factory + noteQueryKeys. Update `apps/notes-app/src/Entities/Note/index.ts` barrel export
