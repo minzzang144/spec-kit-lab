@@ -32,13 +32,13 @@
 
 **Purpose**: Project initialization, tooling, and basic FSD structure
 
-- [ ] T001 Create `apps/notes-app/package.json` with all dependencies (React 19, Vite 7.x, TailwindCSS 4.x, TanStack Query 5.x, Zustand 5.x, React Router 7.x, React Hook Form, Zod, MSW 2.x, shadcn/ui) and scripts (dev, build, preview, type-check, lint, test, test:e2e)
-- [ ] T002 [P] Create TypeScript configs: `apps/notes-app/tsconfig.json` (base with `#/*` path alias), `apps/notes-app/tsconfig.app.json` (app-specific), `apps/notes-app/tsconfig.node.json` (node-specific)
-- [ ] T003 [P] Create `apps/notes-app/vite.config.ts` with React plugin, @tailwindcss/vite plugin, `#` path alias, and Vitest configuration
-- [ ] T004 [P] Create `apps/notes-app/index.html` entry HTML file
-- [ ] T005 [P] Create ESLint config (`apps/notes-app/eslint.config.js`) with TypeScript and React rules
-- [ ] T006 Install dependencies: run `pnpm install` in `apps/notes-app/`
-- [ ] T007 Initialize shadcn/ui: run `pnpm dlx shadcn@latest init` and add base components (Button, Input, Dialog, Card, Textarea, Select, Label, Badge, Separator)
+- [x] T001 Create `apps/notes-app/package.json` with all dependencies (React 19, Vite 7.x, TailwindCSS 4.x, TanStack Query 5.x, Zustand 5.x, React Router 7.x, React Hook Form, Zod, MSW 2.x, shadcn/ui) and scripts (dev, build, preview, type-check, lint, test, test:e2e)
+- [x] T002 [P] Create TypeScript configs: `apps/notes-app/tsconfig.json` (base with `#/*` path alias), `apps/notes-app/tsconfig.app.json` (app-specific), `apps/notes-app/tsconfig.node.json` (node-specific)
+- [x] T003 [P] Create `apps/notes-app/vite.config.ts` with React plugin, @tailwindcss/vite plugin, `#` path alias, and Vitest configuration
+- [x] T004 [P] Create `apps/notes-app/index.html` entry HTML file
+- [x] T005 [P] Create ESLint config (`apps/notes-app/eslint.config.js`) with TypeScript and React rules
+- [x] T006 Install dependencies: run `pnpm install` in `apps/notes-app/`
+- [x] T007 Initialize shadcn/ui: run `pnpm dlx shadcn@latest init` and add base components (Button, Input, Dialog, Card, Textarea, Select, Label, Badge, Separator)
 
 ---
 
