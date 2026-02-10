@@ -1,5 +1,5 @@
-export { Button, buttonVariants } from './button';
-export { Input } from './input';
+export { Button, buttonVariants } from './Shadcn/button';
+export { Input } from './Shadcn/input';
 export {
   Dialog,
   DialogClose,
@@ -11,7 +11,7 @@ export {
   DialogPortal,
   DialogTitle,
   DialogTrigger,
-} from './dialog';
+} from './Shadcn/dialog';
 export {
   Card,
   CardAction,
@@ -20,8 +20,8 @@ export {
   CardFooter,
   CardHeader,
   CardTitle,
-} from './card';
-export { Textarea } from './textarea';
+} from './Shadcn/card';
+export { Textarea } from './Shadcn/textarea';
 export {
   Select,
   SelectContent,
@@ -33,7 +33,7 @@ export {
   SelectSeparator,
   SelectTrigger,
   SelectValue,
-} from './select';
-export { Label } from './label';
-export { Badge, badgeVariants } from './badge';
-export { Separator } from './separator';
+} from './Shadcn/select';
+export { Label } from './Shadcn/label';
+export { Badge, badgeVariants } from './Shadcn/badge';
+export { Separator } from './Shadcn/separator';
