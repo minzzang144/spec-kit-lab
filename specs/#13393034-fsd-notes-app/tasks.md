@@ -70,10 +70,10 @@
 
 ### MSW Mock API Setup
 
-- [ ] T022 Create `apps/notes-app/src/Entities/Note/__Mock__/noteHandlers.ts` with MSW handlers for GET /api/notes (with categoryId, keyword, sort query params) and GET /api/notes/:id — reads from in-memory mock data
-- [ ] T023 [P] Create `apps/notes-app/src/Entities/Category/__Mock__/categoryHandlers.ts` with MSW handlers for GET /api/categories and GET /api/categories/:id/notes-count — reads from in-memory mock data
-- [ ] T024 Create `apps/notes-app/src/App/Mock/browser.ts` combining all MSW handlers (note + category read handlers), initializing ServiceWorker. Import handlers directly from __Mock__ segments (allowed for App layer)
-- [ ] T025 Create `apps/notes-app/src/main.tsx` with async MSW initialization (dev mode only), then React app render
+- [x] T022 Create `apps/notes-app/src/App/Mock/noteHandler.ts` with MSW handlers for GET /api/notes (with categoryId, keyword, sort query params) and GET /api/notes/:id — reads from centralized mockStore
+- [x] T023 [P] Create `apps/notes-app/src/App/Mock/categoryHandler.ts` with MSW handlers for GET /api/categories and GET /api/categories/:id/notes-count — reads from centralized mockStore
+- [x] T024 Create `apps/notes-app/src/App/Mock/browser.ts` combining all MSW handlers (note + category read/write handlers), initializing ServiceWorker. Centralized mockStore in App/Mock for cross-entity data access
+- [x] T025 Create `apps/notes-app/src/main.tsx` with async MSW initialization (dev mode only), then React app render
 
 ### App Layer (Non-domain)
 
