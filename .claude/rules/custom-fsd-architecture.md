@@ -91,7 +91,7 @@ App/
 Shared/
 ├── Api/
 ├── Config/
-├── Lib/
+├── Model/
 ├── Type/
 └── Ui/
 ```
@@ -183,6 +183,8 @@ Domain 레이어 슬라이스 내 세그먼트 종류:
 | `Ui`         | React 컴포넌트                                                |
 
 **확장**: 팀 논의를 통해 세그먼트를 추가할 수 있다. 모든 슬라이스에 모든 세그먼트가 필수는 아니며, 필요한 세그먼트만 생성한다.
+
+**App 전용 세그먼트**: App 레이어는 위 6종 외에 `Style`(글로벌 CSS), `Provider`(Context Provider), `Router`(라우팅), `Mock`(MSW 설정) 등 앱 초기화 전용 슬라이스를 사용할 수 있다.
 
 ---
 
@@ -501,6 +503,7 @@ function ChatWidget() {
 | Zustand Logic 파일       | camelCase        | `useChatLogic.ts`                       |
 | Zustand Slice 파일       | PascalCase       | `MessageSlice.ts`, `ConnectionSlice.ts` |
 | Barrel 파일              | `index.ts`       | `index.ts`                              |
+| shadcn 생성 파일 (예외)   | 소문자 허용       | `button.tsx`, `dialog.tsx` (`Shadcn/` 그룹 내부에서만) |
 
 ---
 
@@ -531,6 +534,31 @@ ChatMessageItem/
 ├── ChatMessageItem.test.tsx
 └── index.ts
 ```
+
+### shadcn/ui 통합 패턴
+
+shadcn/ui CLI가 생성하는 컴포넌트는 `Shadcn/` 그룹 내에서 관리한다:
+
+```
+Shared/
+├── Model/
+│   └── Shadcn/              ← shadcn 전용 유틸 그룹
+│       └── Utils.ts         ← cn() 등 shadcn 유틸리티
+└── Ui/
+    ├── Shadcn/              ← shadcn CLI 자동 생성 컴포넌트 그룹
+    │   ├── button.tsx       ← CLI 생성 파일 (소문자 예외)
+    │   ├── input.tsx
+    │   └── dialog.tsx
+    ├── ErrorBoundary/       ← 커스텀 컴포넌트 (PascalCase)
+    │   ├── ErrorBoundary.tsx
+    │   └── index.ts
+    └── index.ts
+```
+
+**규칙**:
+- `Shadcn/` 그룹 내 파일은 shadcn CLI가 생성하므로 **소문자 파일명 허용** (유일한 예외)
+- 커스텀 컴포넌트는 `Shadcn/` 그룹 밖에서 PascalCase 폴더 구조를 유지
+- `components.json`의 `ui` alias를 `#/Shared/Ui/Shadcn`, `utils` alias를 `#/Shared/Model/Shadcn/Utils`로 설정
 
 ---
 
@@ -719,20 +747,23 @@ src/
     │   ├── httpClient.ts
     │   └── index.ts
     ├── Config/
-    │   ├── routes.ts
+    │   ├── Routes.ts
     │   └── index.ts
-    ├── Lib/
-    │   ├── dayjs.ts
+    ├── Model/
+    │   ├── Shadcn/
+    │   │   └── Utils.ts
+    │   ├── DateFormat.ts
     │   └── index.ts
     ├── Type/
     │   ├── Common.ts
     │   └── index.ts
     └── Ui/
-        ├── Button/
-        │   ├── Button.tsx
-        │   └── index.ts
-        ├── Input/
-        │   ├── Input.tsx
+        ├── Shadcn/
+        │   ├── button.tsx
+        │   ├── input.tsx
+        │   └── dialog.tsx
+        ├── ErrorBoundary/
+        │   ├── ErrorBoundary.tsx
         │   └── index.ts
         └── index.ts
 ```
