@@ -1,0 +1,151 @@
+openapi: 3.0.3
+info:
+  title: FSD Notes App - Categories API
+  description: |
+    Categories management API for the FSD Notes App.
+    Implemented as MSW mock handlers in development.
+  version: 1.0.0
+
+servers:
+  - url: /api
+    description: Mock API (MSW)
+
+paths:
+  /categories:
+    get:
+      summary: Get all categories
+      operationId: getCategories
+      responses:
+        '200':
+          description: List of categories
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Category'
+
+    post:
+      summary: Create a new category
+      operationId: createCategory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCategoryRequest'
+      responses:
+        '201':
+          description: Category created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Category'
+        '400':
+          description: Validation error (e.g., duplicate name)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /categories/{id}:
+    delete:
+      summary: Delete a category
+      operationId: deleteCategory
+      description: |
+        Deletes a category. Notes in this category are moved to "uncategorized".
+        Default categories (isDefault=true) cannot be deleted.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Category deleted, affected notes moved to uncategorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  movedNotesCount:
+                    type: integer
+                    description: Number of notes moved to uncategorized
+        '400':
+          description: Cannot delete default category
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Category not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /categories/{id}/notes-count:
+    get:
+      summary: Get count of notes in a category
+      operationId: getCategoryNotesCount
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Notes count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      count:
+                        type: integer
+
+components:
+  schemas:
+    Category:
+      type: object
+      required: [id, name, isDefault]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+          minLength: 1
+        isDefault:
+          type: boolean
+
+    CreateCategoryRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 1
+
+    ErrorResponse:
+      type: object
+      required: [error, message, statusCode]
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        statusCode:
+          type: integer
