@@ -1,5 +1,9 @@
 ---
 description: Execute the implementation plan by processing and executing all tasks defined in tasks.md
+handoffs:
+  - label: Review Session
+    description: Analyze session to extract learnings and suggest improvements
+    command: /session-review --speckit
 ---
 
 ## User Input
