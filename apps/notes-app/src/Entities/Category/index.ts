@@ -4,3 +4,5 @@ export {
   ALL_CATEGORY_ID,
   UNCATEGORIZED_CATEGORY_ID,
 } from './Config/CategoryConfig';
+export { getCategoryList } from './Api/Get';
+export { categoryQueryKey, categoryQueryOption } from './Api/Query';
