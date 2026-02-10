@@ -1,5 +1,8 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { QueryProvider } from './App/Provider';
+import { AppRouter } from './App/Router';
+import './App/Style/global.css';
 
 async function enableMocking(): Promise<void> {
   if (import.meta.env.DEV) {
@@ -17,7 +20,9 @@ enableMocking().then(() => {
 
   createRoot(root).render(
     <StrictMode>
-      <div>Notes App - Loading...</div>
+      <QueryProvider>
+        <AppRouter />
+      </QueryProvider>
     </StrictMode>,
   );
 });

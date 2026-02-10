@@ -77,10 +77,10 @@
 
 ### App Layer (Non-domain)
 
-- [ ] T026 Create `apps/notes-app/src/App/Style/global.css` with `@import "tailwindcss"` and custom CSS variables (shadcn/ui theming)
-- [ ] T027 [P] Create `apps/notes-app/src/App/Config/Env.ts` with environment configuration (API base URL, MSW flag)
-- [ ] T028 Create `apps/notes-app/src/App/Provider/QueryProvider.tsx` with TanStack Query QueryClientProvider setup and `apps/notes-app/src/App/Provider/index.ts` barrel export
-- [ ] T029 Create `apps/notes-app/src/App/Router/AppRouter.tsx` with createBrowserRouter and route definitions (/, /notes/new, /notes/:id, /categories) as lazy-loaded pages. Create `apps/notes-app/src/App/Router/index.ts` barrel export
+- [x] T026 Create `apps/notes-app/src/App/Style/global.css` with `@import "tailwindcss"` and custom CSS variables (shadcn/ui theming) — already created by shadcn init
+- [x] T027 [P] Create `apps/notes-app/src/App/Config/Env.ts` with environment configuration (API base URL, MSW flag)
+- [x] T028 Create `apps/notes-app/src/App/Provider/QueryProvider.tsx` with TanStack Query QueryClientProvider setup and `apps/notes-app/src/App/Provider/index.ts` barrel export
+- [x] T029 Create `apps/notes-app/src/App/Router/AppRouter.tsx` with createBrowserRouter and route definitions (/, /notes/new, /notes/:id, /categories) as lazy-loaded pages. Create `apps/notes-app/src/App/Router/index.ts` barrel export
 
 ### Foundational Verification
 
