@@ -1021,12 +1021,14 @@ FSD 미준수 영역을 **"추후 리팩토링 작업"**으로 목록화:
 | `typescript-specifics.md`   | TypeScript 패턴 → 타입 정의, import 구조에 적용       |
 | `javascript-specifics.md`   | JS 패턴 → 모듈 패턴, async 패턴에 적용               |
 | `speckit-workflow-rules.md` | 워크플로우 규칙 → implement 단계에서 이 FSD 규칙 강제 |
+| `naming-no-plurals.md`     | 네이밍 규칙 → 슬라이스/세그먼트/파일/함수 이름에 적용  |
 
 ### 적용 범위
 
 ```
 IF 새로운 앱 코드 작성:
   APPLY custom-fsd-architecture.md  (구조)
+  APPLY naming-no-plurals.md        (네이밍)
   APPLY clean-code-unified.md       (코드 품질)
   APPLY toss-frontend-rule.md       (설계 원칙)
   APPLY typescript-specifics.md     (TS 패턴)
