@@ -12,7 +12,7 @@
 
 ```bash
 # 프로젝트 루트에서
-cd notes-app
+cd apps/notes-app
 
 # 의존성 설치
 pnpm install
@@ -39,7 +39,7 @@ pnpm dev
 ## Project Structure Overview
 
 ```
-notes-app/src/
+apps/notes-app/src/
 ├── App/         # 앱 초기화, 프로바이더, 라우팅, MSW 설정
 ├── Pages/       # 4개 페이지 (Home, NoteWrite, NoteView, CategoryManage)
 ├── Widgets/     # 6개 위젯 (NoteList, NoteEditor, NoteDetail, SearchBar, Sidebar, CategoryFilter)

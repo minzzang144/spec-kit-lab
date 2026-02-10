@@ -53,11 +53,21 @@ Follow-up TODOs: Update tasks-template.md with mandatory E2E phase
 
 ## II. Architecture Principles
 
+### Repository Structure (NON-NEGOTIABLE)
+
+This repository is a **pnpm + Turborepo monorepo**. All implementation code MUST respect the workspace layout defined in `pnpm-workspace.yaml`.
+
+- **Applications**: `apps/[APP_NAME]/` — all new apps go under `apps/`
+- **Shared packages**: `packages/[PACKAGE_NAME]/` — reusable libraries
+- **NEVER** create application directories at the repository root
+
+When `/speckit.plan` generates implementation paths, the **Project root** for any new app MUST be `apps/[APP_NAME]/`, NOT `[APP_NAME]/`.
+
 ### Frontend Structure (FSD - Feature-Sliced Design)
 **Note**: `[APP_NAME]` is defined during spec creation with `/speckit.plan`
 
 ```
-[APP_NAME]/frontend/src/
+apps/[APP_NAME]/src/
 ├── app/           # Application initialization, providers, routing
 ├── pages/         # Page components (route-level)
 ├── widgets/       # Complex UI blocks (header, sidebar, etc.)
@@ -70,7 +80,7 @@ Follow-up TODOs: Update tasks-template.md with mandatory E2E phase
 **Note**: `[APP_NAME]` is defined during spec creation with `/speckit.plan`
 
 ```
-[APP_NAME]/backend/src/
+apps/[APP_NAME]/backend/src/
 ├── app.module.ts         # Root application module
 ├── main.ts              # Application entry point
 ├── common/              # Shared utilities, guards, interceptors

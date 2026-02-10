@@ -175,52 +175,61 @@ specs/#ticket-feature/
 └── tasks.md             # Phase 2 output (/speckit.tasks command - NOT created by /speckit.plan)
 ```
 
-### Source Code (repository root)
+### Source Code
 
 <!--
   ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
   for this feature. Delete unused options and expand the chosen structure with
   real paths (e.g., apps/admin, packages/something). The delivered plan must
   not include Option labels.
+
+  CRITICAL — MONOREPO AWARENESS:
+  This repository is a pnpm + Turborepo monorepo (see pnpm-workspace.yaml).
+  All application directories MUST be placed under apps/ (not at repo root).
+  - Application code → apps/[APP_NAME]/
+  - Shared packages  → packages/[PACKAGE_NAME]/
+
+  Before choosing a structure, run `cat pnpm-workspace.yaml` to confirm
+  workspace packages and verify existing apps under apps/.
 -->
 
 ```text
-# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
-src/
-├── models/
-├── services/
-├── cli/
-└── lib/
-
-tests/
-├── contract/
-├── integration/
-└── unit/
-
-# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
-backend/
+# [REMOVE IF UNUSED] Option 1: Single project (frontend-only or backend-only)
+apps/[APP_NAME]/
 ├── src/
 │   ├── models/
 │   ├── services/
-│   └── api/
+│   ├── cli/
+│   └── lib/
 └── tests/
+    ├── contract/
+    ├── integration/
+    └── unit/
 
-frontend/
-├── src/
-│   ├── app/            # Application initialization, providers, routing
-│   ├── pages/          # Full pages (e.g., home/, profile/)
-│   ├── widgets/        # Independent UI blocks (e.g., header/, sidebar/)
-│   ├── features/       # User interactions (e.g., auth/login/, cart/add-item/)
-│   ├── entities/       # Business entities (e.g., user/, product/)
-│   └── shared/         # Reusable code (ui/, lib/, api/, types/)
-└── tests/
+# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
+apps/[APP_NAME]/
+├── backend/
+│   ├── src/
+│   │   ├── models/
+│   │   ├── services/
+│   │   └── api/
+│   └── tests/
+└── frontend/
+    ├── src/
+    │   ├── app/            # Application initialization, providers, routing
+    │   ├── pages/          # Full pages (e.g., home/, profile/)
+    │   ├── widgets/        # Independent UI blocks (e.g., header/, sidebar/)
+    │   ├── features/       # User interactions (e.g., auth/login/, cart/add-item/)
+    │   ├── entities/       # Business entities (e.g., user/, product/)
+    │   └── shared/         # Reusable code (ui/, lib/, api/, types/)
+    └── tests/
 
 # [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
-api/
-└── [same as backend above]
-
-ios/ or android/
-└── [platform-specific structure: feature modules, UI flows, platform tests]
+apps/[APP_NAME]/
+├── api/
+│   └── [same as backend above]
+└── ios/ or android/
+    └── [platform-specific structure: feature modules, UI flows, platform tests]
 ```
 
 **Structure Decision**: [Document the selected structure and reference the real

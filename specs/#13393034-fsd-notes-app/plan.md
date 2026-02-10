@@ -1,7 +1,7 @@
 # Implementation Plan: FSD Notes App
 
 **Branch**: `spec/#13393034-fsd-notes-app` | **Date**: 2026-02-10 | **Spec**: [spec.md](./spec.md)
-**Input**: Feature specification from `/specs/#13393034-fsd-notes-app/spec.md`
+**Input**: Feature specification from `/specs/#13393034-fsd-apps/notes-app/spec.md`
 
 **Note**: This plan implements a Notes/Memo application designed to validate all rules in the Custom FSD Architecture rule file.
 
@@ -16,7 +16,7 @@ Custom FSD Architecture 규칙의 전체 검증을 위한 Notes/Memo 앱을 구�
 **Storage**: MSW Mock API (in-memory, 브라우저 Service Worker 기반)
 **Testing**: Vitest + Testing Library (unit/integration), Playwright (E2E)
 **Target Platform**: Web (SPA, 최신 Chrome/Firefox/Safari/Edge)
-**Project Type**: Single Frontend App (notes-app/)
+**Project Type**: Single Frontend App (apps/notes-app/)
 **Performance Goals**: 목록 로드 2초 이내, 검색/필터 500ms 이내, 초기 번들 < 200KB (gzipped)
 **Constraints**: 단일 사용자, 오프라인 미지원, 플레인 텍스트만
 **Scale/Scope**: ~20 files across 6 FSD layers, 3 pages, 5+ widgets, 2 entities, 3+ features
@@ -128,7 +128,7 @@ General:
 ### Documentation (this feature)
 
 ```text
-specs/#13393034-fsd-notes-app/
+specs/#13393034-fsd-apps/notes-app/
 ├── plan.md              # This file
 ├── research.md          # Phase 0 output
 ├── data-model.md        # Phase 1 output
@@ -140,7 +140,7 @@ specs/#13393034-fsd-notes-app/
 ### Source Code (repository root)
 
 ```text
-notes-app/
+apps/notes-app/
 ├── package.json
 ├── tsconfig.json
 ├── tsconfig.app.json
@@ -380,7 +380,7 @@ notes-app/
             └── index.ts
 ```
 
-**Structure Decision**: Frontend-only SPA (`notes-app/` 디렉토리). Custom FSD Architecture 규칙에 따라 PascalCase 디렉토리, 6-layer 구조를 엄격히 준수. 백엔드는 MSW로 대체하여 FSD 규칙 검증에 집중한다.
+**Structure Decision**: Frontend-only SPA (`apps/notes-app/` 디렉토리). Custom FSD Architecture 규칙에 따라 PascalCase 디렉토리, 6-layer 구조를 엄격히 준수. 백엔드는 MSW로 대체하여 FSD 규칙 검증에 집중한다.
 
 ### Custom FSD 규칙 커버리지 매핑
 
