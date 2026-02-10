@@ -58,3 +58,6 @@ Thumbs.db
 
 # Debug
 .vscode-test/
+
+# Local session data (not tracked)
+*.local/

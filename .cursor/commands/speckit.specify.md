@@ -24,6 +24,33 @@ The text the user typed after `/speckit.specify` in the triggering message **is*
 
 Given that feature description, do this:
 
+0. **Extract or request ticket ID** (REQUIRED before proceeding):
+
+   a. First, try to parse the feature description for ticket reference patterns:
+      - `#13272f64 Add user auth` → ticket: `13272f64`
+      - `13272f64 Add user auth` → ticket: `13272f64` (if starts with alphanumeric ID)
+      - `[PROJ123] Add user auth` → ticket: `PROJ123`
+
+   b. If NO ticket ID found in input, **사용자에게 티켓 ID를 요청합니다**:
+
+      > **이 기능의 티켓 ID를 입력해주세요.**
+      >
+      > | 옵션 | 설명 |
+      > |------|------|
+      > | 티켓 ID 입력 | 영숫자로만 구성된 ID를 입력해주세요 (예: `13272f64`, `PROJ123`) |
+      > | 건너뛰기 | 티켓 ID 없이는 스크립트가 실패합니다 |
+      >
+      > 티켓 ID를 입력해주세요.
+
+      - 사용자 응답을 대기한 후 진행합니다
+
+   c. Validate the ticket ID:
+      - Must be alphanumeric only (a-z, A-Z, 0-9)
+      - No hyphens, spaces, or special characters allowed
+      - If invalid, ask again with format guidance
+
+   d. Store the extracted/provided ticket ID for use in step 2
+
 1. **Generate a concise short name** (2-4 words) for the branch:
    - Analyze the feature description and extract the most meaningful keywords
    - Create a 2-4 word short name that captures the essence of the feature
@@ -36,7 +63,7 @@ Given that feature description, do this:
      - "Create a dashboard for analytics" → "analytics-dashboard"
      - "Fix payment processing timeout bug" → "fix-payment-timeout"
 
-2. **Check for existing branches before creating new one**:
+2. **Check for existing spec and create new branch**:
 
    a. First, fetch all remote branches to ensure we have the latest information:
 
@@ -44,28 +71,28 @@ Given that feature description, do this:
       git fetch --all --prune
       ```
 
-   b. Find the highest feature number across all sources for the short-name:
-      - Remote branches: `git ls-remote --heads origin | grep -E 'refs/heads/[0-9]+-<short-name>$'`
-      - Local branches: `git branch | grep -E '^[* ]*[0-9]+-<short-name>$'`
-      - Specs directories: Check for directories matching `specs/[0-9]+-<short-name>`
+   b. Check if a spec already exists for this ticket ID:
+      - Remote branches: `git ls-remote --heads origin | grep -E "refs/heads/spec/#${TICKET_ID}-"`
+      - Local branches: `git branch | grep -E "^[* ]*spec/#${TICKET_ID}-"`
+      - Specs directories: Check for `specs/#${TICKET_ID}-*` directories
 
-   c. Determine the next available number:
-      - Extract all numbers from all three sources
-      - Find the highest number N
-      - Use N+1 for the new branch number
+   c. If a spec exists for this ticket: **STOP** and inform the user:
+      - "A spec already exists for ticket #${TICKET_ID}"
+      - Provide the existing branch name or spec directory path
+      - Suggest checking out the existing branch instead
 
-   d. Run the script `.specify/scripts/bash/create-new-feature.sh --json "$ARGUMENTS"` with the calculated number and short-name:
-      - Pass `--number N+1` and `--short-name "your-short-name"` along with the feature description
-      - Bash example: `.specify/scripts/bash/create-new-feature.sh --json "$ARGUMENTS" --json --number 5 --short-name "user-auth" "Add user authentication"`
-      - PowerShell example: `.specify/scripts/bash/create-new-feature.sh --json "$ARGUMENTS" -Json -Number 5 -ShortName "user-auth" "Add user authentication"`
+   d. If no existing spec, run the script with the ticket ID:
+      ```bash
+      .specify/scripts/bash/create-new-feature.sh --json --ticket "${TICKET_ID}" --short-name "your-short-name" "Feature description"
+      ```
 
    **IMPORTANT**:
-   - Check all three sources (remote branches, local branches, specs directories) to find the highest number
-   - Only match branches/directories with the exact short-name pattern
-   - If no existing branches/directories found with this short-name, start with number 1
+   - Ticket ID is REQUIRED - the script will fail without it
+   - The script validates that the ticket doesn't already have a spec
    - You must only ever run this script once per feature
-   - The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for
-   - The JSON output will contain BRANCH_NAME and SPEC_FILE paths
+   - The JSON output contains: BRANCH_NAME, SPEC_FILE, TICKET_ID
+   - Branch format: `spec/#ticket-feature-name` (e.g., `spec/#13272f64-user-auth`)
+   - Spec directory format: `specs/#ticket-feature-name/` (e.g., `specs/#13272f64-user-auth/`)
    - For single quotes in args like "I'm Groot", use escape syntax: e.g 'I'\''m Groot' (or double-quote if possible: "I'm Groot")
 
 3. Load `.specify/templates/spec-template.md` to understand required sections.

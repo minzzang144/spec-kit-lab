@@ -1,7 +1,7 @@
 # Implementation Plan: [FEATURE]
 
-**Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
-**Input**: Feature specification from `/specs/[###-feature-name]/spec.md`
+**Branch**: `[spec/#ticket-feature-name]` | **Date**: [DATE] | **Spec**: [link]
+**Input**: Feature specification from `/specs/#ticket-feature-name/spec.md`
 
 **Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/commands/plan.md` for the execution workflow.
 
@@ -26,6 +26,54 @@
 **Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
 **Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
 **Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
+
+## Technology Version Check (MANDATORY) 🔍
+
+<!--
+  CRITICAL: This section MUST be completed BEFORE proceeding to Constitution Check.
+
+  Use context7 MCP tool (resolve-library-id → query-docs) to verify:
+  1. Current stable versions of all dependencies
+  2. Configuration requirements for those versions
+  3. Breaking changes from previous versions
+
+  WHY THIS MATTERS:
+  - Constitution specifies WHAT to use (e.g., "TailwindCSS") but not versions
+  - Major version upgrades often change configuration methods completely
+  - Example: TailwindCSS v3 uses tailwind.config.js, v4 requires @tailwindcss/vite plugin
+-->
+
+### Frontend Dependencies Version Check
+
+| Dependency | Constitution Says | Installed Version | Configuration Method | Verified via context7 |
+|------------|-------------------|-------------------|---------------------|----------------------|
+| React | React 18+ | [e.g., 19.2.0] | [e.g., Standard] | [ ] |
+| TailwindCSS | TailwindCSS | [e.g., 4.1.18] | [e.g., @tailwindcss/vite plugin] | [ ] |
+| Vite | Vite | [e.g., 7.2.4] | [e.g., vite.config.ts] | [ ] |
+| Zustand | Zustand | [e.g., 5.0.10] | [e.g., create() with persist] | [ ] |
+| TanStack Query | TanStack Query | [e.g., 5.x] | [e.g., QueryClientProvider] | [ ] |
+
+### Backend Dependencies Version Check (if applicable)
+
+| Dependency | Constitution Says | Installed Version | Configuration Method | Verified via context7 |
+|------------|-------------------|-------------------|---------------------|----------------------|
+| NestJS | NestJS | [e.g., 10.x] | [standard module structure] | [ ] |
+| Prisma | Prisma or TypeORM | [e.g., 5.x] | [e.g., schema.prisma] | [ ] |
+| ... | ... | ... | ... | [ ] |
+
+### Breaking Changes Identified
+
+<!--
+  List any breaking changes from previous versions that affect configuration:
+-->
+
+- [ ] [e.g., TailwindCSS v4: No longer uses tailwind.config.js by default, requires @tailwindcss/vite or @tailwindcss/postcss]
+- [ ] [e.g., React 19: New hooks API, concurrent features by default]
+
+### Version Lock Decision
+
+**Lock versions in package.json?**: [Yes/No - recommend Yes for stability]
+**Reason**: [e.g., Avoid unexpected breaking changes during implementation]
 
 ## Constitution Check
 
@@ -118,7 +166,7 @@ General:
 ### Documentation (this feature)
 
 ```text
-specs/[###-feature]/
+specs/#ticket-feature/
 ├── plan.md              # This file (/speckit.plan command output)
 ├── research.md          # Phase 0 output (/speckit.plan command)
 ├── data-model.md        # Phase 1 output (/speckit.plan command)

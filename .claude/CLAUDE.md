@@ -65,9 +65,45 @@ All commands follow pattern `speckit.[phase]` and are available in both `.claude
 
 ## Feature Branch Naming Convention
 
-- Format: `###-feature-name` (e.g., `001-user-auth`, `042-payment-flow`)
-- Three-digit prefix allows multiple branches per feature number
-- Generated specs use same numbering in `specs/###-feature-name/`
+### Specification Phase
+- **Format**: `spec/#ticket-feature-name` (e.g., `spec/#13272f64-user-auth`, `spec/#PROJ123-payment-flow`)
+- Used for: `speckit.specify`, `speckit.clarify`, `speckit.plan`, `speckit.tasks` phases
+- Contains: `specs/#ticket-feature-name/` directory with spec.md, plan.md, tasks.md, etc.
+- **Ticket ID Requirements**:
+  - Must be alphanumeric only (a-z, A-Z, 0-9)
+  - No hyphens, spaces, or special characters
+  - Examples: `13272f64`, `PROJ123`, `abc456`
+
+### Implementation Phase
+- **Single Mode**: `feature/#ticket-feature-name`
+  - One branch for all implementation work
+  - Best for small features (1-2 User Stories)
+- **Parallel Mode**: `feature/#ticket-us{N}-feature-name`
+  - Separate branches per User Story
+  - e.g., `feature/#13272f64-us1-user-auth` (User Story 1)
+  - e.g., `feature/#13272f64-us2-user-auth` (User Story 2)
+  - Best for large features (3+ User Stories) or team collaboration
+
+### Branch Flow
+```
+develop (stable - production ready)
+  ↑ PR #2 (release)
+  │
+spec/#ticket-feature (verification - specify → plan → tasks → integration)
+  ↑ PR #1 (implementation merge)
+  │
+feature/#ticket-[us{N}-]feature (development - implement)
+```
+
+**Key Points**:
+- `spec` branches are created from `develop`
+- `feature` branches are created from `spec`
+- All branches read specs from the same `specs/#ticket-feature-name/` directory
+- `feature` → `spec` merge (implementation integration)
+- `spec` → `develop` merge (release)
+
+### Legacy Support
+- Format `###-feature-name` (e.g., `001-user-auth`) is still recognized for backward compatibility
 
 ## Specification Templates
 
@@ -116,10 +152,11 @@ The system enforces quality through:
 
 ## Working with Features
 
-- Each feature gets isolated directory in `specs/###-feature-name/`
+- Each feature gets isolated directory in `specs/#ticket-feature-name/`
 - Contains: `spec.md`, `plan.md`, `tasks.md`, `research.md`, `data-model.md`
 - Branch-based isolation allows parallel feature development
-- Numeric prefixes enable feature history tracking
+- Ticket ID enables traceability to external issue trackers
+- Legacy specs with `###-` prefix are still supported
 
 ## Error Handling
 

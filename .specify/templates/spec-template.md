@@ -1,6 +1,6 @@
 # Feature Specification: [FEATURE NAME]
 
-**Feature Branch**: `[###-feature-name]`  
+**Feature Branch**: `[spec/#ticket-feature-name]`  
 **Created**: [DATE]  
 **Status**: Draft  
 **Input**: User description: "$ARGUMENTS"
@@ -129,3 +129,44 @@
 - **SC-002**: [Measurable metric, e.g., "System handles 1000 concurrent users without degradation"]
 - **SC-003**: [User satisfaction metric, e.g., "90% of users successfully complete primary task on first attempt"]
 - **SC-004**: [Business metric, e.g., "Reduce support tickets related to [X] by 50%"]
+
+## E2E Test Scenarios *(mandatory)*
+
+<!--
+  CONSTITUTION REQUIREMENT: E2E tests are MANDATORY for all user stories.
+
+  This section defines the critical user flows that MUST be covered by automated E2E tests.
+  Each user story should have at least one E2E test scenario.
+
+  ✅ FOCUS ON:
+  - Complete user journeys from start to finish
+  - Happy path scenarios for each user story
+  - Critical error scenarios that affect user experience
+  - Data persistence verification (if applicable)
+
+  ❌ DO NOT INCLUDE:
+  - Implementation details (specific selectors, frameworks)
+  - Technical test configuration
+  - Unit test scenarios (those belong in plan.md)
+-->
+
+### E2E Scenarios for User Story 1
+
+- **E2E-US1-001**: [Full user journey, e.g., "User can complete the entire registration flow from landing page to dashboard"]
+- **E2E-US1-002**: [Data persistence, e.g., "User data persists after browser refresh"]
+
+### E2E Scenarios for User Story 2
+
+- **E2E-US2-001**: [Full user journey for this story]
+
+### E2E Scenarios for User Story 3
+
+- **E2E-US3-001**: [Full user journey for this story]
+
+### Cross-Story E2E Scenarios
+
+<!--
+  Optional: Scenarios that span multiple user stories or test integration between stories
+-->
+
+- **E2E-INT-001**: [Integration scenario, e.g., "User can complete full workflow: create item → edit → delete"]

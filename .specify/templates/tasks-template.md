@@ -5,7 +5,7 @@ description: "Task list template for feature implementation"
 
 # Tasks: [FEATURE NAME]
 
-**Input**: Design documents from `/specs/[###-feature-name]/`
+**Input**: Design documents from `/specs/#ticket-feature-name/`
 **Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/
 
 **Tests**: Following constitution TDD requirements, tests are MANDATORY for business logic. All test tasks MUST be completed BEFORE implementation tasks.
@@ -104,16 +104,17 @@ Frontend Foundational:
 ### Tests for User Story 1 (MANDATORY - TDD Required) ⚠️
 
 > **CONSTITUTION REQUIREMENT: Write these tests FIRST, ensure they FAIL before implementation**
+> **E2E TESTS ARE MANDATORY**: Per constitution v2.1.2, all user stories MUST have E2E tests
 
 Frontend Tests:
 - [ ] T017 [P] [US1] Unit test for [Entity] in frontend/src/entities/[entity]/[entity].test.ts (Vitest + Testing Library)
 - [ ] T018 [P] [US1] Integration test for [Feature] in frontend/src/features/[feature]/[feature].test.tsx
-- [ ] T019 [P] [US1] E2E test for user flow in frontend/tests/e2e/[story].spec.ts (Playwright)
+- [ ] T019 [P] [US1] **E2E test (MANDATORY)** for user flow in frontend/e2e/[story].spec.ts (Playwright)
 
 Backend Tests:
 - [ ] T020 [P] [US1] Unit test for [Service] in backend/src/modules/[module]/tests/[module].service.spec.ts (Jest)
 - [ ] T021 [P] [US1] Controller test for [API endpoints] in backend/src/modules/[module]/tests/[module].controller.spec.ts
-- [ ] T022 [P] [US1] E2E API test for [endpoints] in backend/src/modules/[module]/tests/[module].e2e.spec.ts (Supertest)
+- [ ] T022 [P] [US1] **E2E API test (MANDATORY)** for [endpoints] in backend/src/modules/[module]/tests/[module].e2e.spec.ts (Supertest)
 
 ### Implementation for User Story 1 (After Tests Pass)
 
@@ -149,10 +150,12 @@ Integration & Quality:
 
 **Independent Test**: [How to verify this story works on its own]
 
-### Tests for User Story 2 (OPTIONAL - only if tests requested) ⚠️
+### Tests for User Story 2 (MANDATORY - TDD Required) ⚠️
 
-- [ ] T018 [P] [US2] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T019 [P] [US2] Integration test for [user journey] in tests/integration/test_[name].py
+> **E2E TESTS ARE MANDATORY**: Per constitution v2.1.2, all user stories MUST have E2E tests
+
+- [ ] TXXX [P] [US2] Unit/Integration test for [component/service]
+- [ ] TXXX [P] [US2] **E2E test (MANDATORY)** for [user journey] in e2e/[story].spec.ts (Playwright)
 
 ### Implementation for User Story 2
 
@@ -171,10 +174,12 @@ Integration & Quality:
 
 **Independent Test**: [How to verify this story works on its own]
 
-### Tests for User Story 3 (OPTIONAL - only if tests requested) ⚠️
+### Tests for User Story 3 (MANDATORY - TDD Required) ⚠️
 
-- [ ] T024 [P] [US3] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T025 [P] [US3] Integration test for [user journey] in tests/integration/test_[name].py
+> **E2E TESTS ARE MANDATORY**: Per constitution v2.1.2, all user stories MUST have E2E tests
+
+- [ ] TXXX [P] [US3] Unit/Integration test for [component/service]
+- [ ] TXXX [P] [US3] **E2E test (MANDATORY)** for [user journey] in e2e/[story].spec.ts (Playwright)
 
 ### Implementation for User Story 3
 
@@ -187,6 +192,36 @@ Integration & Quality:
 ---
 
 [Add more user story phases as needed, following the same pattern]
+
+---
+
+## Phase N-1: E2E Integration Testing (MANDATORY) 🧪
+
+**Purpose**: Verify complete user journeys across all user stories work together
+
+**⚠️ CONSTITUTION REQUIREMENT (v2.1.2)**: This phase is MANDATORY for all features
+
+### E2E Test Setup (if not already done)
+
+- [ ] TXXX Setup Playwright in project root or frontend directory
+- [ ] TXXX Configure playwright.config.ts with webServer and browser settings
+- [ ] TXXX Add test:e2e and test:e2e:ui scripts to package.json
+
+### Cross-Story E2E Tests
+
+> These tests verify that all user stories work together as a complete feature
+
+- [ ] TXXX E2E test for complete user workflow (US1 → US2 → US3 integration)
+- [ ] TXXX E2E test for data persistence across all operations
+- [ ] TXXX E2E test for error handling across user stories
+
+### E2E Verification
+
+- [ ] TXXX Run all E2E tests (pnpm run test:e2e)
+- [ ] TXXX Verify E2E coverage for all user stories defined in spec.md
+- [ ] TXXX Document any E2E test failures and resolutions
+
+**Checkpoint**: All E2E tests pass - feature is ready for final polish
 
 ---
 
@@ -293,3 +328,82 @@ With multiple developers:
 - Commit after each task or logical group
 - Stop at any checkpoint to validate story independently
 - Avoid: vague tasks, same file conflicts, cross-story dependencies that break independence
+
+---
+
+## Implementation Branches
+
+When running `/speckit.implement`, feature branches are created from the spec branch.
+
+### Branch Flow
+
+```
+develop (stable - production ready)
+  │
+  └── spec/#ticket-feature-name (verification - spec + implementation integration)
+       │                        ↑
+       │                        │ PR: feature → spec
+       │                        │
+       ├── [Single Mode]        │
+       │   └── feature/#ticket-feature-name ──────┘
+       │
+       └── [Parallel Mode]
+           ├── feature/#ticket-us1-feature-name ──┐
+           ├── feature/#ticket-us2-feature-name ──┼── PR → spec
+           └── feature/#ticket-us3-feature-name ──┘
+
+Final: spec/#ticket-feature-name → PR → develop (release)
+```
+
+### Single Mode
+
+For smaller features (1-2 User Stories) or single developer work:
+
+```
+feature/#ticket-feature-name
+```
+
+- All tasks executed in one branch
+- One PR for entire feature implementation
+- Simpler workflow, less branch management
+
+### Parallel Mode (User Story Branches)
+
+For larger features (3+ User Stories) or team collaboration:
+
+| User Story | Branch Pattern | PR Target |
+|------------|----------------|-----------|
+| Foundation (Phase 1-2) | `feature/#ticket-feature-name` | spec branch |
+| US1 | `feature/#ticket-us1-feature-name` | spec branch |
+| US2 | `feature/#ticket-us2-feature-name` | spec branch |
+| US3 | `feature/#ticket-us3-feature-name` | spec branch |
+
+**Execution Strategy (Option C: Sequential-Parallel Hybrid)**:
+
+1. **Phase 1-2 (Foundation)**: Complete in `feature/#ticket-feature-name`
+   - Setup + Foundational infrastructure (shared code)
+   - MUST complete before User Story branches start
+
+2. **Phase 3+ (User Stories)**: Can proceed in parallel after Foundation
+   - Each User Story gets its own branch (if needed)
+   - Or continue in single branch for smaller stories
+
+**Merge Order**:
+1. Each `feature` branch → `spec` branch (implementation integration)
+2. Review and test in `spec` branch
+3. `spec` branch → `develop` (release)
+
+### Choosing a Mode
+
+| Criteria | Single Mode | Parallel Mode |
+|----------|-------------|---------------|
+| Feature size | Small-Medium | Large |
+| User Stories | 1-2 | 3+ |
+| Team size | 1 developer | Multiple developers |
+| PR review preference | One large PR | Multiple smaller PRs |
+| Complexity | Low | Higher (more branches) |
+
+**Recommendation**: Start with Single Mode. Switch to Parallel Mode if:
+- Feature grows larger than expected
+- Team wants to parallelize work
+- Stakeholders prefer incremental PR reviews
