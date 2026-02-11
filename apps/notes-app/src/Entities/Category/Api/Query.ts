@@ -1,10 +1,6 @@
 import { queryOptions } from '@tanstack/react-query';
 import { getCategoryList } from './Get';
-
-export const categoryQueryKey = {
-  all: ['category'] as const,
-  list: () => [...categoryQueryKey.all, 'list'] as const,
-};
+import { categoryQueryKey } from './Key';
 
 export const categoryQueryOption = {
   list: () =>

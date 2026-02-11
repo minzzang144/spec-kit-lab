@@ -251,6 +251,7 @@ apps/notes-app/
     │   │   │   └── noteWriteHandlers.ts
     │   │   ├── Api/
     │   │   │   ├── Post.ts
+    │   │   │   ├── Key.ts
     │   │   │   └── Mutation.ts
     │   │   ├── Model/
     │   │   │   └── Hook/
@@ -261,6 +262,7 @@ apps/notes-app/
     │   ├── NoteEdit/            # 하위 도메인 (Note의 서브도메인)
     │   │   ├── Api/
     │   │   │   ├── Put.ts
+    │   │   │   ├── Key.ts
     │   │   │   └── Mutation.ts
     │   │   ├── Model/
     │   │   │   └── Hook/
@@ -271,6 +273,7 @@ apps/notes-app/
     │   ├── NoteDelete/          # 하위 도메인 (Note의 서브도메인)
     │   │   ├── Api/
     │   │   │   ├── Delete.ts
+    │   │   │   ├── Key.ts
     │   │   │   └── Mutation.ts
     │   │   ├── Model/
     │   │   │   └── Hook/
@@ -289,6 +292,7 @@ apps/notes-app/
     │   │   ├── Api/
     │   │   │   ├── Post.ts
     │   │   │   ├── Delete.ts
+    │   │   │   ├── Key.ts
     │   │   │   └── Mutation.ts
     │   │   ├── Model/
     │   │   │   └── Hook/
@@ -314,6 +318,7 @@ apps/notes-app/
     │   │   │   └── noteMockData.ts
     │   │   ├── Api/
     │   │   │   ├── Get.ts
+    │   │   │   ├── Key.ts
     │   │   │   └── Query.ts
     │   │   ├── Config/
     │   │   │   └── NoteConfig.ts
@@ -337,6 +342,7 @@ apps/notes-app/
     │       │   └── categoryMockData.ts
     │       ├── Api/
     │       │   ├── Get.ts
+    │       │   ├── Key.ts
     │       │   └── Query.ts
     │       ├── Config/
     │       │   └── CategoryConfig.ts
@@ -358,8 +364,11 @@ apps/notes-app/
         ├── Config/
         │   ├── Routes.ts
         │   └── index.ts
-        ├── Lib/
-        │   ├── DateFormat.ts
+        ├── Model/
+        │   ├── Lib/
+        │   │   └── DateFormat.ts
+        │   ├── Shadcn/
+        │   │   └── Utils.ts
         │   └── index.ts
         ├── Type/
         │   ├── Common.ts

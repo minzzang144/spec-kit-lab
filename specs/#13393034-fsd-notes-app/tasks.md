@@ -53,7 +53,7 @@
 - [x] T008 Create `apps/notes-app/src/Shared/Type/Common.ts` with shared API response types (`ApiResponse<T>`, `ApiError`) and `apps/notes-app/src/Shared/Type/index.ts` barrel export
 - [x] T009 [P] Create `apps/notes-app/src/Shared/Api/httpClient.ts` with custom fetch wrapper (BASE_URL `/api`, GET/POST/PUT/DELETE methods, error handling) and `apps/notes-app/src/Shared/Api/index.ts` barrel export
 - [x] T010 [P] Create `apps/notes-app/src/Shared/Config/Routes.ts` with route path constants (`/`, `/notes/new`, `/notes/:id`, `/categories`) and `apps/notes-app/src/Shared/Config/index.ts` barrel export
-- [x] T011 [P] Create `apps/notes-app/src/Shared/Lib/DateFormat.ts` with date formatting utility (ISO string → human-readable) and `apps/notes-app/src/Shared/Lib/index.ts` barrel export
+- [x] T011 [P] Create `apps/notes-app/src/Shared/Model/Lib/DateFormat.ts` with date formatting utility (ISO string → human-readable) and update `apps/notes-app/src/Shared/Model/index.ts` barrel export
 - [x] T012 [P] Create `apps/notes-app/src/Shared/Ui/ErrorBoundary/ErrorBoundary.tsx` + `index.ts` with React Error Boundary component, and `apps/notes-app/src/Shared/Ui/index.ts` barrel export
 
 ### Entities Layer (Domain - read-oriented)
@@ -63,8 +63,8 @@
 - [x] T015 [P] Create `apps/notes-app/src/Entities/Category/Config/CategoryConfig.ts` with DEFAULT_CATEGORIES, ALL_CATEGORY_ID, UNCATEGORIZED_CATEGORY_ID constants
 - [x] T016 Create `apps/notes-app/src/Entities/Note/__Mock__/noteMockData.ts` with initial mock notes data (5+ notes across categories) — NOT exported from index.ts
 - [x] T017 [P] Create `apps/notes-app/src/Entities/Category/__Mock__/categoryMockData.ts` with initial mock categories data (default + 3 custom categories) — NOT exported from index.ts
-- [x] T018 Create `apps/notes-app/src/Entities/Note/Api/Get.ts` with getNotes (list with filters), getNote (by id) HTTP functions and `apps/notes-app/src/Entities/Note/Api/Query.ts` with noteQueryOptions factory + noteQueryKeys. Update `apps/notes-app/src/Entities/Note/index.ts` barrel export
-- [x] T019 Create `apps/notes-app/src/Entities/Category/Api/Get.ts` with getCategories HTTP function and `apps/notes-app/src/Entities/Category/Api/Query.ts` with categoryQueryOptions factory + categoryQueryKeys. Update `apps/notes-app/src/Entities/Category/index.ts` barrel export
+- [x] T018 Create `apps/notes-app/src/Entities/Note/Api/Get.ts` with getNoteList/getNote HTTP functions, `apps/notes-app/src/Entities/Note/Api/Key.ts` with noteQueryKey factory, and `apps/notes-app/src/Entities/Note/Api/Query.ts` with noteQueryOption factory. Update barrel export
+- [x] T019 Create `apps/notes-app/src/Entities/Category/Api/Get.ts` with getCategoryList HTTP function, `apps/notes-app/src/Entities/Category/Api/Key.ts` with categoryQueryKey factory, and `apps/notes-app/src/Entities/Category/Api/Query.ts` with categoryQueryOption factory. Update barrel export
 - [x] T020 Create `apps/notes-app/src/Entities/Note/Model/Hook/useNoteList.ts` (list query hook with categoryId/keyword/sort params) and `apps/notes-app/src/Entities/Note/Model/Hook/useNote.ts` (single note query hook). Update barrel export
 - [x] T021 [P] Create `apps/notes-app/src/Entities/Category/Model/Hook/useCategoryList.ts` (categories list query hook). Update barrel export
 
@@ -109,7 +109,7 @@
 #### Features/NoteWrite (하위 도메인 of Note)
 
 - [ ] T033 [P] [US1] Create `apps/notes-app/src/Features/NoteWrite/Type/NoteWrite.ts` with CreateNoteRequest and CreateNoteResponse types. Create `apps/notes-app/src/Features/NoteWrite/index.ts` barrel export
-- [ ] T034 [US1] Create `apps/notes-app/src/Features/NoteWrite/Api/Post.ts` with postNote HTTP function and `apps/notes-app/src/Features/NoteWrite/Api/Mutation.ts` with noteWriteMutationOptions factory + noteWriteMutationKeys. Update barrel export
+- [ ] T034 [US1] Create `apps/notes-app/src/Features/NoteWrite/Api/Post.ts` with postNote HTTP function, `apps/notes-app/src/Features/NoteWrite/Api/Key.ts` with noteWriteMutationKey factory, and `apps/notes-app/src/Features/NoteWrite/Api/Mutation.ts` with noteWriteMutationOption factory. Update barrel export
 - [ ] T035 [US1] Create `apps/notes-app/src/Features/NoteWrite/__Mock__/noteWriteHandlers.ts` with MSW handler for POST /api/notes (validate title required, generate id/timestamps, add to in-memory store). Update `apps/notes-app/src/App/Mock/browser.ts` to include this handler
 - [ ] T036 [US1] Create `apps/notes-app/src/Features/NoteWrite/Model/Hook/useCreateNote.ts` with mutation hook (uses noteWriteMutationOptions, invalidates noteQueryKeys on success, navigates to home). Update barrel export
 
@@ -223,7 +223,7 @@
 #### Features/NoteEdit (하위 도메인 of Note)
 
 - [ ] T057 [P] [US4] Create `apps/notes-app/src/Features/NoteEdit/Type/NoteEdit.ts` with UpdateNoteRequest and UpdateNoteResponse types. Create `apps/notes-app/src/Features/NoteEdit/index.ts` barrel export
-- [ ] T058 [US4] Create `apps/notes-app/src/Features/NoteEdit/Api/Put.ts` with putNote HTTP function and `apps/notes-app/src/Features/NoteEdit/Api/Mutation.ts` with noteEditMutationOptions factory + noteEditMutationKeys. Update barrel export
+- [ ] T058 [US4] Create `apps/notes-app/src/Features/NoteEdit/Api/Put.ts` with putNote HTTP function, `apps/notes-app/src/Features/NoteEdit/Api/Key.ts` with noteEditMutationKey factory, and `apps/notes-app/src/Features/NoteEdit/Api/Mutation.ts` with noteEditMutationOption factory. Update barrel export
 - [ ] T059 [US4] Create MSW handler for PUT /api/notes/:id in `apps/notes-app/src/Entities/Note/__Mock__/noteHandlers.ts` (add to existing handlers — validate, update in-memory store, update updatedAt). Update `apps/notes-app/src/App/Mock/browser.ts` if needed
 - [ ] T060 [US4] Create `apps/notes-app/src/Features/NoteEdit/Model/Hook/useUpdateNote.ts` with mutation hook (uses noteEditMutationOptions, invalidates noteQueryKeys on success). Update barrel export
 
@@ -257,7 +257,7 @@
 
 #### Features/NoteDelete (하위 도메인 of Note)
 
-- [ ] T065 [P] [US5] Create `apps/notes-app/src/Features/NoteDelete/Api/Delete.ts` with deleteNote HTTP function and `apps/notes-app/src/Features/NoteDelete/Api/Mutation.ts` with noteDeleteMutationOptions factory + noteDeleteMutationKeys. Create `apps/notes-app/src/Features/NoteDelete/index.ts` barrel export
+- [ ] T065 [P] [US5] Create `apps/notes-app/src/Features/NoteDelete/Api/Delete.ts` with deleteNote HTTP function, `apps/notes-app/src/Features/NoteDelete/Api/Key.ts` with noteDeleteMutationKey factory, and `apps/notes-app/src/Features/NoteDelete/Api/Mutation.ts` with noteDeleteMutationOption factory. Create `apps/notes-app/src/Features/NoteDelete/index.ts` barrel export
 - [ ] T066 [US5] Create MSW handler for DELETE /api/notes/:id in `apps/notes-app/src/Entities/Note/__Mock__/noteHandlers.ts` (add to existing handlers — remove from in-memory store). Update browser.ts if needed
 - [ ] T067 [US5] Create `apps/notes-app/src/Features/NoteDelete/Model/Hook/useDeleteNote.ts` with mutation hook (uses noteDeleteMutationOptions, invalidates noteQueryKeys on success, navigates to home). Update barrel export
 
@@ -292,7 +292,7 @@
 #### Features/CategoryWrite (하위 도메인 of Category)
 
 - [ ] T072 [P] [US6] Create `apps/notes-app/src/Features/CategoryWrite/Type/CategoryWrite.ts` with CreateCategoryRequest/Response types. Create `apps/notes-app/src/Features/CategoryWrite/index.ts` barrel export
-- [ ] T073 [US6] Create `apps/notes-app/src/Features/CategoryWrite/Api/Post.ts` with postCategory HTTP function, `apps/notes-app/src/Features/CategoryWrite/Api/Delete.ts` with deleteCategory HTTP function, and `apps/notes-app/src/Features/CategoryWrite/Api/Mutation.ts` with categoryWriteMutationOptions factory (create + delete). Update barrel export
+- [ ] T073 [US6] Create `apps/notes-app/src/Features/CategoryWrite/Api/Post.ts` with postCategory HTTP function, `apps/notes-app/src/Features/CategoryWrite/Api/Delete.ts` with deleteCategory HTTP function, `apps/notes-app/src/Features/CategoryWrite/Api/Key.ts` with categoryWriteMutationKey factory, and `apps/notes-app/src/Features/CategoryWrite/Api/Mutation.ts` with categoryWriteMutationOption factory (create + delete). Update barrel export
 - [ ] T074 [US6] Create `apps/notes-app/src/Features/CategoryWrite/__Mock__/categoryWriteHandlers.ts` with MSW handlers for POST /api/categories (validate unique name, generate id) and DELETE /api/categories/:id (reject default, move notes to uncategorized, return movedNotesCount). Update browser.ts
 - [ ] T075 [US6] Create `apps/notes-app/src/Features/CategoryWrite/Model/Hook/useCreateCategory.ts` and `apps/notes-app/src/Features/CategoryWrite/Model/Hook/useDeleteCategory.ts` with mutation hooks (invalidate categoryQueryKeys on success). Update barrel export
 

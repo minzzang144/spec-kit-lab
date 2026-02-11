@@ -176,7 +176,7 @@ Domain 레이어 슬라이스 내 세그먼트 종류:
 | 세그먼트      | 역할                                                          |
 |--------------|--------------------------------------------------------------|
 | `__Mock__`   | MSW 핸들러, 테스트 목 데이터                                   |
-| `Api`        | HTTP 호출 함수 + TanStack Query/Mutation 옵션 팩토리           |
+| `Api`        | HTTP 호출 함수, Key factory, TanStack Query/Mutation 옵션 팩토리 |
 | `Config`     | 상수 모음                                                     |
 | `Model`      | hook, util, lib, 비즈니스 로직(상태관리, 소켓 등), Zustand store/logic |
 | `Type`       | TypeScript 타입/인터페이스                                     |
@@ -209,7 +209,7 @@ Domain 레이어 슬라이스 내 세그먼트 종류:
 | 세그먼트 | 그룹 예시                                          |
 |---------|---------------------------------------------------|
 | Model   | `Hook/`, `Store/`, `Logic/`, `Util/`, `Lib/`, `Socket/` |
-| Api     | 파일 레벨 (그룹핑 불필요: `Get.ts`, `Query.ts` 등)     |
+| Api     | 파일 레벨 (그룹핑 불필요: `Get.ts`, `Key.ts`, `Query.ts` 등) |
 | Ui      | 컴포넌트 폴더들 (각 컴포넌트가 그룹)                    |
 
 ---
@@ -307,35 +307,42 @@ import { mockMessages } from '../__Mock__/chatMockData';
 ```
 Entities/{Domain}/Api/
 ├── Get.ts        ← GET HTTP 함수
-└── Query.ts      ← queryOptions factory + query keys
+├── Key.ts        ← query key factory
+└── Query.ts      ← queryOptions factory (Key.ts에서 key import)
 ```
+
+**Key.ts 분리 이유**: query key는 Entity 내부(Query.ts)뿐 아니라 Feature(Mutation hook에서 invalidation)에서도 사용된다. Key를 별도 파일로 분리하면 각 파일의 책임이 명확해지고, Feature에서 key만 import할 때 의도가 드러난다.
 
 ```typescript
 // Entities/Chat/Api/Get.ts
 import { httpClient } from '#/Shared/Api';
 import type { ChatMessage } from '../Type/Chat';
 
-export async function getChatMessages(roomId: string): Promise<ChatMessage[]> {
+export async function getChatMessage(roomId: string): Promise<ChatMessage[]> {
   const { data } = await httpClient.get(`/chat/rooms/${roomId}/messages`);
   return data;
 }
 ```
 
 ```typescript
+// Entities/Chat/Api/Key.ts
+export const chatQueryKey = {
+  all: ['chat'] as const,
+  message: (roomId: string) => [...chatQueryKey.all, 'message', roomId] as const,
+};
+```
+
+```typescript
 // Entities/Chat/Api/Query.ts
 import { queryOptions } from '@tanstack/react-query';
-import { getChatMessages } from './Get';
+import { getChatMessage } from './Get';
+import { chatQueryKey } from './Key';
 
-export const chatQueryKeys = {
-  all: ['chat'] as const,
-  messages: (roomId: string) => [...chatQueryKeys.all, 'messages', roomId] as const,
-};
-
-export const chatQueryOptions = {
-  messages: (roomId: string) =>
+export const chatQueryOption = {
+  message: (roomId: string) =>
     queryOptions({
-      queryKey: chatQueryKeys.messages(roomId),
-      queryFn: () => getChatMessages(roomId),
+      queryKey: chatQueryKey.message(roomId),
+      queryFn: () => getChatMessage(roomId),
     }),
 };
 ```
@@ -348,7 +355,8 @@ Features/{Domain}/Api/
 ├── Put.ts        ← PUT HTTP 함수
 ├── Patch.ts      ← PATCH HTTP 함수
 ├── Delete.ts     ← DELETE HTTP 함수
-└── Mutation.ts   ← mutationOptions factory + mutation keys
+├── Key.ts        ← mutation key factory
+└── Mutation.ts   ← mutationOptions factory (Key.ts에서 key import)
 ```
 
 ```typescript
@@ -363,16 +371,20 @@ export async function postChatMessage(payload: SendMessageRequest) {
 ```
 
 ```typescript
-// Features/ChatWrite/Api/Mutation.ts
-import { postChatMessage } from './Post';
-
-export const chatWriteMutationKeys = {
+// Features/ChatWrite/Api/Key.ts
+export const chatWriteMutationKey = {
   send: ['chat', 'send'] as const,
 };
+```
 
-export const chatWriteMutationOptions = {
+```typescript
+// Features/ChatWrite/Api/Mutation.ts
+import { postChatMessage } from './Post';
+import { chatWriteMutationKey } from './Key';
+
+export const chatWriteMutationOption = {
   send: () => ({
-    mutationKey: chatWriteMutationKeys.send,
+    mutationKey: chatWriteMutationKey.send,
     mutationFn: postChatMessage,
   }),
 };
@@ -381,29 +393,29 @@ export const chatWriteMutationOptions = {
 ### Hook 래퍼 패턴
 
 ```typescript
-// Entities/Chat/Model/Hook/useChatMessages.ts
+// Entities/Chat/Model/Hook/useChatMessage.ts
 import { useQuery } from '@tanstack/react-query';
-import { chatQueryOptions } from '../../Api/Query';
+import { chatQueryOption } from '../../Api/Query';
 
-export function useChatMessages(roomId: string) {
-  return useQuery(chatQueryOptions.messages(roomId));
+export function useChatMessage(roomId: string) {
+  return useQuery(chatQueryOption.message(roomId));
 }
 ```
 
 ```typescript
 // Features/ChatWrite/Model/Hook/useSendMessage.ts
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { chatQueryKeys } from '#/Entities/Chat';
-import { chatWriteMutationOptions } from '../../Api/Mutation';
+import { chatQueryKey } from '#/Entities/Chat';
+import { chatWriteMutationOption } from '../../Api/Mutation';
 
 export function useSendMessage(roomId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    ...chatWriteMutationOptions.send(),
+    ...chatWriteMutationOption.send(),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: chatQueryKeys.messages(roomId),
+        queryKey: chatQueryKey.message(roomId),
       });
     },
   });
@@ -696,6 +708,7 @@ src/
 │   │   │   └── chatWriteHandlers.ts
 │   │   ├── Api/
 │   │   │   ├── Post.ts
+│   │   │   ├── Key.ts
 │   │   │   └── Mutation.ts
 │   │   ├── Model/
 │   │   │   ├── Hook/
@@ -714,6 +727,7 @@ src/
 │   └── UserAuth/
 │       ├── Api/
 │       │   ├── Post.ts
+│       │   ├── Key.ts
 │       │   └── Mutation.ts
 │       ├── Model/
 │       │   └── Hook/
@@ -728,6 +742,7 @@ src/
 │   │   │   └── chatMockData.ts
 │   │   ├── Api/
 │   │   │   ├── Get.ts
+│   │   │   ├── Key.ts
 │   │   │   └── Query.ts
 │   │   ├── Config/
 │   │   │   └── ChatConfig.ts
@@ -753,6 +768,7 @@ src/
 │   └── User/
 │       ├── Api/
 │       │   ├── Get.ts
+│       │   ├── Key.ts
 │       │   └── Query.ts
 │       ├── Model/
 │       │   └── Hook/
@@ -773,9 +789,10 @@ src/
     │   ├── Routes.ts
     │   └── index.ts
     ├── Model/
+    │   ├── Lib/
+    │   │   └── DateFormat.ts
     │   ├── Shadcn/
     │   │   └── Utils.ts
-    │   ├── DateFormat.ts
     │   └── index.ts
     ├── Type/
     │   ├── Common.ts
@@ -955,6 +972,7 @@ Q: 테스트 전용 목 데이터 / MSW?
 | Store 파일    | camelCase    | `useChatStore.ts`             |
 | Slice 파일    | PascalCase   | `MessageSlice.ts`             |
 | HTTP 파일     | PascalCase   | `Get.ts`, `Post.ts`           |
+| Key 파일      | PascalCase   | `Key.ts`                      |
 | Query/Mutation | PascalCase  | `Query.ts`, `Mutation.ts`     |
 
 ### Zustand 사용 판단 치트시트
