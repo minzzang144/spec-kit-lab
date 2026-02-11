@@ -84,7 +84,7 @@
 
 ### Foundational Verification
 
-- [ ] T030 Run MSW Service Worker init (`pnpm exec msw init public/ --save`), verify dev server starts (`pnpm dev`), and confirm GET /api/notes and GET /api/categories return mock data in browser
+- [x] T030 Run MSW Service Worker init (`pnpm exec msw init public/ --save`), verify dev server starts (`pnpm dev`), and confirm GET /api/notes and GET /api/categories return mock data in browser
 
 **Checkpoint**: Foundation ready — all shared infrastructure, entities, mock API, and app shell are in place. User story implementation can now begin.
 
