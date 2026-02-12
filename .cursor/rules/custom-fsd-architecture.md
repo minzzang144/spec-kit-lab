@@ -18,15 +18,16 @@
 7. [Import Rules](#7-import-rules)
 8. [TanStack Query Integration](#8-tanstack-query-integration)
 9. [Zustand State Management](#9-zustand-state-management)
-10. [File Naming](#10-file-naming)
-11. [UI Component Structure](#11-ui-component-structure)
-12. [Path Alias](#12-path-alias)
-13. [Full Directory Tree](#13-full-directory-tree)
-14. [Enforcement Mechanisms](#14-enforcement-mechanisms)
-15. [Test Code Management](#15-test-code-management)
-16. [Quick Reference](#16-quick-reference)
-17. [Migration Strategy](#17-migration-strategy)
-18. [Relationship to Other Rules](#18-relationship-to-other-rules)
+10. [MSW Integration](#10-msw-integration)
+11. [File Naming](#11-file-naming)
+12. [UI Component Structure](#12-ui-component-structure)
+13. [Path Alias](#13-path-alias)
+14. [Full Directory Tree](#14-full-directory-tree)
+15. [Enforcement Mechanisms](#15-enforcement-mechanisms)
+16. [Test Code Management](#16-test-code-management)
+17. [Quick Reference](#17-quick-reference)
+18. [Migration Strategy](#18-migration-strategy)
+19. [Relationship to Other Rules](#19-relationship-to-other-rules)
 
 ---
 
@@ -175,7 +176,7 @@ Domain 레이어 슬라이스 내 세그먼트 종류:
 
 | 세그먼트      | 역할                                                          |
 |--------------|--------------------------------------------------------------|
-| `__Mock__`   | MSW 핸들러, 테스트 목 데이터                                   |
+| `__Mock__`   | MSW 핸들러, 시드 데이터, in-memory DB (Section 10 참조)        |
 | `Api`        | HTTP 호출 함수, Key factory, TanStack Query/Mutation 옵션 팩토리 |
 | `Config`     | 상수 모음                                                     |
 | `Model`      | hook, util, lib, 비즈니스 로직(상태관리, 소켓 등), Zustand store/logic |
@@ -206,11 +207,12 @@ Domain 레이어 슬라이스 내 세그먼트 종류:
 
 ### 주요 그룹 예시
 
-| 세그먼트 | 그룹 예시                                          |
-|---------|---------------------------------------------------|
-| Model   | `Hook/`, `Store/`, `Logic/`, `Util/`, `Lib/`, `Socket/` |
-| Api     | 파일 레벨 (그룹핑 불필요: `Get.ts`, `Key.ts`, `Query.ts` 등) |
-| Ui      | 컴포넌트 폴더들 (각 컴포넌트가 그룹)                    |
+| 세그먼트    | 그룹 예시                                          |
+|-----------|---------------------------------------------------|
+| Model     | `Hook/`, `Store/`, `Logic/`, `Util/`, `Lib/`, `Socket/` |
+| Api       | 파일 레벨 (그룹핑 불필요: `Get.ts`, `Key.ts`, `Query.ts` 등) |
+| Ui        | 컴포넌트 폴더들 (각 컴포넌트가 그룹)                    |
+| __Mock__  | 파일 레벨 (그룹핑 불필요: `Seed.ts`, `Db.ts`, `Handler.ts`) |
 
 ---
 
@@ -577,7 +579,127 @@ function ChatWidget() {
 
 ---
 
-## 10. File Naming
+## 10. MSW Integration
+
+MSW(Mock Service Worker) 핸들러를 FSD 레이어 규칙에 맞게 도메인별로 분산 관리한다.
+
+### `__Mock__` 3-file 패턴
+
+각 도메인의 `__Mock__` 세그먼트는 다음 세 파일로 구성한다:
+
+| 파일 | 역할 | 예시 |
+|------|------|------|
+| `Seed.ts` | 초기 시드 데이터 (정적 상수) | `noteSeedData`, `categorySeedData` |
+| `Db.ts` | in-memory CRUD 함수 (상태 관리) | `getNoteList()`, `createNote()`, `deleteNote()` |
+| `Handler.ts` | MSW `http.*` 핸들러 (Db 함수 호출) | `http.get('/notes', ...)` |
+
+```
+Entities/Chat/__Mock__/
+├── Seed.ts          ← 초기 데이터
+├── Db.ts            ← in-memory DB (CRUD)
+└── Handler.ts       ← MSW GET 핸들러
+```
+
+세 파일이 모두 필요하지 않으면 필요한 파일만 생성한다. 예를 들어, 시드 데이터 없이 빈 DB로 시작하면 `Seed.ts`는 생략 가능하다.
+
+### 레이어별 핸들러 분담
+
+**Entity `__Mock__`**: GET 핸들러(읽기)만 담당한다.
+
+```typescript
+// Entities/Chat/__Mock__/Handler.ts
+import { http, HttpResponse } from 'msw';
+import { chatDb } from './Db';
+
+export const chatEntityHandler = [
+  http.get('/api/chat/rooms/:roomId/messages', ({ params }) => {
+    const messageList = chatDb.getMessageList(params.roomId as string);
+    return HttpResponse.json(messageList);
+  }),
+];
+```
+
+**Feature `__Mock__`**: 쓰기 핸들러(POST/PUT/PATCH/DELETE)만 담당한다.
+
+```typescript
+// Features/ChatWrite/__Mock__/Handler.ts
+import { http, HttpResponse } from 'msw';
+import { chatDb } from '#/Entities/Chat/__Mock__/Db';
+
+export const chatWriteFeatureHandler = [
+  http.post('/api/chat/messages', async ({ request }) => {
+    const body = await request.json();
+    const created = chatDb.createMessage(body);
+    return HttpResponse.json(created, { status: 201 });
+  }),
+];
+```
+
+### `__Mock__` cross-entity import 예외
+
+Mock 핸들러는 백엔드를 시뮬레이션하므로, **다른 Entity의 `__Mock__/Db.ts`를 직접 import**하는 것을 허용한다.
+
+```typescript
+// Entities/Category/__Mock__/Handler.ts
+import { noteDb } from '#/Entities/Note/__Mock__/Db';  // ✅ __Mock__ cross-entity 예외
+
+export const categoryEntityHandler = [
+  http.get('/api/categories/:id/note-count', ({ params }) => {
+    const count = noteDb.countByCategoryId(params.id as string);
+    return HttpResponse.json({ count });
+  }),
+];
+```
+
+**예외 조건**:
+
+| 조건 | 설명 |
+|------|------|
+| `__Mock__` 세그먼트 내부 파일만 | Handler.ts, Db.ts 등 mock 전용 파일 |
+| `__Mock__/Db.ts` 또는 `__Mock__/Seed.ts`만 대상 | Handler.ts를 cross-import하지 않음 |
+| production 코드에는 적용 불가 | Api, Model, Type 등은 기존 레이어 규칙 유지 |
+
+**근거**: `__Mock__`은 백엔드 시뮬레이션이므로 프론트엔드 레이어 규칙의 적용 대상이 아니다. 실제 백엔드에서는 모든 테이블/컬렉션에 자유롭게 접근하므로, mock도 동일한 수준의 접근이 필요하다.
+
+### App/Mock: 조합 전용
+
+`App/Mock/` 슬라이스는 Entity와 Feature의 핸들러를 **모아서 setupWorker에 전달하는 역할만** 수행한다.
+
+```typescript
+// App/Mock/browser.ts
+import { setupWorker } from 'msw/browser';
+
+// Entity handlers (GET)
+import { chatEntityHandler } from '#/Entities/Chat/__Mock__/Handler';
+import { userEntityHandler } from '#/Entities/User/__Mock__/Handler';
+
+// Feature handlers (POST/PUT/DELETE)
+import { chatWriteFeatureHandler } from '#/Features/ChatWrite/__Mock__/Handler';
+
+export const worker = setupWorker(
+  // Entity (읽기)
+  ...chatEntityHandler,
+  ...userEntityHandler,
+  // Feature (쓰기)
+  ...chatWriteFeatureHandler,
+);
+```
+
+**규칙**:
+- `App/Mock/browser.ts`에서 handler 직접 정의 금지 — 조합만 담당
+- Entity와 Feature handler를 구분하여 import (가독성)
+- `__Mock__`은 index.ts에서 export하지 않으므로 직접 경로 import 허용 (`#/Entities/Chat/__Mock__/Handler`)
+
+### handler 네이밍 규칙
+
+| 레이어 | 네이밍 패턴 | 예시 |
+|--------|-----------|------|
+| Entity | `{domain}EntityHandler` | `chatEntityHandler`, `noteEntityHandler` |
+| Feature | `{domain}FeatureHandler` | `chatWriteFeatureHandler`, `noteWriteFeatureHandler` |
+
+---
+
+## 11. File Naming
 
 | 대상                     | 규칙             | 예시                                    |
 |-------------------------|------------------|-----------------------------------------|
@@ -593,7 +715,7 @@ function ChatWidget() {
 
 ---
 
-## 11. UI Component Structure
+## 12. UI Component Structure
 
 ```
 ComponentName/
@@ -649,7 +771,7 @@ Shared/
 
 ---
 
-## 12. Path Alias
+## 13. Path Alias
 
 ### 설정
 
@@ -692,7 +814,7 @@ export default defineConfig({
 
 ---
 
-## 13. Full Directory Tree
+## 14. Full Directory Tree
 
 채팅 앱 기반 완전한 디렉토리 예시:
 
@@ -701,6 +823,8 @@ src/
 ├── App/
 │   ├── Config/
 │   │   └── env.ts
+│   ├── Mock/
+│   │   └── browser.ts           ← setupWorker (핸들러 조합만)
 │   ├── Provider/
 │   │   ├── QueryProvider.tsx
 │   │   └── index.ts
@@ -757,7 +881,8 @@ src/
 ├── Features/
 │   ├── ChatWrite/
 │   │   ├── __Mock__/
-│   │   │   └── chatWriteHandlers.ts
+│   │   │   ├── Db.ts             ← in-memory DB (쓰기 전용 로직)
+│   │   │   └── Handler.ts        ← MSW POST/PUT/DELETE 핸들러
 │   │   ├── Api/
 │   │   │   ├── Post.ts
 │   │   │   ├── Key.ts
@@ -791,7 +916,9 @@ src/
 ├── Entities/
 │   ├── Chat/
 │   │   ├── __Mock__/
-│   │   │   └── chatMockData.ts
+│   │   │   ├── Seed.ts           ← 초기 시드 데이터
+│   │   │   ├── Db.ts             ← in-memory DB (CRUD)
+│   │   │   └── Handler.ts        ← MSW GET 핸들러
 │   │   ├── Api/
 │   │   │   ├── Get.ts
 │   │   │   ├── Key.ts
@@ -862,7 +989,7 @@ src/
 
 ---
 
-## 14. Enforcement Mechanisms
+## 15. Enforcement Mechanisms
 
 **모든 코드 작성 시** 아래 검증을 수행한다.
 
@@ -900,6 +1027,8 @@ BEFORE adding an import:
       ALLOW
     ELSE IF source_layer == 'Entities' AND is_import_type AND targets_index_ts:
       ALLOW (cross-entity import type 예외)
+    ELSE IF source_file IN '__Mock__/' AND target_file IN '__Mock__/':
+      ALLOW (__Mock__ cross-entity 예외)
     ELSE:
       STOP
       EXPLAIN: "같은 레이어의 다른 슬라이스를 import할 수 없습니다"
@@ -936,7 +1065,7 @@ AFTER creating a slice:
 
 ---
 
-## 15. Test Code Management
+## 16. Test Code Management
 
 ### 파일 옆 배치 (Sibling) 방식
 
@@ -958,13 +1087,13 @@ Ui/ChatMessageItem/
 | 규칙                                    | 설명                                         |
 |----------------------------------------|----------------------------------------------|
 | depth 추가 없음                         | max depth 규칙(5-level)과 충돌하지 않음        |
-| `__Mock__` 세그먼트와 역할 분리          | `__Mock__` = 공유 목 데이터/MSW 핸들러 전용   |
+| `__Mock__` 세그먼트와 역할 분리          | `__Mock__` = 시드 데이터/in-memory DB/MSW 핸들러 전용 (Section 10 참조) |
 | 테스트 파일은 index.ts에서 export 안 함  | public API에 테스트 노출 금지                  |
 | `__Mock__` 직접 import 허용             | 테스트 파일에서만 예외적으로 허용               |
 
 ---
 
-## 16. Quick Reference
+## 17. Quick Reference
 
 ### "이 코드는 어디에?" 결정 트리
 
@@ -1031,6 +1160,7 @@ Q: 테스트 전용 목 데이터 / MSW?
 | HTTP 파일     | PascalCase   | `Get.ts`, `Post.ts`           |
 | Key 파일      | PascalCase   | `Key.ts`                      |
 | Query/Mutation | PascalCase  | `Query.ts`, `Mutation.ts`     |
+| Mock 파일      | PascalCase   | `Seed.ts`, `Db.ts`, `Handler.ts` |
 
 ### Zustand 사용 판단 치트시트
 
@@ -1050,7 +1180,7 @@ Q: 단일 컴포넌트 내부 상태?
 
 ---
 
-## 17. Migration Strategy
+## 18. Migration Strategy
 
 기존 레포에 적용할 때의 전략.
 
@@ -1079,7 +1209,7 @@ FSD 미준수 영역을 **"추후 리팩토링 작업"**으로 목록화:
 
 ---
 
-## 18. Relationship to Other Rules
+## 19. Relationship to Other Rules
 
 ### constitution.md와의 관계
 
