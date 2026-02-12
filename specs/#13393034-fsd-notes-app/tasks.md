@@ -101,34 +101,34 @@
 > **CONSTITUTION REQUIREMENT: Write these tests FIRST, ensure they FAIL before implementation**
 > **E2E TESTS ARE MANDATORY**: Per constitution v2.1.2, all user stories MUST have E2E tests
 
-- [ ] T031 [P] [US1] Unit test for NoteWrite mutation in `apps/notes-app/src/Features/NoteWrite/Api/Post.test.ts` — test createNote POST request format and response (Vitest + MSW server)
-- [ ] T032 [P] [US1] Unit test for NoteEditor widget in `apps/notes-app/src/Widgets/NoteEditor/Ui/NoteEditor/NoteEditor.test.tsx` — test form rendering, validation (empty title), category select, submit callback (Vitest + Testing Library)
+- [x] T031 [P] [US1] Unit test for NoteWrite mutation in `apps/notes-app/src/Features/NoteWrite/Api/Post.test.ts` — test createNote POST request format and response (Vitest + MSW server)
+- [x] T032 [P] [US1] Unit test for NoteEditor widget in `apps/notes-app/src/Widgets/NoteEditor/Ui/NoteEditor/NoteEditor.test.tsx` — test form rendering, validation (empty title), category select, submit callback (Vitest + Testing Library)
 
 ### Implementation for User Story 1
 
 #### Features/NoteWrite (하위 도메인 of Note)
 
-- [ ] T033 [P] [US1] Create `apps/notes-app/src/Features/NoteWrite/Type/NoteWrite.ts` with CreateNoteRequest and CreateNoteResponse types. Create `apps/notes-app/src/Features/NoteWrite/index.ts` barrel export
-- [ ] T034 [US1] Create `apps/notes-app/src/Features/NoteWrite/Api/Post.ts` with postNote HTTP function, `apps/notes-app/src/Features/NoteWrite/Api/Key.ts` with noteWriteMutationKey factory, and `apps/notes-app/src/Features/NoteWrite/Api/Mutation.ts` with noteWriteMutationOption factory. Update barrel export
-- [ ] T035 [US1] Create `apps/notes-app/src/Features/NoteWrite/__Mock__/noteWriteHandlers.ts` with MSW handler for POST /api/notes (validate title required, generate id/timestamps, add to in-memory store). Update `apps/notes-app/src/App/Mock/browser.ts` to include this handler
-- [ ] T036 [US1] Create `apps/notes-app/src/Features/NoteWrite/Model/Hook/useCreateNote.ts` with mutation hook (uses noteWriteMutationOptions, invalidates noteQueryKeys on success, navigates to home). Update barrel export
+- [x] T033 [P] [US1] Create `apps/notes-app/src/Features/NoteWrite/Type/NoteWrite.ts` with CreateNoteRequest and CreateNoteResponse types. Create `apps/notes-app/src/Features/NoteWrite/index.ts` barrel export
+- [x] T034 [US1] Create `apps/notes-app/src/Features/NoteWrite/Api/Post.ts` with postNote HTTP function, `apps/notes-app/src/Features/NoteWrite/Api/Key.ts` with noteWriteMutationKey factory, and `apps/notes-app/src/Features/NoteWrite/Api/Mutation.ts` with noteWriteMutationOption factory. Update barrel export
+- [x] T035 [US1] Create `apps/notes-app/src/Features/NoteWrite/__Mock__/noteWriteHandlers.ts` with MSW handler for POST /api/notes (validate title required, generate id/timestamps, add to in-memory store). Update `apps/notes-app/src/App/Mock/browser.ts` to include this handler
+- [x] T036 [US1] Create `apps/notes-app/src/Features/NoteWrite/Model/Hook/useCreateNote.ts` with mutation hook (uses noteWriteMutationOptions, invalidates noteQueryKeys on success, navigates to home). Update barrel export
 
 #### Widgets/NoteEditor
 
-- [ ] T037 [US1] Create `apps/notes-app/src/Widgets/NoteEditor/Model/Hook/useNoteForm.ts` with React Hook Form + Zod schema (noteFormSchema from data-model.md) for note create/edit form state management
-- [ ] T038 [US1] Create `apps/notes-app/src/Widgets/NoteEditor/Ui/NoteEditor/NoteEditor.tsx` + `index.ts` with note form UI (title input, content textarea, category select using useCategories, save/cancel buttons, unsaved changes prompt). Create `apps/notes-app/src/Widgets/NoteEditor/index.ts` barrel export
+- [x] T037 [US1] Create `apps/notes-app/src/Widgets/NoteEditor/Model/Hook/useNoteForm.ts` with React Hook Form + Zod schema (noteFormSchema from data-model.md) for note create/edit form state management
+- [x] T038 [US1] Create `apps/notes-app/src/Widgets/NoteEditor/Ui/NoteEditor/NoteEditor.tsx` + `index.ts` with note form UI (title input, content textarea, category select using useCategories, save/cancel buttons, unsaved changes prompt). Create `apps/notes-app/src/Widgets/NoteEditor/index.ts` barrel export
 
 #### Pages/NoteWritePage
 
-- [ ] T039 [US1] Create `apps/notes-app/src/Pages/NoteWritePage/Ui/NoteWritePage/NoteWritePage.tsx` + `index.ts` composing NoteEditor widget with useCreateNote hook. Create `apps/notes-app/src/Pages/NoteWritePage/index.ts` barrel export. Wire into AppRouter
+- [x] T039 [US1] Create `apps/notes-app/src/Pages/NoteWritePage/Ui/NoteWritePage/NoteWritePage.tsx` + `index.ts` composing NoteEditor widget with useCreateNote hook. Create `apps/notes-app/src/Pages/NoteWritePage/index.ts` barrel export. Wire into AppRouter
 
 #### E2E Test (MANDATORY)
 
-- [ ] T040 [US1] **E2E test** in `apps/notes-app/e2e/note-write.spec.ts` — E2E-US1-001: create note with title/content/category → verify in list; E2E-US1-002: attempt save without title → validation error shown (Playwright)
+- [x] T040 [US1] **E2E test** in `apps/notes-app/e2e/note-write.spec.ts` — E2E-US1-001: create note with title/content/category → verify in list; E2E-US1-002: attempt save without title → validation error shown (Playwright)
 
 #### Verification
 
-- [ ] T041 [US1] Run frontend verification: `pnpm run type-check && pnpm run lint && pnpm run test && pnpm run build`
+- [x] T041 [US1] Run frontend verification: `pnpm run type-check && pnpm run lint && pnpm run test && pnpm run build`
 
 **Checkpoint**: User Story 1 complete — notes can be created with full form validation
 

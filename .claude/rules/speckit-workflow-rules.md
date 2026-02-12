@@ -25,10 +25,11 @@ FOR EACH TASK:
 1. ✅ Execute ONE task implementation
 2. ✅ Verify functionality (build/test if applicable)
 3. ✅ Update TodoWrite: mark task as "completed"
-4. ✅ Git add all changed files
-5. ✅ Git commit with proper message format
-6. ✅ Verify commit was successful
-7. ✅ ONLY THEN start next task
+4. ✅ Mark task as [x] in tasks.md (specs/*/tasks.md)
+5. ✅ Git add all changed files (구현 파일 + tasks.md 포함)
+6. ✅ Git commit with proper message format
+7. ✅ Verify commit was successful
+8. ✅ ONLY THEN start next task
 ```
 
 ### Commit Message Format (REQUIRED)

@@ -193,7 +193,11 @@ You **MUST** consider the user input before proceeding (if not empty).
    - For parallel tasks [P], continue with successful tasks, report failed ones
    - Provide clear error messages with context for debugging
    - Suggest next steps if implementation cannot proceed
-   - **IMPORTANT** For completed tasks, make sure to mark the task off as [X] in the tasks file.
+   - **IMPORTANT: tasks.md 체크박스는 구현 코드와 같은 커밋에 포함**해야 한다. 각 태스크 완료 시 다음 순서를 따른다:
+     1. 태스크 구현 완료
+     2. tasks.md에서 해당 태스크를 `[x]`로 체크
+     3. 구현 파일 **+ tasks.md**를 함께 `git add`
+     4. 하나의 커밋으로 커밋
 
 10. Completion validation:
     - Verify all required tasks are completed
