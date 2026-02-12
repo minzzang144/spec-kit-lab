@@ -1,7 +1,7 @@
 # Implementation Plan: FSD Notes App
 
 **Branch**: `spec/#13393034-fsd-notes-app` | **Date**: 2026-02-10 | **Spec**: [spec.md](./spec.md)
-**Input**: Feature specification from `/specs/#13393034-fsd-apps/notes-app/spec.md`
+**Input**: Feature specification from `/specs/#13393034-fsd-notes-app/spec.md`
 
 **Note**: This plan implements a Notes/Memo application designed to validate all rules in the Custom FSD Architecture rule file.
 
@@ -128,7 +128,7 @@ General:
 ### Documentation (this feature)
 
 ```text
-specs/#13393034-fsd-apps/notes-app/
+specs/#13393034-fsd-notes-app/
 ├── plan.md              # This file
 ├── research.md          # Phase 0 output
 ├── data-model.md        # Phase 1 output
@@ -156,205 +156,272 @@ apps/notes-app/
     ├── App/                     # Non-domain layer: App initialization
     │   ├── Config/
     │   │   └── Env.ts
+    │   ├── Mock/
+    │   │   └── browser.ts       # MSW browser worker setup (조합 전용 — 핸들러 직접 정의 금지)
     │   ├── Provider/
     │   │   ├── QueryProvider.tsx
     │   │   └── index.ts
     │   ├── Router/
     │   │   ├── AppRouter.tsx
+    │   │   ├── AppLayout.tsx
     │   │   └── index.ts
-    │   ├── Style/
-    │   │   └── global.css
-    │   └── Mock/
-    │       └── browser.ts       # MSW browser worker setup
+    │   └── Style/
+    │       └── global.css
     │
     ├── Pages/                   # Domain layer: route-level pages
     │   ├── HomePage/
     │   │   ├── Ui/
-    │   │   │   └── HomePage/
-    │   │   │       ├── HomePage.tsx
-    │   │   │       └── index.ts
+    │   │   │   ├── HomePage/
+    │   │   │   │   ├── HomePage.tsx
+    │   │   │   │   └── index.ts
+    │   │   │   └── index.ts         # 세그먼트 barrel
     │   │   └── index.ts
     │   ├── NoteWritePage/
     │   │   ├── Ui/
-    │   │   │   └── NoteWritePage/
-    │   │   │       ├── NoteWritePage.tsx
-    │   │   │       └── index.ts
+    │   │   │   ├── NoteWritePage/
+    │   │   │   │   ├── NoteWritePage.tsx
+    │   │   │   │   └── index.ts
+    │   │   │   └── index.ts
     │   │   └── index.ts
     │   ├── NoteViewPage/
     │   │   ├── Ui/
-    │   │   │   └── NoteViewPage/
-    │   │   │       ├── NoteViewPage.tsx
-    │   │   │       └── index.ts
+    │   │   │   ├── NoteViewPage/
+    │   │   │   │   ├── NoteViewPage.tsx
+    │   │   │   │   └── index.ts
+    │   │   │   └── index.ts
     │   │   └── index.ts
     │   └── CategoryManagePage/
     │       ├── Ui/
-    │       │   └── CategoryManagePage/
-    │       │       ├── CategoryManagePage.tsx
-    │       │       └── index.ts
+    │       │   ├── CategoryManagePage/
+    │       │   │   ├── CategoryManagePage.tsx
+    │       │   │   └── index.ts
+    │       │   └── index.ts
     │       └── index.ts
     │
     ├── Widgets/                 # Domain layer: independent UI blocks
     │   ├── NoteList/
     │   │   ├── Model/
-    │   │   │   └── Hook/
-    │   │   │       └── useNoteListFilter.ts
+    │   │   │   ├── Hook/
+    │   │   │   │   ├── useNoteListFilter.ts
+    │   │   │   │   └── index.ts
+    │   │   │   └── index.ts
     │   │   ├── Ui/
-    │   │   │   └── NoteList/
-    │   │   │       ├── NoteList.tsx
-    │   │   │       ├── NoteList.loading.tsx
-    │   │   │       ├── NoteList.test.tsx
-    │   │   │       └── index.ts
+    │   │   │   ├── NoteList/
+    │   │   │   │   ├── NoteList.tsx
+    │   │   │   │   ├── NoteList.loading.tsx
+    │   │   │   │   ├── NoteList.test.tsx
+    │   │   │   │   └── index.ts
+    │   │   │   └── index.ts
     │   │   └── index.ts
     │   ├── NoteEditor/
     │   │   ├── Model/
-    │   │   │   └── Hook/
-    │   │   │       └── useNoteForm.ts
+    │   │   │   ├── Hook/
+    │   │   │   │   ├── useNoteForm.ts
+    │   │   │   │   └── index.ts
+    │   │   │   └── index.ts
     │   │   ├── Ui/
-    │   │   │   └── NoteEditor/
-    │   │   │       ├── NoteEditor.tsx
-    │   │   │       └── index.ts
+    │   │   │   ├── NoteEditor/
+    │   │   │   │   ├── NoteEditor.tsx
+    │   │   │   │   └── index.ts
+    │   │   │   └── index.ts
     │   │   └── index.ts
     │   ├── NoteDetail/
     │   │   ├── Ui/
-    │   │   │   └── NoteDetail/
-    │   │   │       ├── NoteDetail.tsx
-    │   │   │       └── index.ts
+    │   │   │   ├── NoteDetail/
+    │   │   │   │   ├── NoteDetail.tsx
+    │   │   │   │   └── index.ts
+    │   │   │   └── index.ts
     │   │   └── index.ts
     │   ├── SearchBar/
     │   │   ├── Model/
-    │   │   │   └── Hook/
-    │   │   │       └── useSearchKeyword.ts
+    │   │   │   ├── Hook/
+    │   │   │   │   ├── useSearchKeyword.ts
+    │   │   │   │   └── index.ts
+    │   │   │   └── index.ts
     │   │   ├── Ui/
-    │   │   │   └── SearchBar/
-    │   │   │       ├── SearchBar.tsx
-    │   │   │       └── index.ts
+    │   │   │   ├── SearchBar/
+    │   │   │   │   ├── SearchBar.tsx
+    │   │   │   │   └── index.ts
+    │   │   │   └── index.ts
     │   │   └── index.ts
     │   ├── Sidebar/
     │   │   ├── Model/
-    │   │   │   └── Hook/
-    │   │   │       └── useSidebarState.ts
+    │   │   │   ├── Hook/
+    │   │   │   │   ├── useSidebarState.ts
+    │   │   │   │   └── index.ts
+    │   │   │   └── index.ts
     │   │   ├── Ui/
-    │   │   │   └── Sidebar/
-    │   │   │       ├── Sidebar.tsx
-    │   │   │       └── index.ts
+    │   │   │   ├── Sidebar/
+    │   │   │   │   ├── Sidebar.tsx
+    │   │   │   │   └── index.ts
+    │   │   │   └── index.ts
     │   │   └── index.ts
     │   └── CategoryFilter/
     │       ├── Ui/
-    │       │   └── CategoryFilter/
-    │       │       ├── CategoryFilter.tsx
-    │       │       └── index.ts
+    │       │   ├── CategoryFilter/
+    │       │   │   ├── CategoryFilter.tsx
+    │       │   │   └── index.ts
+    │       │   └── index.ts
     │       └── index.ts
     │
     ├── Features/                # Domain layer: user write actions
     │   ├── NoteWrite/           # 하위 도메인 (Note의 서브도메인)
     │   │   ├── __Mock__/
-    │   │   │   └── noteWriteHandlers.ts
+    │   │   │   ├── Handler.ts       # POST /api/notes 핸들러
+    │   │   │   └── index.ts
     │   │   ├── Api/
     │   │   │   ├── Post.ts
     │   │   │   ├── Key.ts
-    │   │   │   └── Mutation.ts
+    │   │   │   ├── Mutation.ts
+    │   │   │   └── index.ts
     │   │   ├── Model/
-    │   │   │   └── Hook/
-    │   │   │       └── useCreateNote.ts
+    │   │   │   ├── Hook/
+    │   │   │   │   ├── useCreateNote.ts
+    │   │   │   │   └── index.ts
+    │   │   │   └── index.ts
     │   │   ├── Type/
-    │   │   │   └── NoteWrite.ts
+    │   │   │   ├── NoteWrite.ts
+    │   │   │   └── index.ts
     │   │   └── index.ts
     │   ├── NoteEdit/            # 하위 도메인 (Note의 서브도메인)
+    │   │   ├── __Mock__/
+    │   │   │   ├── Handler.ts       # PUT /api/notes/:id 핸들러
+    │   │   │   └── index.ts
     │   │   ├── Api/
     │   │   │   ├── Put.ts
     │   │   │   ├── Key.ts
-    │   │   │   └── Mutation.ts
+    │   │   │   ├── Mutation.ts
+    │   │   │   └── index.ts
     │   │   ├── Model/
-    │   │   │   └── Hook/
-    │   │   │       └── useUpdateNote.ts
+    │   │   │   ├── Hook/
+    │   │   │   │   ├── useUpdateNote.ts
+    │   │   │   │   └── index.ts
+    │   │   │   └── index.ts
     │   │   ├── Type/
-    │   │   │   └── NoteEdit.ts
+    │   │   │   ├── NoteEdit.ts
+    │   │   │   └── index.ts
     │   │   └── index.ts
     │   ├── NoteDelete/          # 하위 도메인 (Note의 서브도메인)
+    │   │   ├── __Mock__/
+    │   │   │   ├── Handler.ts       # DELETE /api/notes/:id 핸들러
+    │   │   │   └── index.ts
     │   │   ├── Api/
     │   │   │   ├── Delete.ts
     │   │   │   ├── Key.ts
-    │   │   │   └── Mutation.ts
+    │   │   │   ├── Mutation.ts
+    │   │   │   └── index.ts
     │   │   ├── Model/
-    │   │   │   └── Hook/
-    │   │   │       └── useDeleteNote.ts
+    │   │   │   ├── Hook/
+    │   │   │   │   ├── useDeleteNote.ts
+    │   │   │   │   └── index.ts
+    │   │   │   └── index.ts
     │   │   └── index.ts
     │   ├── NoteSearch/          # 독립 Feature
     │   │   ├── Model/
-    │   │   │   └── Hook/
-    │   │   │       └── useNoteSearch.ts
+    │   │   │   ├── Hook/
+    │   │   │   │   ├── useNoteSearch.ts
+    │   │   │   │   └── index.ts
+    │   │   │   └── index.ts
     │   │   ├── Type/
-    │   │   │   └── NoteSearch.ts
+    │   │   │   ├── NoteSearch.ts
+    │   │   │   └── index.ts
     │   │   └── index.ts
     │   ├── CategoryWrite/       # 하위 도메인 (Category의 서브도메인)
     │   │   ├── __Mock__/
-    │   │   │   └── categoryWriteHandlers.ts
+    │   │   │   ├── Handler.ts       # POST /api/categories, DELETE /api/categories/:id 핸들러
+    │   │   │   └── index.ts
     │   │   ├── Api/
     │   │   │   ├── Post.ts
     │   │   │   ├── Delete.ts
     │   │   │   ├── Key.ts
-    │   │   │   └── Mutation.ts
+    │   │   │   ├── Mutation.ts
+    │   │   │   └── index.ts
     │   │   ├── Model/
-    │   │   │   └── Hook/
-    │   │   │       ├── useCreateCategory.ts
-    │   │   │       └── useDeleteCategory.ts
+    │   │   │   ├── Hook/
+    │   │   │   │   ├── useCreateCategory.ts
+    │   │   │   │   ├── useDeleteCategory.ts
+    │   │   │   │   └── index.ts
+    │   │   │   └── index.ts
     │   │   ├── Type/
-    │   │   │   └── CategoryWrite.ts
+    │   │   │   ├── CategoryWrite.ts
+    │   │   │   └── index.ts
     │   │   └── index.ts
     │   └── CategoryFilter/      # 하위 도메인 (Category의 서브도메인)
     │       ├── Model/
     │       │   ├── Hook/
-    │       │   │   └── useCategoryFilter.ts
-    │       │   └── Store/
-    │       │       ├── FilterSlice.ts
-    │       │       └── useFilterStore.ts
+    │       │   │   ├── useCategoryFilter.ts
+    │       │   │   └── index.ts
+    │       │   ├── Store/
+    │       │   │   ├── FilterSlice.ts
+    │       │   │   ├── useFilterStore.ts
+    │       │   │   └── index.ts
+    │       │   └── index.ts
     │       ├── Type/
-    │       │   └── CategoryFilter.ts
+    │       │   ├── CategoryFilter.ts
+    │       │   └── index.ts
     │       └── index.ts
     │
     ├── Entities/                # Domain layer: business entities (read-oriented)
     │   ├── Note/                # 상위 도메인
     │   │   ├── __Mock__/
-    │   │   │   └── noteMockData.ts
+    │   │   │   ├── Seed.ts          # 초기 시드 데이터 (5+ notes)
+    │   │   │   ├── Db.ts           # in-memory CRUD 함수
+    │   │   │   ├── Handler.ts       # GET /api/notes, GET /api/notes/:id 핸들러
+    │   │   │   └── index.ts         # __Mock__ barrel (슬라이스 barrel에서 re-export 금지)
     │   │   ├── Api/
     │   │   │   ├── Get.ts
     │   │   │   ├── Key.ts
-    │   │   │   └── Query.ts
+    │   │   │   ├── Query.ts
+    │   │   │   └── index.ts
     │   │   ├── Config/
-    │   │   │   └── NoteConfig.ts
+    │   │   │   ├── NoteConfig.ts
+    │   │   │   └── index.ts
     │   │   ├── Model/
-    │   │   │   └── Hook/
-    │   │   │       ├── useNotes.ts
-    │   │   │       └── useNote.ts
+    │   │   │   ├── Hook/
+    │   │   │   │   ├── useNoteList.ts
+    │   │   │   │   ├── useNote.ts
+    │   │   │   │   └── index.ts
+    │   │   │   └── index.ts
     │   │   ├── Type/
-    │   │   │   └── Note.ts
+    │   │   │   ├── Note.ts
+    │   │   │   └── index.ts
     │   │   ├── Ui/
     │   │   │   ├── NoteCard/
     │   │   │   │   ├── NoteCard.tsx
     │   │   │   │   ├── NoteCard.test.tsx
     │   │   │   │   └── index.ts
-    │   │   │   └── EmptyNoteState/
-    │   │   │       ├── EmptyNoteState.tsx
-    │   │   │       └── index.ts
+    │   │   │   ├── EmptyNoteState/
+    │   │   │   │   ├── EmptyNoteState.tsx
+    │   │   │   │   └── index.ts
+    │   │   │   └── index.ts
     │   │   └── index.ts
     │   └── Category/            # 상위 도메인
     │       ├── __Mock__/
-    │       │   └── categoryMockData.ts
+    │       │   ├── Seed.ts          # 초기 시드 데이터 (default + custom categories)
+    │       │   ├── Db.ts           # in-memory CRUD 함수
+    │       │   ├── Handler.ts       # GET /api/categories 핸들러
+    │       │   └── index.ts
     │       ├── Api/
     │       │   ├── Get.ts
     │       │   ├── Key.ts
-    │       │   └── Query.ts
+    │       │   ├── Query.ts
+    │       │   └── index.ts
     │       ├── Config/
-    │       │   └── CategoryConfig.ts
+    │       │   ├── CategoryConfig.ts
+    │       │   └── index.ts
     │       ├── Model/
-    │       │   └── Hook/
-    │       │       └── useCategories.ts
+    │       │   ├── Hook/
+    │       │   │   ├── useCategoryList.ts
+    │       │   │   └── index.ts
+    │       │   └── index.ts
     │       ├── Type/
-    │       │   └── Category.ts
+    │       │   ├── Category.ts
+    │       │   └── index.ts
     │       ├── Ui/
-    │       │   └── CategoryBadge/
-    │       │       ├── CategoryBadge.tsx
-    │       │       └── index.ts
+    │       │   ├── CategoryBadge/
+    │       │   │   ├── CategoryBadge.tsx
+    │       │   │   └── index.ts
+    │       │   └── index.ts
     │       └── index.ts
     │
     └── Shared/                  # Non-domain layer: shared utilities
@@ -366,23 +433,26 @@ apps/notes-app/
         │   └── index.ts
         ├── Model/
         │   ├── Lib/
-        │   │   └── DateFormat.ts
+        │   │   ├── DateFormat.ts
+        │   │   └── index.ts
         │   ├── Shadcn/
-        │   │   └── Utils.ts
+        │   │   ├── Utils.ts
+        │   │   └── index.ts
         │   └── index.ts
         ├── Type/
         │   ├── Common.ts
         │   └── index.ts
         └── Ui/
-            ├── Button/
-            │   ├── Button.tsx
-            │   └── index.ts
-            ├── Input/
-            │   ├── Input.tsx
-            │   └── index.ts
-            ├── Dialog/
-            │   ├── ConfirmDialog.tsx
-            │   └── index.ts
+            ├── Shadcn/              # shadcn CLI 자동 생성 (소문자 파일, barrel 없음)
+            │   ├── button.tsx
+            │   ├── input.tsx
+            │   ├── dialog.tsx
+            │   ├── card.tsx
+            │   ├── textarea.tsx
+            │   ├── select.tsx
+            │   ├── label.tsx
+            │   ├── badge.tsx
+            │   └── separator.tsx
             ├── ErrorBoundary/
             │   ├── ErrorBoundary.tsx
             │   └── index.ts
@@ -396,19 +466,24 @@ apps/notes-app/
 | Custom FSD 규칙 | 구현 위치 | 검증 방법 |
 |---|---|---|
 | 6개 레이어 | App/Pages/Widgets/Features/Entities/Shared | 전체 디렉토리 구조 |
-| Non-domain 레이어 (슬라이스=세그먼트) | App/Config, App/Provider, Shared/Api, Shared/Ui | 세그먼트 직접 사용 |
+| Non-domain 레이어 (슬라이스=세그먼트) | App/Config, App/Mock, App/Provider, Shared/Api, Shared/Ui | 세그먼트 직접 사용 |
 | Domain 레이어 (슬라이스→세그먼트) | Entities/Note/Api, Features/NoteWrite/Model | 슬라이스 내 세그먼트 구조 |
 | 상위/하위 도메인 | Note(상위), NoteWrite/NoteEdit/NoteDelete(하위); Category(상위), CategoryWrite/CategoryFilter(하위) | Import 방향 검증 |
 | 세그먼트 종류 (__Mock__, Api, Config, Model, Type, Ui) | Entities/Note에 모든 세그먼트 사용 | 6종 세그먼트 모두 포함 |
 | 세그먼트 1단계 그룹핑 | Model/Hook, Model/Store | 최대 depth 5 준수 |
-| Public API (index.ts) | 모든 슬라이스에 index.ts | 빌드 시 import 검증 |
-| Import 규칙 (상대/절대) | 같은 슬라이스: `../../Type/Note`, 다른 슬라이스: `#/Entities/Note` | ESLint 규칙 가능 |
-| TanStack Query 통합 | Entities/*/Api: Get+Query, Features/*/Api: Post/Put/Delete+Mutation | queryOptions/mutationOptions factory |
+| Barrel-everywhere (슬라이스+세그먼트+그룹) | 모든 슬라이스/세그먼트/그룹에 index.ts | 빌드 시 import 검증 |
+| Import 규칙 (상대/절대) | 같은 슬라이스: `../../Type` (barrel 경유), 다른 슬라이스: `#/Entities/Note` | ESLint 규칙 가능 |
+| __Mock__ 3-file 패턴 | Seed.ts (시드 데이터) + Db.ts (in-memory CRUD) + Handler.ts (MSW 핸들러) | 파일 구조 검증 |
+| __Mock__ 분산 핸들러 | Entity __Mock__: GET 핸들러, Feature __Mock__: POST/PUT/PATCH/DELETE 핸들러 | Handler.ts 내용 검증 |
+| __Mock__ 슬라이스 barrel re-export 금지 | 슬라이스 index.ts에서 __Mock__ re-export 안 함; `#/Entities/Note/__Mock__`으로 직접 import | 코드 리뷰 |
+| App/Mock 조합 전용 | App/Mock/browser.ts에서 핸들러 직접 정의 금지 — import + setupWorker만 | 코드 리뷰 |
+| TanStack Query 통합 | Entities/*/Api: Get+Key+Query, Features/*/Api: Post/Put/Delete+Key+Mutation | queryOptions/mutationOptions factory |
 | Zustand slices pattern | Features/CategoryFilter/Model/Store/FilterSlice+useFilterStore | 여러 Widget에서 공유 상태 |
 | 파일 네이밍 (PascalCase/camelCase) | 디렉토리 PascalCase, Hook camelCase, Slice PascalCase | 전체 파일 구조 |
+| No-plurals 네이밍 | useNoteList (not useNotes), useCategoryList (not useCategories) | 복수형 접미사 금지 |
 | UI 컴포넌트 구조 | NoteCard/, SearchBar/ 등 | ComponentName.tsx + index.ts |
+| shadcn/ui Shadcn/ 그룹 | Shared/Ui/Shadcn/ (소문자 파일, barrel 없음); Shared/Model/Shadcn/Utils.ts | CLI 생성 파일 예외 |
 | Path Alias (#/) | tsconfig.json paths: `#/*` → `src/*` | 빌드 검증 |
-| __Mock__ export 금지 | index.ts에서 __Mock__ export 안 함 | 코드 리뷰 |
 
 ## Complexity Tracking
 
