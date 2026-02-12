@@ -1,4 +1,4 @@
-import type { Note } from '../Type/Note';
+import type { Note } from '../Type';
 import { INITIAL_NOTE_LIST } from './Seed';
 
 let noteList: Note[] = [...INITIAL_NOTE_LIST];

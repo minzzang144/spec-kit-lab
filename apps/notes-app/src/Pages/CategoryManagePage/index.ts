@@ -1,1 +1,1 @@
-export { CategoryManagePage } from './Ui/CategoryManagePage';
+export { CategoryManagePage } from './Ui';

@@ -1,4 +1,4 @@
-import type { Category } from '../Type/Category';
+import type { Category } from '../Type';
 import { getNoteList } from '#/Entities/Note/__Mock__/Db';
 import { INITIAL_CATEGORY_LIST } from './Seed';
 

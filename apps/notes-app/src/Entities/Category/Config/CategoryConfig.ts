@@ -1,4 +1,4 @@
-import type { Category } from '../Type/Category';
+import type { Category } from '../Type';
 
 export const DEFAULT_CATEGORY_LIST: readonly Category[] = [
   { id: 'all', name: '전체', isDefault: true },
