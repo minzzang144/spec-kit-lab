@@ -1,5 +1,5 @@
 import type { Category } from '../Type';
-import { getNoteList } from '#/Entities/Note/__Mock__/Db';
+import { getNoteList } from '#/Entities/Note/__Mock__';
 import { INITIAL_CATEGORY_LIST } from './Seed';
 
 let categoryList: Category[] = [...INITIAL_CATEGORY_LIST];

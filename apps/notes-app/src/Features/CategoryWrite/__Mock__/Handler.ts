@@ -3,7 +3,7 @@ import {
   getCategoryList,
   addCategory,
   deleteCategory,
-} from '#/Entities/Category/__Mock__/Db';
+} from '#/Entities/Category/__Mock__';
 
 export const categoryWriteFeatureHandler = [
   http.post('/api/categories', async ({ request }) => {

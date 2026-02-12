@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw';
-import { getNoteList } from '#/Entities/Note/__Mock__/Db';
+import { getNoteList } from '#/Entities/Note/__Mock__';
 import { getCategoryList } from './Db';
 
 export const categoryEntityHandler = [

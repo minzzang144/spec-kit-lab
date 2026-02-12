@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw';
-import { addNote, updateNote, deleteNote } from '#/Entities/Note/__Mock__/Db';
+import { addNote, updateNote, deleteNote } from '#/Entities/Note/__Mock__';
 
 export const noteWriteFeatureHandler = [
   http.post('/api/notes', async ({ request }) => {

@@ -228,7 +228,7 @@ Domain 레이어 슬라이스 내 세그먼트 종류:
 | Slice (슬라이스) | ✅ **필수** | `Entities/Chat/index.ts` |
 | Segment (세그먼트) | ✅ **생성** | `Entities/Chat/Api/index.ts` |
 | Group (그룹) | ✅ **생성** | `Entities/Chat/Model/Hook/index.ts` |
-| `__Mock__` | ❌ **없음** | `__Mock__`은 public API 없이 직접 경로 import |
+| `__Mock__` | ✅ **생성** | `Entities/Chat/__Mock__/index.ts` — 단, 슬라이스 barrel에서는 re-export 금지 |
 | UI 컴포넌트 폴더 | ✅ **필수** | `Ui/ChatMessageItem/index.ts` (기존 규칙 유지) |
 
 ### Export 규칙
@@ -281,16 +281,27 @@ export { getChatMessage, chatQueryKey, chatQueryOption } from './Api';
 export { useChatMessage, useChatStore } from './Model';
 ```
 
-### `__Mock__`은 barrel 없음
+### `__Mock__` barrel
 
-`__Mock__`은 public API에서 export하지 않으며, barrel 파일도 생성하지 않는다:
+`__Mock__`은 자체 barrel을 가지지만, **슬라이스 barrel에서는 re-export하지 않는다** (production 코드와 테스트 인프라 분리):
 
 ```typescript
-// ❌ 금지
-// export { chatHandlers } from './__Mock__/Handler';
+// Entities/Chat/__Mock__/index.ts (✅ __Mock__ 자체 barrel)
+export { INITIAL_CHAT_SEED } from './Seed';
+export { getChatMessageList, addChatMessage, resetChatDb } from './Db';
+export { chatEntityHandler } from './Handler';
+```
 
-// ✅ __Mock__은 직접 경로로 import (테스트/App/Mock에서만)
-import { chatEntityHandler } from '#/Entities/Chat/__Mock__/Handler';
+```typescript
+// Entities/Chat/index.ts (❌ 슬라이스 barrel에서 __Mock__ re-export 금지)
+export type { ChatMessage } from './Type';
+export { chatQueryOption } from './Api';
+// export { chatEntityHandler } from './__Mock__';  ← 금지
+```
+
+```typescript
+// App/Mock/browser.ts — __Mock__ barrel 경유로 import
+import { chatEntityHandler } from '#/Entities/Chat/__Mock__';
 ```
 
 ---
@@ -362,11 +373,11 @@ import { cn } from '#/Shared/Model';
 
 ### 예외: `__Mock__` 테스트 파일
 
-테스트 파일에서 `__Mock__` 세그먼트 직접 import 허용:
+테스트 파일에서 `__Mock__` 세그먼트 barrel 경유 import 허용:
 
 ```typescript
 // ChatMessage.test.ts
-import { mockMessages } from '../__Mock__/chatMockData';
+import { mockMessageList } from '../__Mock__';
 ```
 
 ### 예외: Entity 간 `import type` (cross-entity 타입 참조)
@@ -666,7 +677,8 @@ MSW(Mock Service Worker) 핸들러를 FSD 레이어 규칙에 맞게 도메인�
 Entities/Chat/__Mock__/
 ├── Seed.ts          ← 초기 데이터
 ├── Db.ts            ← in-memory DB (CRUD)
-└── Handler.ts       ← MSW GET 핸들러
+├── Handler.ts       ← MSW GET 핸들러
+└── index.ts         ← barrel (슬라이스 barrel에서는 re-export 금지)
 ```
 
 세 파일이 모두 필요하지 않으면 필요한 파일만 생성한다. 예를 들어, 시드 데이터 없이 빈 DB로 시작하면 `Seed.ts`는 생략 가능하다.
@@ -693,7 +705,7 @@ export const chatEntityHandler = [
 ```typescript
 // Features/ChatWrite/__Mock__/Handler.ts
 import { http, HttpResponse } from 'msw';
-import { chatDb } from '#/Entities/Chat/__Mock__/Db';
+import { chatDb } from '#/Entities/Chat/__Mock__';
 
 export const chatWriteFeatureHandler = [
   http.post('/api/chat/messages', async ({ request }) => {
@@ -710,7 +722,7 @@ Mock 핸들러는 백엔드를 시뮬레이션하므로, **다른 Entity의 `__M
 
 ```typescript
 // Entities/Category/__Mock__/Handler.ts
-import { noteDb } from '#/Entities/Note/__Mock__/Db';  // ✅ __Mock__ cross-entity 예외
+import { noteDb } from '#/Entities/Note/__Mock__';  // ✅ __Mock__ cross-entity 예외 (barrel 경유)
 
 export const categoryEntityHandler = [
   http.get('/api/categories/:id/note-count', ({ params }) => {
@@ -725,7 +737,7 @@ export const categoryEntityHandler = [
 | 조건 | 설명 |
 |------|------|
 | `__Mock__` 세그먼트 내부 파일만 | Handler.ts, Db.ts 등 mock 전용 파일 |
-| `__Mock__/Db.ts` 또는 `__Mock__/Seed.ts`만 대상 | Handler.ts를 cross-import하지 않음 |
+| `__Mock__` barrel 경유 | `#/Entities/Note/__Mock__` (barrel 경유) |
 | production 코드에는 적용 불가 | Api, Model, Type 등은 기존 레이어 규칙 유지 |
 
 **근거**: `__Mock__`은 백엔드 시뮬레이션이므로 프론트엔드 레이어 규칙의 적용 대상이 아니다. 실제 백엔드에서는 모든 테이블/컬렉션에 자유롭게 접근하므로, mock도 동일한 수준의 접근이 필요하다.
@@ -739,11 +751,11 @@ export const categoryEntityHandler = [
 import { setupWorker } from 'msw/browser';
 
 // Entity handlers (GET)
-import { chatEntityHandler } from '#/Entities/Chat/__Mock__/Handler';
-import { userEntityHandler } from '#/Entities/User/__Mock__/Handler';
+import { chatEntityHandler } from '#/Entities/Chat/__Mock__';
+import { userEntityHandler } from '#/Entities/User/__Mock__';
 
 // Feature handlers (POST/PUT/DELETE)
-import { chatWriteFeatureHandler } from '#/Features/ChatWrite/__Mock__/Handler';
+import { chatWriteFeatureHandler } from '#/Features/ChatWrite/__Mock__';
 
 export const worker = setupWorker(
   // Entity (읽기)
@@ -757,7 +769,7 @@ export const worker = setupWorker(
 **규칙**:
 - `App/Mock/browser.ts`에서 handler 직접 정의 금지 — 조합만 담당
 - Entity와 Feature handler를 구분하여 import (가독성)
-- `__Mock__`은 index.ts에서 export하지 않으므로 직접 경로 import 허용 (`#/Entities/Chat/__Mock__/Handler`)
+- `__Mock__` barrel 경유 import (`#/Entities/Chat/__Mock__`), 슬라이스 barrel에서는 re-export 금지
 
 ### handler 네이밍 규칙
 
@@ -957,9 +969,10 @@ src/
 │
 ├── Features/
 │   ├── ChatWrite/
-│   │   ├── __Mock__/             ← barrel 없음 (직접 경로 import)
+│   │   ├── __Mock__/
 │   │   │   ├── Db.ts
-│   │   │   └── Handler.ts
+│   │   │   ├── Handler.ts
+│   │   │   └── index.ts         ← __Mock__ barrel (슬라이스 barrel에서 re-export 금지)
 │   │   ├── Api/
 │   │   │   ├── Post.ts
 │   │   │   ├── Key.ts
@@ -1002,10 +1015,11 @@ src/
 │
 ├── Entities/
 │   ├── Chat/
-│   │   ├── __Mock__/             ← barrel 없음 (직접 경로 import)
+│   │   ├── __Mock__/
 │   │   │   ├── Seed.ts
 │   │   │   ├── Db.ts
-│   │   │   └── Handler.ts
+│   │   │   ├── Handler.ts
+│   │   │   └── index.ts         ← __Mock__ barrel
 │   │   ├── Api/
 │   │   │   ├── Get.ts
 │   │   │   ├── Key.ts
@@ -1147,9 +1161,9 @@ BEFORE adding an import:
     STOP
     EXPLAIN: "같은 슬라이스 내 import는 상대 경로를 사용하세요"
 
-  IF cross_slice_import AND NOT targeting_index_ts:
+  IF cross_slice_import AND NOT targeting_index_ts AND NOT targeting_mock_index_ts:
     STOP
-    EXPLAIN: "다른 슬라이스는 index.ts(public API)만 import 가능합니다"
+    EXPLAIN: "다른 슬라이스는 index.ts(public API)만 import 가능합니다 (__Mock__은 __Mock__/index.ts 경유)"
 
   IF same_slice_import AND different_segment AND NOT targeting_barrel:
     WARN: "다른 세그먼트는 barrel(index.ts) 경유를 권장합니다 (예: '../../Api' not '../../Api/Get')"
@@ -1166,7 +1180,7 @@ AFTER creating a slice:
     WARN: "index.ts(public API)를 생성해야 합니다"
 
 AFTER creating a segment:
-  IF segment_root does NOT have index.ts AND segment != '__Mock__':
+  IF segment_root does NOT have index.ts:
     WARN: "세그먼트 barrel(index.ts)를 생성해야 합니다"
 
 AFTER creating a group:
@@ -1177,9 +1191,9 @@ AFTER creating a layer-level index.ts (e.g., Entities/index.ts):
   STOP
   EXPLAIN: "레이어 레벨 barrel은 금지입니다 (tree-shaking 불가)"
 
-IF index.ts exports __Mock__ segment:
+IF slice_index_ts re-exports from __Mock__:
   STOP
-  EXPLAIN: "__Mock__은 public API에서 export하지 않습니다"
+  EXPLAIN: "슬라이스 barrel에서 __Mock__을 re-export하지 않습니다"
 
 IF index.ts uses 'export *':
   STOP
