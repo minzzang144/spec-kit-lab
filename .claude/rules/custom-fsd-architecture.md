@@ -298,6 +298,58 @@ import { cn } from '#/Shared/Model';
 import { mockMessages } from '../__Mock__/chatMockData';
 ```
 
+### 예외: Entity 간 `import type` (cross-entity 타입 참조)
+
+NoSQL(MongoDB 등)에서는 API 응답이 다른 도메인의 데이터를 embedded로 포함하는 경우가 흔하다. 이때 Entity 간 타입 참조가 불가피하므로, 다음 **세 가지 조건을 모두 충족**하는 경우에 한해 같은 레이어(Entities) 내 cross-slice import를 허용한다:
+
+| 조건 | 설명 |
+|------|------|
+| `import type`만 사용 | 런타임 의존성 0 (컴파일 후 완전 제거) |
+| `index.ts`(public API) 경유 | 내부 구조 노출 방지 |
+| Type 세그먼트 타입만 대상 | Api, Model 등의 런타임 코드 참조 금지 |
+
+**사용 예시 — API 응답에 다른 도메인이 embedded된 경우**:
+
+```typescript
+// Entities/Category/Api/Get.ts
+import { httpClient } from '#/Shared/Api';
+import type { Category } from '../Type/Category';
+import type { Note } from '#/Entities/Note';  // ✅ import type + index.ts 경유
+
+// NoSQL API 응답: Category 문서에 Note가 embedded
+type CategoryWithNoteListResponse = Category & {
+  noteList: Note[];
+};
+
+export async function getCategoryWithNoteList(
+  id: string
+): Promise<CategoryWithNoteListResponse> {
+  const { data } = await httpClient.get(`/categories/${id}/with-notes`);
+  return data;
+}
+```
+
+**허용되지 않는 사용**:
+
+```typescript
+// ❌ import type이 아닌 일반 import
+import { getNoteList } from '#/Entities/Note';
+
+// ❌ Type 세그먼트가 아닌 Model/Api 참조
+import type { useNote } from '#/Entities/Note';
+
+// ❌ index.ts를 경유하지 않는 직접 참조
+import type { Note } from '#/Entities/Note/Type/Note';
+```
+
+**적용 판단 기준**:
+
+| 상황 | 결정 |
+|------|------|
+| API 응답에 다른 도메인 데이터가 embedded | `import type` 예외 적용 |
+| 도메인 타입 정의(Type 세그먼트)에서 다른 도메인 참조 | `import type` 예외 적용 |
+| Entity의 Model/Api에서 다른 Entity의 런타임 코드 필요 | 상위 레이어(Widget/Feature)에서 조합 |
+
 ---
 
 ## 8. TanStack Query Integration
@@ -844,7 +896,11 @@ BEFORE adding an import:
     EXPLAIN: "하위 레이어에서 상위 레이어를 import할 수 없습니다"
 
   IF same_layer AND different_slice:
-    IF NOT subdomain_child_to_parent(source_slice, target_slice):
+    IF subdomain_child_to_parent(source_slice, target_slice):
+      ALLOW
+    ELSE IF source_layer == 'Entities' AND is_import_type AND targets_index_ts:
+      ALLOW (cross-entity import type 예외)
+    ELSE:
       STOP
       EXPLAIN: "같은 레이어의 다른 슬라이스를 import할 수 없습니다"
 ```
@@ -960,6 +1016,7 @@ Q: 테스트 전용 목 데이터 / MSW?
 |-------------------|-----------------------------|-------------------------------------|
 | 같은 슬라이스       | 상대 경로                     | `import { x } from '../../Type/Y'`  |
 | 다른 슬라이스       | `#/Layer/Slice`              | `import { x } from '#/Entities/Chat'` |
+| Entity 간 타입 참조 | `import type` + `#/Entities/Slice` | `import type { Note } from '#/Entities/Note'` |
 | 외부 라이브러리     | 패키지 이름                    | `import { x } from 'zustand'`       |
 
 ### Naming 치트시트
