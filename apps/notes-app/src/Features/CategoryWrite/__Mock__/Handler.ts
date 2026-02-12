@@ -1,37 +1,11 @@
 import { http, HttpResponse } from 'msw';
 import {
   getCategoryList,
-  getNoteList,
   addCategory,
   deleteCategory,
-} from './mockStore';
+} from '#/Entities/Category/__Mock__/Db';
 
-export const categoryReadHandler = [
-  http.get('/api/categories', () => {
-    return HttpResponse.json({ data: getCategoryList() });
-  }),
-
-  http.get('/api/categories/:id/notes-count', ({ params }) => {
-    const { id } = params;
-    const category = getCategoryList().find((c) => c.id === id);
-
-    if (!category) {
-      return HttpResponse.json(
-        {
-          error: 'Not Found',
-          message: '카테고리를 찾을 수 없습니다.',
-          statusCode: 404,
-        },
-        { status: 404 },
-      );
-    }
-
-    const count = getNoteList().filter((n) => n.categoryId === id).length;
-    return HttpResponse.json({ data: { count } });
-  }),
-];
-
-export const categoryWriteHandler = [
+export const categoryWriteFeatureHandler = [
   http.post('/api/categories', async ({ request }) => {
     const body = (await request.json()) as { name?: string };
 
