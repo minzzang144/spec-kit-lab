@@ -218,39 +218,108 @@ Domain 레이어 슬라이스 내 세그먼트 종류:
 
 ## 6. Public API (index.ts)
 
-### 규칙
+### Barrel 생성 규칙
 
-1. 모든 슬라이스 루트에 `index.ts` **필수**
-2. Cross-slice import는 **반드시** `index.ts`를 통과
-3. `__Mock__`은 public API에서 **export 하지 않음**
-4. `export type` 사용 권장
+모든 **슬라이스, 세그먼트, 그룹**에 `index.ts` barrel 파일을 생성한다.
 
-### 예시
+| 레벨 | 필수 여부 | 예시 |
+|------|----------|------|
+| Layer (레이어) | ❌ **금지** | ~~`Entities/index.ts`~~ — 모든 슬라이스를 번들링하여 tree-shaking 불가 |
+| Slice (슬라이스) | ✅ **필수** | `Entities/Chat/index.ts` |
+| Segment (세그먼트) | ✅ **생성** | `Entities/Chat/Api/index.ts` |
+| Group (그룹) | ✅ **생성** | `Entities/Chat/Model/Hook/index.ts` |
+| `__Mock__` | ❌ **없음** | `__Mock__`은 public API 없이 직접 경로 import |
+| UI 컴포넌트 폴더 | ✅ **필수** | `Ui/ChatMessageItem/index.ts` (기존 규칙 유지) |
+
+### Export 규칙
+
+**named export만 사용**, `export *` 금지:
 
 ```typescript
-// Entities/Chat/index.ts
-export type { ChatMessage, ChatRoom } from './Type/Chat';
-export { chatQueryOptions, chatQueryKeys } from './Api/Query';
-export { getChatMessages } from './Api/Get';
-export { useChat } from './Model/Hook/useChat';
-export { useChatStore } from './Model/Store/useChatStore';
+// ✅ Good — named export
+export { getChatMessage } from './Get';
+export { chatQueryKey } from './Key';
+export { chatQueryOption } from './Query';
+
+// ❌ Bad — wildcard export (tree-shaking 불가)
+export * from './Get';
+export * from './Key';
+```
+
+`export type` 사용 권장:
+
+```typescript
+export type { ChatMessage, ChatRoom } from './Chat';
+```
+
+### Barrel 체이닝
+
+슬라이스 barrel은 세그먼트 barrel로부터 re-export한다:
+
+```typescript
+// Entities/Chat/Api/index.ts (세그먼트 barrel)
+export { getChatMessage } from './Get';
+export { chatQueryKey } from './Key';
+export { chatQueryOption } from './Query';
 ```
 
 ```typescript
-// __Mock__은 export하지 않음
-// export { chatHandlers } from './__Mock__/handlers'; ← 금지
+// Entities/Chat/Model/Hook/index.ts (그룹 barrel)
+export { useChatMessage } from './useChatMessage';
+```
+
+```typescript
+// Entities/Chat/Model/index.ts (세그먼트 barrel)
+export { useChatMessage } from './Hook';
+export { useChatStore } from './Store';
+```
+
+```typescript
+// Entities/Chat/index.ts (슬라이스 barrel)
+export type { ChatMessage, ChatRoom } from './Type';
+export { getChatMessage, chatQueryKey, chatQueryOption } from './Api';
+export { useChatMessage, useChatStore } from './Model';
+```
+
+### `__Mock__`은 barrel 없음
+
+`__Mock__`은 public API에서 export하지 않으며, barrel 파일도 생성하지 않는다:
+
+```typescript
+// ❌ 금지
+// export { chatHandlers } from './__Mock__/Handler';
+
+// ✅ __Mock__은 직접 경로로 import (테스트/App/Mock에서만)
+import { chatEntityHandler } from '#/Entities/Chat/__Mock__/Handler';
 ```
 
 ---
 
 ## 7. Import Rules
 
-### 같은 슬라이스: 상대 경로
+### 같은 슬라이스: 상대 경로 (barrel 경유)
+
+같은 슬라이스 내에서 다른 세그먼트/그룹을 참조할 때는 **barrel(index.ts)을 경유**하는 상대 경로를 사용한다:
 
 ```typescript
 // Entities/Chat/Model/Hook/useChat.ts
-import type { ChatMessage } from '../../Type/Chat';
-import { chatQueryOptions } from '../../Api/Query';
+import type { ChatMessage } from '../../Type';       // ✅ 세그먼트 barrel 경유
+import { chatQueryOption } from '../../Api';          // ✅ 세그먼트 barrel 경유
+```
+
+같은 세그먼트/그룹 내부에서는 **직접 import**:
+
+```typescript
+// Entities/Chat/Api/Query.ts
+import { getChatMessage } from './Get';               // ✅ 같은 세그먼트 내 직접 import
+import { chatQueryKey } from './Key';                  // ✅ 같은 세그먼트 내 직접 import
+```
+
+같은 세그먼트 내 다른 그룹은 **그룹 barrel 경유**:
+
+```typescript
+// Entities/Chat/Model/Logic/useChatLogic.ts
+import { useChatStore } from '../Store';              // ✅ 그룹 barrel 경유
 ```
 
 ### 다른 슬라이스: 절대 경로 (2-depth 고정)
@@ -266,11 +335,11 @@ import { httpClient } from '#/Shared/Api';
 
 ### Non-domain 레이어 내부: 상대 경로
 
-Non-domain 레이어(App, Shared)는 슬라이스가 세그먼트 역할을 하므로, **레이어 내부 슬라이스 간 import는 상대 경로**를 사용한다:
+Non-domain 레이어(App, Shared)는 슬라이스가 세그먼트 역할을 하므로, **레이어 내부 슬라이스 간 import는 상대 경로 + barrel 경유**를 사용한다:
 
 ```typescript
 // Shared/Ui/Shadcn/button.tsx → Shared/Model 참조
-import { cn } from '../../Model/Shadcn/Utils';
+import { cn } from '../../Model';                   // ✅ barrel 경유
 ```
 
 단, **shadcn CLI 생성 코드는 예외**로 `components.json` aliases에 정의된 절대 경로(index.ts 경유)를 허용한다:
@@ -282,7 +351,7 @@ import { cn } from '#/Shared/Model';
 
 | 상황 | 경로 방식 | 예시 |
 |------|----------|------|
-| Non-domain 내부 (직접 작성) | 상대 경로 | `import { cn } from '../../Model/Shadcn/Utils'` |
+| Non-domain 내부 (직접 작성) | 상대 경로 + barrel 경유 | `import { cn } from '../../Model'` |
 | Non-domain 내부 (shadcn 생성) | 절대 경로 예외 (index.ts 경유) | `import { cn } from '#/Shared/Model'` |
 | 외부 → Non-domain | 절대 경로 + index.ts | `import { Button } from '#/Shared/Ui'` |
 
@@ -315,8 +384,8 @@ NoSQL(MongoDB 등)에서는 API 응답이 다른 도메인의 데이터를 embed
 ```typescript
 // Entities/Category/Api/Get.ts
 import { httpClient } from '#/Shared/Api';
-import type { Category } from '../Type/Category';
-import type { Note } from '#/Entities/Note';  // ✅ import type + index.ts 경유
+import type { Category } from '../Type';                   // ✅ 세그먼트 barrel 경유
+import type { Note } from '#/Entities/Note';               // ✅ import type + 슬라이스 barrel 경유
 
 // NoSQL API 응답: Category 문서에 Note가 embedded
 type CategoryWithNoteListResponse = Category & {
@@ -370,7 +439,7 @@ Entities/{Domain}/Api/
 ```typescript
 // Entities/Chat/Api/Get.ts
 import { httpClient } from '#/Shared/Api';
-import type { ChatMessage } from '../Type/Chat';
+import type { ChatMessage } from '../Type';               // ✅ 세그먼트 barrel 경유
 
 export async function getChatMessage(roomId: string): Promise<ChatMessage[]> {
   const { data } = await httpClient.get(`/chat/rooms/${roomId}/messages`);
@@ -416,7 +485,7 @@ Features/{Domain}/Api/
 ```typescript
 // Features/ChatWrite/Api/Post.ts
 import { httpClient } from '#/Shared/Api';
-import type { SendMessageRequest } from '../Type/ChatWrite';
+import type { SendMessageRequest } from '../Type';         // ✅ 세그먼트 barrel 경유
 
 export async function postChatMessage(payload: SendMessageRequest) {
   const { data } = await httpClient.post('/chat/messages', payload);
@@ -449,7 +518,7 @@ export const chatWriteMutationOption = {
 ```typescript
 // Entities/Chat/Model/Hook/useChatMessage.ts
 import { useQuery } from '@tanstack/react-query';
-import { chatQueryOption } from '../../Api/Query';
+import { chatQueryOption } from '../../Api';              // ✅ 세그먼트 barrel 경유
 
 export function useChatMessage(roomId: string) {
   return useQuery(chatQueryOption.message(roomId));
@@ -460,7 +529,7 @@ export function useChatMessage(roomId: string) {
 // Features/ChatWrite/Model/Hook/useSendMessage.ts
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { chatQueryKey } from '#/Entities/Chat';
-import { chatWriteMutationOption } from '../../Api/Mutation';
+import { chatWriteMutationOption } from '../../Api';      // ✅ 세그먼트 barrel 경유
 
 export function useSendMessage(roomId: string) {
   const queryClient = useQueryClient();
@@ -837,127 +906,157 @@ src/
 ├── Pages/
 │   ├── ChatWritePage/
 │   │   ├── Ui/
-│   │   │   └── ChatWritePage/
-│   │   │       ├── ChatWritePage.tsx
-│   │   │       └── index.ts
-│   │   └── index.ts
+│   │   │   ├── ChatWritePage/
+│   │   │   │   ├── ChatWritePage.tsx
+│   │   │   │   └── index.ts     ← 컴포넌트 barrel
+│   │   │   └── index.ts         ← 세그먼트 barrel
+│   │   └── index.ts             ← 슬라이스 barrel
 │   ├── ChatViewPage/
 │   │   ├── Ui/
-│   │   │   └── ChatViewPage/
-│   │   │       ├── ChatViewPage.tsx
-│   │   │       └── index.ts
+│   │   │   ├── ChatViewPage/
+│   │   │   │   ├── ChatViewPage.tsx
+│   │   │   │   └── index.ts
+│   │   │   └── index.ts
 │   │   └── index.ts
 │   └── HomePage/
 │       ├── Ui/
-│       │   └── HomePage/
-│       │       ├── HomePage.tsx
-│       │       └── index.ts
+│       │   ├── HomePage/
+│       │   │   ├── HomePage.tsx
+│       │   │   └── index.ts
+│       │   └── index.ts
 │       └── index.ts
 │
 ├── Widgets/
 │   ├── ChatMessageList/
 │   │   ├── Ui/
-│   │   │   └── ChatMessageList/
-│   │   │       ├── ChatMessageList.tsx
-│   │   │       ├── ChatMessageList.test.tsx
-│   │   │       └── index.ts
-│   │   └── index.ts
+│   │   │   ├── ChatMessageList/
+│   │   │   │   ├── ChatMessageList.tsx
+│   │   │   │   ├── ChatMessageList.test.tsx
+│   │   │   │   └── index.ts
+│   │   │   └── index.ts         ← 세그먼트 barrel
+│   │   └── index.ts             ← 슬라이스 barrel
 │   ├── ChatInput/
 │   │   ├── Model/
-│   │   │   └── Hook/
-│   │   │       └── useChatInput.ts
+│   │   │   ├── Hook/
+│   │   │   │   ├── useChatInput.ts
+│   │   │   │   └── index.ts     ← 그룹 barrel
+│   │   │   └── index.ts         ← 세그먼트 barrel
 │   │   ├── Ui/
-│   │   │   └── ChatInput/
-│   │   │       ├── ChatInput.tsx
-│   │   │       └── index.ts
+│   │   │   ├── ChatInput/
+│   │   │   │   ├── ChatInput.tsx
+│   │   │   │   └── index.ts
+│   │   │   └── index.ts
 │   │   └── index.ts
 │   └── Header/
 │       ├── Ui/
-│       │   └── Header/
-│       │       ├── Header.tsx
-│       │       └── index.ts
+│       │   ├── Header/
+│       │   │   ├── Header.tsx
+│       │   │   └── index.ts
+│       │   └── index.ts
 │       └── index.ts
 │
 ├── Features/
 │   ├── ChatWrite/
-│   │   ├── __Mock__/
-│   │   │   ├── Db.ts             ← in-memory DB (쓰기 전용 로직)
-│   │   │   └── Handler.ts        ← MSW POST/PUT/DELETE 핸들러
+│   │   ├── __Mock__/             ← barrel 없음 (직접 경로 import)
+│   │   │   ├── Db.ts
+│   │   │   └── Handler.ts
 │   │   ├── Api/
 │   │   │   ├── Post.ts
 │   │   │   ├── Key.ts
-│   │   │   └── Mutation.ts
+│   │   │   ├── Mutation.ts
+│   │   │   └── index.ts         ← 세그먼트 barrel
 │   │   ├── Model/
 │   │   │   ├── Hook/
-│   │   │   │   └── useSendMessage.ts
-│   │   │   └── Logic/
-│   │   │       ├── useMessageLogic.ts
-│   │   │       └── useChatWriteLogic.ts
+│   │   │   │   ├── useSendMessage.ts
+│   │   │   │   └── index.ts     ← 그룹 barrel
+│   │   │   ├── Logic/
+│   │   │   │   ├── useMessageLogic.ts
+│   │   │   │   ├── useChatWriteLogic.ts
+│   │   │   │   └── index.ts     ← 그룹 barrel
+│   │   │   └── index.ts         ← 세그먼트 barrel
 │   │   ├── Type/
-│   │   │   └── ChatWrite.ts
+│   │   │   ├── ChatWrite.ts
+│   │   │   └── index.ts         ← 세그먼트 barrel
 │   │   ├── Ui/
-│   │   │   └── SendButton/
-│   │   │       ├── SendButton.tsx
-│   │   │       ├── SendButton.test.tsx
-│   │   │       └── index.ts
-│   │   └── index.ts
+│   │   │   ├── SendButton/
+│   │   │   │   ├── SendButton.tsx
+│   │   │   │   ├── SendButton.test.tsx
+│   │   │   │   └── index.ts
+│   │   │   └── index.ts         ← 세그먼트 barrel
+│   │   └── index.ts             ← 슬라이스 barrel
 │   └── UserAuth/
 │       ├── Api/
 │       │   ├── Post.ts
 │       │   ├── Key.ts
-│       │   └── Mutation.ts
+│       │   ├── Mutation.ts
+│       │   └── index.ts
 │       ├── Model/
-│       │   └── Hook/
-│       │       └── useLogin.ts
+│       │   ├── Hook/
+│       │   │   ├── useLogin.ts
+│       │   │   └── index.ts
+│       │   └── index.ts
 │       ├── Type/
-│       │   └── UserAuth.ts
+│       │   ├── UserAuth.ts
+│       │   └── index.ts
 │       └── index.ts
 │
 ├── Entities/
 │   ├── Chat/
-│   │   ├── __Mock__/
-│   │   │   ├── Seed.ts           ← 초기 시드 데이터
-│   │   │   ├── Db.ts             ← in-memory DB (CRUD)
-│   │   │   └── Handler.ts        ← MSW GET 핸들러
+│   │   ├── __Mock__/             ← barrel 없음 (직접 경로 import)
+│   │   │   ├── Seed.ts
+│   │   │   ├── Db.ts
+│   │   │   └── Handler.ts
 │   │   ├── Api/
 │   │   │   ├── Get.ts
 │   │   │   ├── Key.ts
-│   │   │   └── Query.ts
+│   │   │   ├── Query.ts
+│   │   │   └── index.ts         ← 세그먼트 barrel
 │   │   ├── Config/
-│   │   │   └── ChatConfig.ts
+│   │   │   ├── ChatConfig.ts
+│   │   │   └── index.ts         ← 세그먼트 barrel
 │   │   ├── Model/
 │   │   │   ├── Hook/
-│   │   │   │   └── useChatMessages.ts
-│   │   │   └── Store/
-│   │   │       ├── MessageSlice.ts
-│   │   │       ├── ConnectionSlice.ts
-│   │   │       └── useChatStore.ts
+│   │   │   │   ├── useChatMessage.ts
+│   │   │   │   └── index.ts     ← 그룹 barrel
+│   │   │   ├── Store/
+│   │   │   │   ├── MessageSlice.ts
+│   │   │   │   ├── ConnectionSlice.ts
+│   │   │   │   ├── useChatStore.ts
+│   │   │   │   └── index.ts     ← 그룹 barrel
+│   │   │   └── index.ts         ← 세그먼트 barrel
 │   │   ├── Type/
-│   │   │   └── Chat.ts
+│   │   │   ├── Chat.ts
+│   │   │   └── index.ts         ← 세그먼트 barrel
 │   │   ├── Ui/
 │   │   │   ├── ChatMessageItem/
 │   │   │   │   ├── ChatMessageItem.tsx
 │   │   │   │   ├── ChatMessageBubble.tsx
 │   │   │   │   ├── ChatMessageItem.test.tsx
 │   │   │   │   └── index.ts
-│   │   │   └── ChatRoomCard/
-│   │   │       ├── ChatRoomCard.tsx
-│   │   │       └── index.ts
-│   │   └── index.ts
+│   │   │   ├── ChatRoomCard/
+│   │   │   │   ├── ChatRoomCard.tsx
+│   │   │   │   └── index.ts
+│   │   │   └── index.ts         ← 세그먼트 barrel
+│   │   └── index.ts             ← 슬라이스 barrel
 │   └── User/
 │       ├── Api/
 │       │   ├── Get.ts
 │       │   ├── Key.ts
-│       │   └── Query.ts
+│       │   ├── Query.ts
+│       │   └── index.ts
 │       ├── Model/
-│       │   └── Hook/
-│       │       └── useUser.ts
+│       │   ├── Hook/
+│       │   │   ├── useUser.ts
+│       │   │   └── index.ts
+│       │   └── index.ts
 │       ├── Type/
-│       │   └── User.ts
+│       │   ├── User.ts
+│       │   └── index.ts
 │       ├── Ui/
-│       │   └── UserAvatar/
-│       │       ├── UserAvatar.tsx
-│       │       └── index.ts
+│       │   ├── UserAvatar/
+│       │   │   ├── UserAvatar.tsx
+│       │   │   └── index.ts
+│       │   └── index.ts
 │       └── index.ts
 │
 └── Shared/
@@ -969,15 +1068,17 @@ src/
     │   └── index.ts
     ├── Model/
     │   ├── Lib/
-    │   │   └── DateFormat.ts
+    │   │   ├── DateFormat.ts
+    │   │   └── index.ts         ← 그룹 barrel
     │   ├── Shadcn/
-    │   │   └── Utils.ts
+    │   │   ├── Utils.ts
+    │   │   └── index.ts         ← 그룹 barrel
     │   └── index.ts
     ├── Type/
     │   ├── Common.ts
     │   └── index.ts
     └── Ui/
-        ├── Shadcn/
+        ├── Shadcn/               ← shadcn 그룹은 barrel 없음 (CLI 생성 파일)
         │   ├── button.tsx
         │   ├── input.tsx
         │   └── dialog.tsx
@@ -1049,18 +1150,40 @@ BEFORE adding an import:
   IF cross_slice_import AND NOT targeting_index_ts:
     STOP
     EXPLAIN: "다른 슬라이스는 index.ts(public API)만 import 가능합니다"
+
+  IF same_slice_import AND different_segment AND NOT targeting_barrel:
+    WARN: "다른 세그먼트는 barrel(index.ts) 경유를 권장합니다 (예: '../../Api' not '../../Api/Get')"
+
+  IF same_segment_import AND different_group AND NOT targeting_barrel:
+    WARN: "다른 그룹은 barrel(index.ts) 경유를 권장합니다 (예: '../Store' not '../Store/useChatStore')"
 ```
 
-### Check 4: Public API
+### Check 4: Public API (Barrel)
 
 ```
 AFTER creating a slice:
   IF slice_root does NOT have index.ts:
     WARN: "index.ts(public API)를 생성해야 합니다"
 
-  IF index.ts exports __Mock__ segment:
-    STOP
-    EXPLAIN: "__Mock__은 public API에서 export하지 않습니다"
+AFTER creating a segment:
+  IF segment_root does NOT have index.ts AND segment != '__Mock__':
+    WARN: "세그먼트 barrel(index.ts)를 생성해야 합니다"
+
+AFTER creating a group:
+  IF group_root does NOT have index.ts:
+    WARN: "그룹 barrel(index.ts)를 생성해야 합니다"
+
+AFTER creating a layer-level index.ts (e.g., Entities/index.ts):
+  STOP
+  EXPLAIN: "레이어 레벨 barrel은 금지입니다 (tree-shaking 불가)"
+
+IF index.ts exports __Mock__ segment:
+  STOP
+  EXPLAIN: "__Mock__은 public API에서 export하지 않습니다"
+
+IF index.ts uses 'export *':
+  STOP
+  EXPLAIN: "export *는 금지입니다. named export를 사용하세요"
 ```
 
 ---
@@ -1143,7 +1266,9 @@ Q: 테스트 전용 목 데이터 / MSW?
 
 | 상황               | 형식                          | 예시                                |
 |-------------------|-----------------------------|-------------------------------------|
-| 같은 슬라이스       | 상대 경로                     | `import { x } from '../../Type/Y'`  |
+| 같은 세그먼트/그룹 내부 | 직접 import                 | `import { x } from './Get'`         |
+| 같은 슬라이스, 다른 그룹 | 상대 경로 + 그룹 barrel    | `import { x } from '../Store'`      |
+| 같은 슬라이스, 다른 세그먼트 | 상대 경로 + 세그먼트 barrel | `import { x } from '../../Api'`     |
 | 다른 슬라이스       | `#/Layer/Slice`              | `import { x } from '#/Entities/Chat'` |
 | Entity 간 타입 참조 | `import type` + `#/Entities/Slice` | `import type { Note } from '#/Entities/Note'` |
 | 외부 라이브러리     | 패키지 이름                    | `import { x } from 'zustand'`       |
