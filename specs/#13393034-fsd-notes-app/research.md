@@ -32,7 +32,7 @@
 ### Rationale
 - **Library Mode**: Framework 모드(파일 기반 라우팅)가 아닌 Library 모드 사용. Custom FSD의 Pages 레이어와 충돌 없음
 - **createBrowserRouter**: Data API 지원 (loader, action, errorElement), Type-safe routing
-- **FSD Pages 레이어와 호환**: `Pages/HomePage/`, `Pages/NoteWritePage/` 등 FSD 슬라이스가 라우트 컴포넌트를 제공
+- **FSD Pages 레이어와 호환**: `Pages/NoteList/`, `Pages/NoteWrite/` 등 FSD 슬라이스가 라우트 컴포넌트를 제공
 - **App/Router 세그먼트**: 라우터 설정은 `App/Router/AppRouter.tsx`에 위치 (Non-domain 레이어)
 
 ### Alternatives Considered
@@ -41,9 +41,9 @@
 
 ### Route Structure
 ```
-/                    → HomePage (노트 목록, 검색, 필터)
+/                    → NoteListPage (노트 목록, 검색, 필터)
 /notes/new           → NoteWritePage (새 노트 작성)
-/notes/:id           → NoteViewPage (노트 상세 보기 + 편집)
+/notes/:id           → NoteDetailPage (노트 상세 보기 + 편집)
 /categories          → CategoryManagePage (카테고리 관리)
 ```
 
@@ -168,8 +168,7 @@ export const httpClient = {
 ### Rationale
 - **Note 도메인**:
   - `Entities/Note` (상위): 공통 타입, 읽기 API, UI 컴포넌트
-  - `Features/NoteWrite` (하위): 노트 생성 mutation
-  - `Features/NoteEdit` (하위): 노트 수정 mutation
+  - `Features/NoteWrite` (하위): 노트 생성 + 수정 mutation (create + edit = Write 관심사)
   - `Features/NoteDelete` (하위): 노트 삭제 mutation
 - **Category 도메인**:
   - `Entities/Category` (상위): 공통 타입, 읽기 API, UI 컴포넌트
@@ -179,16 +178,16 @@ export const httpClient = {
 ### Import 방향 검증
 ```
 ✅ Features/NoteWrite → Entities/Note (하위→상위, 허용)
-✅ Features/NoteEdit → Entities/Note (하위→상위, 허용)
+✅ Features/NoteDelete → Entities/Note (하위→상위, 허용)
 ✅ Features/CategoryFilter → Entities/Category (하위→상위, 허용)
-❌ Features/NoteWrite → Features/NoteEdit (형제 간, 금지)
+❌ Features/NoteWrite → Features/NoteDelete (형제 간, 금지)
 ❌ Entities/Note → Features/NoteWrite (상위→하위, 금지)
 ```
 
 ### 서브도메인 분리 기준 (Custom FSD 규칙)
-- 페이지 2개 이상 + 공통 로직 존재: 서브도메인 분리
-- Note: 작성 페이지(NoteWritePage) + 조회 페이지(NoteViewPage) → NoteWrite/NoteEdit/NoteDelete 분리
-- Category: 관리 페이지(CategoryManagePage) + 홈 페이지 필터 → CategoryWrite/CategoryFilter 분리
+- 관심사 분기 + 공통 로직 존재: 서브도메인 분리
+- Note: Write(작성+편집), Detail(상세), Delete(삭제) 관심사 → NoteWrite/NoteDelete 분리
+- Category: Write(관리), Filter(필터) 관심사 → CategoryWrite/CategoryFilter 분리
 
 ---
 

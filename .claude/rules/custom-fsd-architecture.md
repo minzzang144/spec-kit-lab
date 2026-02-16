@@ -142,30 +142,68 @@ User (상위)  →  UserProfile (하위), UserSettings (하위)
 
 형제 간 import 불가는 표준 FSD의 **동일 레이어 내 슬라이스 간 import 금지** 규칙과 동일하다.
 
-### 분리 기준: 페이지 기반 관심사 분리
+### 분리 기준: 관심사 기반 분리
+
+도메인은 **관심사(Concern)**를 기준으로 분리한다. 페이지가 기준이 아니라, **관심사에서 페이지가 파생**된다.
 
 | 상황                                     | 결정                              |
 |-----------------------------------------|-----------------------------------|
-| 페이지 2개 이상 + 공통 로직 존재          | 서브도메인 분리                    |
-| 페이지 1개뿐                             | 분리 불필요                        |
-| 페이지 여러 개 + 공유 로직 없음           | 별개 독립 도메인이 적절             |
+| 관심사 분기 + 공통 로직 존재              | 서브도메인 분리                    |
+| 단일 관심사                              | 분리 불필요                        |
+| 관심사 여러 개 + 공유 로직 없음           | 별개 독립 도메인이 적절             |
 
-**예시**: Chat(상위, 공통 타입/API) → ChatWrite(작성 페이지), ChatView(조회 페이지)
+**예시**: Note(상위, 공통 타입/API) → NoteWrite(작성+편집 관심사), NoteList(목록 관심사), NoteDetail(상세 관심사), NoteDelete(삭제 관심사)
 
 ```
 Entities/
-├── Chat/              ← 상위 도메인 (공통)
+├── Note/              ← 상위 도메인 (공통)
 │   ├── Api/
 │   ├── Type/
 │   └── index.ts
-├── ChatWrite/         ← 하위 도메인 (작성 전용)
+├── NoteList/          ← 하위 도메인 (목록 전용, 필요한 레이어에만)
 │   ├── Model/
+│   └── index.ts
+├── NoteDetail/        ← 하위 도메인 (상세 전용)
 │   ├── Ui/
 │   └── index.ts
-├── ChatView/          ← 하위 도메인 (조회 전용)
-│   ├── Model/
-│   ├── Ui/
-│   └── index.ts
+```
+
+### 아키텍처 규칙
+
+#### 규칙 1: 레이어 간 도메인 네이밍 일관성
+
+관심사명은 Entities → Features → Widgets → Pages 흐름에서 **일관되게 추적 가능**해야 한다:
+
+```
+✅ Entities/Note → Features/NoteWrite → Widgets/NoteWrite → Pages/NoteWrite
+❌ Entities/Note → Features/NoteWrite → Widgets/NoteEditor → Pages/NoteWritePage
+   (NoteEditor는 UI 기능명이므로 관심사 추적이 끊김)
+```
+
+슬라이스명은 관심사명을 사용하고, 내부 컴포넌트 파일에서만 구체적 역할명을 사용한다.
+
+#### 규칙 2: 단일 도메인 원칙 (Pages 예외)
+
+| 레이어 | 도메인 제약 | 설명 |
+|--------|-----------|------|
+| Entities | 단일 도메인 | 하나의 비즈니스 엔티티만 표현 |
+| Features | 단일 도메인 | 하나의 사용자 액션만 표현 |
+| Widgets | 단일 도메인 | 하나의 관심사에 대한 독립 UI 블록 |
+| Pages | **복합 도메인 허용** | 여러 Widget을 조합하여 페이지 구성 |
+
+#### 규칙 3: 슬라이스 선택적 존재
+
+관심사가 **모든 레이어에 존재하지 않아도 된다**. 필요한 레이어에만 슬라이스를 생성한다:
+
+```
+NoteWrite 관심사:
+  Entities/Note     ← 상위 도메인 (공통 타입/API)
+  Features/NoteWrite ← 쓰기 mutation
+  Widgets/NoteWrite  ← 노트 작성 폼 UI
+  Pages/NoteWrite    ← 작성 페이지
+
+NoteDelete 관심사:
+  Features/NoteDelete ← 삭제 mutation만 (Widget, Page 불필요)
 ```
 
 ---
@@ -916,21 +954,21 @@ src/
 │       └── global.css
 │
 ├── Pages/
-│   ├── ChatWritePage/
+│   ├── ChatWrite/                ← 슬라이스 = 관심사명 (Page 접미사 없음)
 │   │   ├── Ui/
-│   │   │   ├── ChatWritePage/
+│   │   │   ├── ChatWritePage/    ← 컴포넌트 파일명은 Page 접미사 유지
 │   │   │   │   ├── ChatWritePage.tsx
 │   │   │   │   └── index.ts     ← 컴포넌트 barrel
 │   │   │   └── index.ts         ← 세그먼트 barrel
 │   │   └── index.ts             ← 슬라이스 barrel
-│   ├── ChatViewPage/
+│   ├── ChatView/
 │   │   ├── Ui/
 │   │   │   ├── ChatViewPage/
 │   │   │   │   ├── ChatViewPage.tsx
 │   │   │   │   └── index.ts
 │   │   │   └── index.ts
 │   │   └── index.ts
-│   └── HomePage/
+│   └── Home/
 │       ├── Ui/
 │       │   ├── HomePage/
 │       │   │   ├── HomePage.tsx
@@ -1239,7 +1277,9 @@ Q: 앱 초기화 / 프로바이더 / 라우팅?
   → App/
 
 Q: 특정 URL 경로에 매핑되는 페이지?
-  → Pages/{PageName}/
+  → Pages/{ConcernName}/ (관심사명, Page 접미사 없음)
+  → 단일 도메인: Pages/NoteWrite/, Pages/NoteList/
+  → 복합 도메인: Pages/Dashboard/ (예외)
 
 Q: 독립적 UI 블록 (여러 Feature/Entity 조합)?
   → Widgets/{WidgetName}/

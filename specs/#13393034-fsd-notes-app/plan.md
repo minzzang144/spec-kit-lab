@@ -168,29 +168,29 @@ apps/notes-app/
     │   └── Style/
     │       └── global.css
     │
-    ├── Pages/                   # Domain layer: route-level pages
-    │   ├── HomePage/
+    ├── Pages/                   # Domain layer: route-level pages (슬라이스=관심사명, Page 접미사 없음)
+    │   ├── NoteList/            # was HomePage — 관심사명으로 변경
     │   │   ├── Ui/
-    │   │   │   ├── HomePage/
-    │   │   │   │   ├── HomePage.tsx
+    │   │   │   ├── NoteListPage/    # 컴포넌트 파일명은 Page 접미사 유지
+    │   │   │   │   ├── NoteListPage.tsx
     │   │   │   │   └── index.ts
     │   │   │   └── index.ts         # 세그먼트 barrel
     │   │   └── index.ts
-    │   ├── NoteWritePage/
+    │   ├── NoteWrite/           # was NoteWritePage — Page 접미사 제거
     │   │   ├── Ui/
     │   │   │   ├── NoteWritePage/
     │   │   │   │   ├── NoteWritePage.tsx
     │   │   │   │   └── index.ts
     │   │   │   └── index.ts
     │   │   └── index.ts
-    │   ├── NoteViewPage/
+    │   ├── NoteDetail/          # was NoteViewPage — 관심사명 NoteDetail로 변경
     │   │   ├── Ui/
-    │   │   │   ├── NoteViewPage/
-    │   │   │   │   ├── NoteViewPage.tsx
+    │   │   │   ├── NoteDetailPage/
+    │   │   │   │   ├── NoteDetailPage.tsx
     │   │   │   │   └── index.ts
     │   │   │   └── index.ts
     │   │   └── index.ts
-    │   └── CategoryManagePage/
+    │   └── CategoryManage/      # was CategoryManagePage — Page 접미사 제거
     │       ├── Ui/
     │       │   ├── CategoryManagePage/
     │       │   │   ├── CategoryManagePage.tsx
@@ -213,15 +213,15 @@ apps/notes-app/
     │   │   │   │   └── index.ts
     │   │   │   └── index.ts
     │   │   └── index.ts
-    │   ├── NoteEditor/
+    │   ├── NoteWrite/            # was NoteEditor — 관심사명 일관성
     │   │   ├── Model/
     │   │   │   ├── Hook/
     │   │   │   │   ├── useNoteForm.ts
     │   │   │   │   └── index.ts
     │   │   │   └── index.ts
     │   │   ├── Ui/
-    │   │   │   ├── NoteEditor/
-    │   │   │   │   ├── NoteEditor.tsx
+    │   │   │   ├── NoteWrite/
+    │   │   │   │   ├── NoteWrite.tsx
     │   │   │   │   └── index.ts
     │   │   │   └── index.ts
     │   │   └── index.ts
@@ -265,40 +265,24 @@ apps/notes-app/
     │       └── index.ts
     │
     ├── Features/                # Domain layer: user write actions
-    │   ├── NoteWrite/           # 하위 도메인 (Note의 서브도메인)
+    │   ├── NoteWrite/           # 하위 도메인 (Note의 서브도메인) — create + edit 통합
     │   │   ├── __Mock__/
-    │   │   │   ├── Handler.ts       # POST /api/notes 핸들러
+    │   │   │   ├── Handler.ts       # POST /api/notes + PUT /api/notes/:id 핸들러
     │   │   │   └── index.ts
     │   │   ├── Api/
-    │   │   │   ├── Post.ts
-    │   │   │   ├── Key.ts
-    │   │   │   ├── Mutation.ts
+    │   │   │   ├── Post.ts          # POST (create)
+    │   │   │   ├── Put.ts           # PUT (update) — was NoteEdit/Api/Put.ts
+    │   │   │   ├── Key.ts           # create + edit mutation key
+    │   │   │   ├── Mutation.ts      # create + edit mutation option
     │   │   │   └── index.ts
     │   │   ├── Model/
     │   │   │   ├── Hook/
     │   │   │   │   ├── useCreateNote.ts
+    │   │   │   │   ├── useUpdateNote.ts   # was NoteEdit/Model/Hook/useUpdateNote.ts
     │   │   │   │   └── index.ts
     │   │   │   └── index.ts
     │   │   ├── Type/
-    │   │   │   ├── NoteWrite.ts
-    │   │   │   └── index.ts
-    │   │   └── index.ts
-    │   ├── NoteEdit/            # 하위 도메인 (Note의 서브도메인)
-    │   │   ├── __Mock__/
-    │   │   │   ├── Handler.ts       # PUT /api/notes/:id 핸들러
-    │   │   │   └── index.ts
-    │   │   ├── Api/
-    │   │   │   ├── Put.ts
-    │   │   │   ├── Key.ts
-    │   │   │   ├── Mutation.ts
-    │   │   │   └── index.ts
-    │   │   ├── Model/
-    │   │   │   ├── Hook/
-    │   │   │   │   ├── useUpdateNote.ts
-    │   │   │   │   └── index.ts
-    │   │   │   └── index.ts
-    │   │   ├── Type/
-    │   │   │   ├── NoteEdit.ts
+    │   │   │   ├── NoteWrite.ts     # CreateNoteRequest/Response + UpdateNoteRequest/Response
     │   │   │   └── index.ts
     │   │   └── index.ts
     │   ├── NoteDelete/          # 하위 도메인 (Note의 서브도메인)
@@ -468,7 +452,7 @@ apps/notes-app/
 | 6개 레이어 | App/Pages/Widgets/Features/Entities/Shared | 전체 디렉토리 구조 |
 | Non-domain 레이어 (슬라이스=세그먼트) | App/Config, App/Mock, App/Provider, Shared/Api, Shared/Ui | 세그먼트 직접 사용 |
 | Domain 레이어 (슬라이스→세그먼트) | Entities/Note/Api, Features/NoteWrite/Model | 슬라이스 내 세그먼트 구조 |
-| 상위/하위 도메인 | Note(상위), NoteWrite/NoteEdit/NoteDelete(하위); Category(상위), CategoryWrite/CategoryFilter(하위) | Import 방향 검증 |
+| 상위/하위 도메인 | Note(상위), NoteWrite/NoteDelete(하위); Category(상위), CategoryWrite/CategoryFilter(하위) | Import 방향 검증 |
 | 세그먼트 종류 (__Mock__, Api, Config, Model, Type, Ui) | Entities/Note에 모든 세그먼트 사용 | 6종 세그먼트 모두 포함 |
 | 세그먼트 1단계 그룹핑 | Model/Hook, Model/Store | 최대 depth 5 준수 |
 | Barrel-everywhere (슬라이스+세그먼트+그룹) | 모든 슬라이스/세그먼트/그룹에 index.ts | 빌드 시 import 검증 |

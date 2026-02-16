@@ -102,7 +102,7 @@
 > **E2E TESTS ARE MANDATORY**: Per constitution v2.1.2, all user stories MUST have E2E tests
 
 - [x] T031 [P] [US1] Unit test for NoteWrite mutation in `apps/notes-app/src/Features/NoteWrite/Api/Post.test.ts` — test createNote POST request format and response (Vitest + MSW server)
-- [x] T032 [P] [US1] Unit test for NoteEditor widget in `apps/notes-app/src/Widgets/NoteEditor/Ui/NoteEditor/NoteEditor.test.tsx` — test form rendering, validation (empty title), category select, submit callback (Vitest + Testing Library)
+- [x] T032 [P] [US1] Unit test for NoteWrite widget in `apps/notes-app/src/Widgets/NoteWrite/Ui/NoteWrite/NoteWrite.test.tsx` — test form rendering, validation (empty title), category select, submit callback (Vitest + Testing Library)
 
 ### Implementation for User Story 1
 
@@ -113,14 +113,14 @@
 - [x] T035 [US1] Create `apps/notes-app/src/Features/NoteWrite/__Mock__/noteWriteHandlers.ts` with MSW handler for POST /api/notes (validate title required, generate id/timestamps, add to in-memory store). Update `apps/notes-app/src/App/Mock/browser.ts` to include this handler
 - [x] T036 [US1] Create `apps/notes-app/src/Features/NoteWrite/Model/Hook/useCreateNote.ts` with mutation hook (uses noteWriteMutationOptions, invalidates noteQueryKeys on success, navigates to home). Update barrel export
 
-#### Widgets/NoteEditor
+#### Widgets/NoteWrite
 
-- [x] T037 [US1] Create `apps/notes-app/src/Widgets/NoteEditor/Model/Hook/useNoteForm.ts` with React Hook Form + Zod schema (noteFormSchema from data-model.md) for note create/edit form state management
-- [x] T038 [US1] Create `apps/notes-app/src/Widgets/NoteEditor/Ui/NoteEditor/NoteEditor.tsx` + `index.ts` with note form UI (title input, content textarea, category select using useCategories, save/cancel buttons, unsaved changes prompt). Create `apps/notes-app/src/Widgets/NoteEditor/index.ts` barrel export
+- [x] T037 [US1] Create `apps/notes-app/src/Widgets/NoteWrite/Model/Hook/useNoteForm.ts` with React Hook Form + Zod schema (noteFormSchema from data-model.md) for note create/edit form state management
+- [x] T038 [US1] Create `apps/notes-app/src/Widgets/NoteWrite/Ui/NoteWrite/NoteWrite.tsx` + `index.ts` with note form UI (title input, content textarea, category select using useCategories, save/cancel buttons, unsaved changes prompt). Create `apps/notes-app/src/Widgets/NoteWrite/index.ts` barrel export
 
-#### Pages/NoteWritePage
+#### Pages/NoteWrite
 
-- [x] T039 [US1] Create `apps/notes-app/src/Pages/NoteWritePage/Ui/NoteWritePage/NoteWritePage.tsx` + `index.ts` composing NoteEditor widget with useCreateNote hook. Create `apps/notes-app/src/Pages/NoteWritePage/index.ts` barrel export. Wire into AppRouter
+- [x] T039 [US1] Create `apps/notes-app/src/Pages/NoteWrite/Ui/NoteWritePage/NoteWritePage.tsx` + `index.ts` composing NoteWrite widget with useCreateNote hook. Create `apps/notes-app/src/Pages/NoteWrite/index.ts` barrel export. Wire into AppRouter
 
 #### E2E Test (MANDATORY)
 
@@ -160,9 +160,9 @@
 
 - [ ] T047 [US2] Create `apps/notes-app/src/Widgets/NoteList/Ui/NoteList/NoteList.tsx` + `NoteList.loading.tsx` + `index.ts` composing useNotes hook, rendering NoteCard list (sorted by createdAt desc) with loading skeleton and EmptyNoteState. Create `apps/notes-app/src/Widgets/NoteList/index.ts` barrel export
 
-#### Pages/HomePage
+#### Pages/NoteList
 
-- [ ] T048 [US2] Create `apps/notes-app/src/Pages/HomePage/Ui/HomePage/HomePage.tsx` + `index.ts` composing NoteList widget with "새 노트 작성" navigation button. Create `apps/notes-app/src/Pages/HomePage/index.ts` barrel export. Wire into AppRouter
+- [ ] T048 [US2] Create `apps/notes-app/src/Pages/NoteList/Ui/NoteListPage/NoteListPage.tsx` + `index.ts` composing NoteList widget with "새 노트 작성" navigation button. Create `apps/notes-app/src/Pages/NoteList/index.ts` barrel export. Wire into AppRouter
 
 #### E2E Test (MANDATORY)
 
@@ -192,9 +192,9 @@
 
 - [ ] T052 [US3] Create `apps/notes-app/src/Widgets/NoteDetail/Ui/NoteDetail/NoteDetail.tsx` + `index.ts` displaying note title, content, category badge, createdAt, updatedAt, with "편집" and "삭제" action buttons. Create `apps/notes-app/src/Widgets/NoteDetail/index.ts` barrel export
 
-#### Pages/NoteViewPage
+#### Pages/NoteDetail
 
-- [ ] T053 [US3] Create `apps/notes-app/src/Pages/NoteViewPage/Ui/NoteViewPage/NoteViewPage.tsx` + `index.ts` composing NoteDetail widget with useNote(id) hook, loading/error states. Create `apps/notes-app/src/Pages/NoteViewPage/index.ts` barrel export. Wire into AppRouter
+- [ ] T053 [US3] Create `apps/notes-app/src/Pages/NoteDetail/Ui/NoteDetailPage/NoteDetailPage.tsx` + `index.ts` composing NoteDetail widget with useNote(id) hook, loading/error states. Create `apps/notes-app/src/Pages/NoteDetail/index.ts` barrel export. Wire into AppRouter
 
 #### E2E Test (MANDATORY)
 
@@ -216,20 +216,20 @@
 
 ### Tests for User Story 4 (MANDATORY - TDD Required)
 
-- [ ] T056 [P] [US4] Unit test for NoteEdit mutation in `apps/notes-app/src/Features/NoteEdit/Api/Put.test.ts` — test updateNote PUT request format and response (Vitest + MSW server)
+- [ ] T056 [P] [US4] Unit test for NoteWrite edit mutation in `apps/notes-app/src/Features/NoteWrite/Api/Put.test.ts` — test updateNote PUT request format and response (Vitest + MSW server)
 
 ### Implementation for User Story 4
 
-#### Features/NoteEdit (하위 도메인 of Note)
+#### Features/NoteWrite (Edit 기능 추가)
 
-- [ ] T057 [P] [US4] Create `apps/notes-app/src/Features/NoteEdit/Type/NoteEdit.ts` with UpdateNoteRequest and UpdateNoteResponse types. Create `apps/notes-app/src/Features/NoteEdit/index.ts` barrel export
-- [ ] T058 [US4] Create `apps/notes-app/src/Features/NoteEdit/Api/Put.ts` with putNote HTTP function, `apps/notes-app/src/Features/NoteEdit/Api/Key.ts` with noteEditMutationKey factory, and `apps/notes-app/src/Features/NoteEdit/Api/Mutation.ts` with noteEditMutationOption factory. Update barrel export
+- [ ] T057 [P] [US4] Add UpdateNoteRequest and UpdateNoteResponse types to `apps/notes-app/src/Features/NoteWrite/Type/NoteWrite.ts`. Update barrel export
+- [ ] T058 [US4] Create `apps/notes-app/src/Features/NoteWrite/Api/Put.ts` with putNote HTTP function. Add edit entries to existing `apps/notes-app/src/Features/NoteWrite/Api/Key.ts` (noteWriteMutationKey) and `apps/notes-app/src/Features/NoteWrite/Api/Mutation.ts` (noteWriteMutationOption). Update barrel export
 - [ ] T059 [US4] Create MSW handler for PUT /api/notes/:id in `apps/notes-app/src/Entities/Note/__Mock__/noteHandlers.ts` (add to existing handlers — validate, update in-memory store, update updatedAt). Update `apps/notes-app/src/App/Mock/browser.ts` if needed
-- [ ] T060 [US4] Create `apps/notes-app/src/Features/NoteEdit/Model/Hook/useUpdateNote.ts` with mutation hook (uses noteEditMutationOptions, invalidates noteQueryKeys on success). Update barrel export
+- [ ] T060 [US4] Create `apps/notes-app/src/Features/NoteWrite/Model/Hook/useUpdateNote.ts` with mutation hook (uses noteWriteMutationOption, invalidates noteQueryKeys on success). Update barrel export
 
-#### NoteViewPage Edit Mode Integration
+#### NoteDetail Edit Mode Integration
 
-- [ ] T061 [US4] Update `apps/notes-app/src/Pages/NoteViewPage/Ui/NoteViewPage/NoteViewPage.tsx` to integrate edit mode toggle — reuse NoteEditor widget with existing note data pre-filled, useUpdateNote hook for save
+- [ ] T061 [US4] Update `apps/notes-app/src/Pages/NoteDetail/Ui/NoteDetailPage/NoteDetailPage.tsx` to integrate edit mode toggle — reuse NoteWrite widget with existing note data pre-filled, useUpdateNote hook for save
 
 #### E2E Test (MANDATORY)
 
@@ -296,9 +296,9 @@
 - [ ] T074 [US6] Create `apps/notes-app/src/Features/CategoryWrite/__Mock__/categoryWriteHandlers.ts` with MSW handlers for POST /api/categories (validate unique name, generate id) and DELETE /api/categories/:id (reject default, move notes to uncategorized, return movedNotesCount). Update browser.ts
 - [ ] T075 [US6] Create `apps/notes-app/src/Features/CategoryWrite/Model/Hook/useCreateCategory.ts` and `apps/notes-app/src/Features/CategoryWrite/Model/Hook/useDeleteCategory.ts` with mutation hooks (invalidate categoryQueryKeys on success). Update barrel export
 
-#### Pages/CategoryManagePage
+#### Pages/CategoryManage
 
-- [ ] T076 [US6] Create `apps/notes-app/src/Pages/CategoryManagePage/Ui/CategoryManagePage/CategoryManagePage.tsx` + `index.ts` with category list (useCategories), create form (input + add button), delete button per category (disabled for isDefault, ConfirmDialog with notes count). Create `apps/notes-app/src/Pages/CategoryManagePage/index.ts` barrel export. Wire into AppRouter
+- [ ] T076 [US6] Create `apps/notes-app/src/Pages/CategoryManage/Ui/CategoryManagePage/CategoryManagePage.tsx` + `index.ts` with category list (useCategories), create form (input + add button), delete button per category (disabled for isDefault, ConfirmDialog with notes count). Create `apps/notes-app/src/Pages/CategoryManage/index.ts` barrel export. Wire into AppRouter
 
 #### E2E Test (MANDATORY)
 
@@ -334,9 +334,9 @@
 
 - [ ] T083 [US7] Create `apps/notes-app/src/Widgets/CategoryFilter/Ui/CategoryFilter/CategoryFilter.tsx` + `index.ts` rendering category tabs/buttons (using useCategories + useCategoryFilter), highlighting active filter. Create `apps/notes-app/src/Widgets/CategoryFilter/index.ts` barrel export
 
-#### HomePage Integration
+#### NoteList Page Integration
 
-- [ ] T084 [US7] Update `apps/notes-app/src/Pages/HomePage/Ui/HomePage/HomePage.tsx` to include CategoryFilter widget above NoteList. Update `apps/notes-app/src/Widgets/NoteList/Model/Hook/useNoteListFilter.ts` to read selectedCategoryId from useFilterStore and pass to useNotes query params
+- [ ] T084 [US7] Update `apps/notes-app/src/Pages/NoteList/Ui/NoteListPage/NoteListPage.tsx` to include CategoryFilter widget above NoteList. Update `apps/notes-app/src/Widgets/NoteList/Model/Hook/useNoteListFilter.ts` to read selectedCategoryId from useFilterStore and pass to useNotes query params
 
 #### E2E Test (MANDATORY)
 
@@ -371,9 +371,9 @@
 
 - [ ] T090 [US8] Create `apps/notes-app/src/Widgets/SearchBar/Model/Hook/useSearchKeyword.ts` consuming useNoteSearch for search state. Create `apps/notes-app/src/Widgets/SearchBar/Ui/SearchBar/SearchBar.tsx` + `index.ts` with search input field and clear button. Create `apps/notes-app/src/Widgets/SearchBar/index.ts` barrel export
 
-#### HomePage Integration
+#### NoteList Page Integration
 
-- [ ] T091 [US8] Update `apps/notes-app/src/Pages/HomePage/Ui/HomePage/HomePage.tsx` to include SearchBar widget. Update `apps/notes-app/src/Widgets/NoteList/Model/Hook/useNoteListFilter.ts` to also read keyword from search state and pass to useNotes query params
+- [ ] T091 [US8] Update `apps/notes-app/src/Pages/NoteList/Ui/NoteListPage/NoteListPage.tsx` to include SearchBar widget. Update `apps/notes-app/src/Widgets/NoteList/Model/Hook/useNoteListFilter.ts` to also read keyword from search state and pass to useNotes query params
 
 #### E2E Test (MANDATORY)
 
@@ -463,14 +463,14 @@
 - **Setup (Phase 1)**: No dependencies — can start immediately
 - **Foundational (Phase 2)**: Depends on Setup (T006 install) — BLOCKS all user stories
 - **User Story 1 (Phase 3)**: Depends on Foundational (Phase 2) completion
-- **User Story 2 (Phase 4)**: Depends on Foundational (Phase 2) completion. Can run in parallel with US1 but shares NoteEditor dependency
+- **User Story 2 (Phase 4)**: Depends on Foundational (Phase 2) completion. Can run in parallel with US1 but shares NoteWrite widget dependency
 - **User Story 3 (Phase 5)**: Depends on Phase 2. Independent of US1/US2 for implementation, but practically builds on note list navigation
-- **User Story 4 (Phase 6)**: Depends on US3 (NoteViewPage) and US1 (NoteEditor widget reuse)
+- **User Story 4 (Phase 6)**: Depends on US3 (NoteDetail page) and US1 (NoteWrite widget reuse)
 - **User Story 5 (Phase 7)**: Depends on US3 (NoteDetail widget for delete button integration)
 - **User Story 6 (Phase 8)**: Depends on Phase 2 only. Independent of note features
 - **User Story 7 (Phase 9)**: Depends on US6 (categories exist) for meaningful testing, but can implement with defaults
-- **User Story 8 (Phase 10)**: Depends on US2 (NoteList/HomePage to integrate SearchBar)
-- **User Story 9 (Phase 11)**: Depends on US7 (CategoryFilter for sidebar), US2 (HomePage)
+- **User Story 8 (Phase 10)**: Depends on US2 (NoteList page to integrate SearchBar)
+- **User Story 9 (Phase 11)**: Depends on US7 (CategoryFilter for sidebar), US2 (NoteList page)
 - **E2E Integration (Phase 12)**: Depends on ALL user stories complete
 - **Polish (Phase 13)**: Depends on all user stories and E2E integration
 
@@ -500,7 +500,7 @@
 | 6-layer hierarchy | All phases | Full directory structure |
 | Non-domain layers (slice=segment) | T008-T012, T026-T029 | App/*, Shared/* |
 | Domain layers (slice→segment) | T013-T021, T033-T036 | Entities/*, Features/* |
-| Parent/child sub-domains | T033-T036 (NoteWrite), T057-T060 (NoteEdit), T065-T067 (NoteDelete), T072-T075 (CategoryWrite), T080-T082 (CategoryFilter) | Features/NoteWrite→Entities/Note, Features/CategoryFilter→Entities/Category |
+| Parent/child sub-domains | T033-T036 (NoteWrite create), T057-T060 (NoteWrite edit addition), T065-T067 (NoteDelete), T072-T075 (CategoryWrite), T080-T082 (CategoryFilter) | Features/NoteWrite→Entities/Note, Features/CategoryFilter→Entities/Category |
 | Segment types (__Mock__, Api, Config, Model, Type, Ui) | T013-T023 | Entities/Note has ALL 6 segments |
 | 1-level segment grouping | T020, T036, T081 | Model/Hook/, Model/Store/ |
 | Public API (index.ts) | Every slice creation task | All index.ts files |
