@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
-import { NoteEditor } from './NoteEditor';
+import { NoteWrite } from './NoteWrite';
 import { useNoteForm } from '../../Model';
 
 const MOCK_CATEGORY_LIST = [
@@ -31,7 +31,7 @@ function createQueryClient() {
   });
 }
 
-function NoteEditorTestWrapper({
+function NoteWriteTestWrapper({
   onSubmit = vi.fn(),
   onCancel = vi.fn(),
 }: {
@@ -40,7 +40,7 @@ function NoteEditorTestWrapper({
 }) {
   const form = useNoteForm();
   return (
-    <NoteEditor
+    <NoteWrite
       form={form}
       onSubmit={onSubmit}
       onCancel={onCancel}
@@ -55,9 +55,9 @@ function renderWithProvider(ui: React.ReactElement) {
   );
 }
 
-describe('NoteEditor', () => {
+describe('NoteWrite', () => {
   it('should render title input, content textarea, and buttons', () => {
-    renderWithProvider(<NoteEditorTestWrapper />);
+    renderWithProvider(<NoteWriteTestWrapper />);
 
     expect(screen.getByLabelText('제목')).toBeInTheDocument();
     expect(screen.getByLabelText('내용')).toBeInTheDocument();
@@ -67,7 +67,7 @@ describe('NoteEditor', () => {
 
   it('should show validation error when title is empty', async () => {
     const user = userEvent.setup();
-    renderWithProvider(<NoteEditorTestWrapper />);
+    renderWithProvider(<NoteWriteTestWrapper />);
 
     await user.click(screen.getByRole('button', { name: '저장' }));
 
@@ -79,7 +79,7 @@ describe('NoteEditor', () => {
   it('should call onSubmit with form data when valid', async () => {
     const handleSubmit = vi.fn();
     const user = userEvent.setup();
-    renderWithProvider(<NoteEditorTestWrapper onSubmit={handleSubmit} />);
+    renderWithProvider(<NoteWriteTestWrapper onSubmit={handleSubmit} />);
 
     await user.type(screen.getByLabelText('제목'), '테스트 노트');
     await user.type(screen.getByLabelText('내용'), '테스트 내용');
@@ -99,7 +99,7 @@ describe('NoteEditor', () => {
   it('should call onCancel when cancel button is clicked', async () => {
     const handleCancel = vi.fn();
     const user = userEvent.setup();
-    renderWithProvider(<NoteEditorTestWrapper onCancel={handleCancel} />);
+    renderWithProvider(<NoteWriteTestWrapper onCancel={handleCancel} />);
 
     await user.click(screen.getByRole('button', { name: '취소' }));
 
@@ -107,7 +107,7 @@ describe('NoteEditor', () => {
   });
 
   it('should render category select with options from API', async () => {
-    renderWithProvider(<NoteEditorTestWrapper />);
+    renderWithProvider(<NoteWriteTestWrapper />);
 
     await waitFor(() => {
       expect(screen.getByLabelText('카테고리 선택')).toBeInTheDocument();

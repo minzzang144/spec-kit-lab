@@ -13,7 +13,7 @@ import {
 } from '#/Shared/Ui';
 import type { NoteFormData } from '../../Model';
 
-type NoteEditorProps = {
+type NoteWriteProps = {
   form: UseFormReturn<NoteFormData>;
   onSubmit: (data: NoteFormData) => void;
   onCancel: () => void;
@@ -21,13 +21,13 @@ type NoteEditorProps = {
   submitLabel?: string;
 };
 
-export function NoteEditor({
+export function NoteWrite({
   form,
   onSubmit,
   onCancel,
   isSubmitting = false,
   submitLabel = '저장',
-}: NoteEditorProps) {
+}: NoteWriteProps) {
   const { data: categoryList } = useCategoryList();
   const {
     register,
