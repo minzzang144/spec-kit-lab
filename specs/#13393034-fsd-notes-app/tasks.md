@@ -142,23 +142,23 @@
 
 ### Tests for User Story 2 (MANDATORY - TDD Required)
 
-- [ ] T042 [P] [US2] Unit test for NoteCard component in `apps/notes-app/src/Entities/Note/Ui/NoteCard/NoteCard.test.tsx` — test rendering title, category badge, date, click handler (Vitest + Testing Library)
-- [ ] T043 [P] [US2] Unit test for NoteList widget in `apps/notes-app/src/Widgets/NoteList/Ui/NoteList/NoteList.test.tsx` — test list rendering, loading state, empty state with CTA button (Vitest + Testing Library)
+- [x] T042 [P] [US2] Unit test for NoteCard component in `apps/notes-app/src/Entities/Note/Ui/NoteCard/NoteCard.test.tsx` — test rendering title, category badge, date, click handler (Vitest + Testing Library)
+- [x] T043 [P] [US2] Unit test for NoteList widget in `apps/notes-app/src/Widgets/NoteList/Ui/NoteList/NoteList.test.tsx` — test list rendering, loading state, empty state with CTA button (Vitest + Testing Library)
 
 ### Implementation for User Story 2
 
 #### Entities/Note/Ui
 
-- [ ] T044 [P] [US2] Create `apps/notes-app/src/Entities/Note/Ui/NoteCard/NoteCard.tsx` + `index.ts` displaying note title, category badge (using CategoryBadge), formatted createdAt, onClick navigation. Update Entities/Note barrel export
-- [ ] T045 [P] [US2] Create `apps/notes-app/src/Entities/Note/Ui/EmptyNoteState/EmptyNoteState.tsx` + `index.ts` with "아직 작성된 노트가 없습니다" message and "첫 노트 작성하기" CTA button. Update barrel export
+- [x] T044 [P] [US2] Create `apps/notes-app/src/Entities/Note/Ui/NoteCard/NoteCard.tsx` + `index.ts` displaying note title, category badge (using CategoryBadge), formatted createdAt, onClick navigation. Update Entities/Note barrel export
+- [x] T045 [P] [US2] Create `apps/notes-app/src/Entities/Note/Ui/EmptyNoteState/EmptyNoteState.tsx` + `index.ts` with "아직 작성된 노트가 없습니다" message and "첫 노트 작성하기" CTA button. Update barrel export
 
 #### Entities/Category/Ui
 
-- [ ] T046 [US2] Create `apps/notes-app/src/Entities/Category/Ui/CategoryBadge/CategoryBadge.tsx` + `index.ts` displaying category name as a badge component. Update Entities/Category barrel export
+- [x] T046 [US2] Create `apps/notes-app/src/Entities/Category/Ui/CategoryBadge/CategoryBadge.tsx` + `index.ts` displaying category name as a badge component. Update Entities/Category barrel export
 
 #### Widgets/NoteList
 
-- [ ] T047 [US2] Create `apps/notes-app/src/Widgets/NoteList/Ui/NoteList/NoteList.tsx` + `NoteList.loading.tsx` + `index.ts` composing useNotes hook, rendering NoteCard list (sorted by createdAt desc) with loading skeleton and EmptyNoteState. Create `apps/notes-app/src/Widgets/NoteList/index.ts` barrel export
+- [x] T047 [US2] Create `apps/notes-app/src/Widgets/NoteList/Ui/NoteList/NoteList.tsx` + `NoteList.loading.tsx` + `index.ts` composing useNotes hook, rendering NoteCard list (sorted by createdAt desc) with loading skeleton and EmptyNoteState. Create `apps/notes-app/src/Widgets/NoteList/index.ts` barrel export
 
 #### Pages/NoteList
 
