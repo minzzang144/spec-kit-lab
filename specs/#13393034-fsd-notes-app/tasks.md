@@ -162,7 +162,7 @@
 
 #### Pages/NoteList
 
-- [ ] T048 [US2] Create `apps/notes-app/src/Pages/NoteList/Ui/NoteListPage/NoteListPage.tsx` + `index.ts` composing NoteList widget with "새 노트 작성" navigation button. Create `apps/notes-app/src/Pages/NoteList/index.ts` barrel export. Wire into AppRouter
+- [x] T048 [US2] Create `apps/notes-app/src/Pages/NoteList/Ui/NoteListPage/NoteListPage.tsx` + `index.ts` composing NoteList widget with "새 노트 작성" navigation button. Create `apps/notes-app/src/Pages/NoteList/index.ts` barrel export. Wire into AppRouter
 
 #### E2E Test (MANDATORY)
 

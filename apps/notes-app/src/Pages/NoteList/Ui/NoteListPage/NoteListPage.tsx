@@ -1,3 +1,18 @@
+import { Link } from 'react-router';
+import { NoteList } from '#/Widgets/NoteList';
+import { ROUTES } from '#/Shared/Config';
+import { Button } from '#/Shared/Ui';
+
 export function NoteListPage() {
-  return <div className="p-8">노트 목록 페이지 (구현 예정)</div>;
+  return (
+    <div className="mx-auto max-w-2xl p-6">
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-2xl font-bold">내 노트</h1>
+        <Button asChild>
+          <Link to={ROUTES.NOTE_WRITE}>새 노트 작성</Link>
+        </Button>
+      </div>
+      <NoteList />
+    </div>
+  );
 }
