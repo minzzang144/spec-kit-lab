@@ -166,11 +166,11 @@
 
 #### E2E Test (MANDATORY)
 
-- [ ] T049 [US2] **E2E test** in `apps/notes-app/e2e/note-list.spec.ts` — E2E-US2-001: verify notes displayed in latest-first order; E2E-US2-002: verify empty state with CTA (Playwright)
+- [x] T049 [US2] **E2E test** in `apps/notes-app/e2e/note-list.spec.ts` — E2E-US2-001: verify notes displayed in latest-first order; E2E-US2-002: verify empty state with CTA (Playwright)
 
 #### Verification
 
-- [ ] T050 [US2] Run frontend verification: `pnpm run type-check && pnpm run lint && pnpm run test && pnpm run build`
+- [x] T050 [US2] Run frontend verification: `pnpm run type-check && pnpm run lint && pnpm run test && pnpm run build`
 
 **Checkpoint**: User Stories 1 & 2 complete — MVP functional: create notes and view list
 
