@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { useNote } from '#/Entities/Note';
 import { useCategoryList } from '#/Entities/Category';
@@ -19,6 +19,17 @@ export function NoteDetailPage() {
   const { data: categoryList } = useCategoryList();
   const updateNote = useUpdateNote(id ?? '');
   const form = useNoteForm({ existingNote: note });
+
+  // note 데이터가 로드된 후 form 값을 동기화 (RHF defaultValues는 첫 렌더에만 적용됨)
+  useEffect(() => {
+    if (note) {
+      form.reset({
+        title: note.title,
+        content: note.content ?? '',
+        categoryId: note.categoryId,
+      });
+    }
+  }, [note?.id]);
 
   if (isLoading) {
     return (

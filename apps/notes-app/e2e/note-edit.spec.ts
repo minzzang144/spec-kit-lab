@@ -24,6 +24,8 @@ test.describe('US4: 노트 편집', () => {
     await page.getByRole('button', { name: '편집' }).click();
 
     const titleInput = page.getByLabel('제목');
+    // 편집 모드 전환 후 form pre-fill 대기
+    await expect(titleInput).not.toHaveValue('');
     await expect(titleInput).toHaveValue(titleText ?? '');
   });
 
@@ -49,12 +51,19 @@ test.describe('US4: 노트 편집', () => {
     await page.goto('/');
 
     await page.locator('article[role="article"]').first().click();
-    const originalTitle = await page.getByRole('heading', { level: 1 }).textContent();
+    await expect(page).toHaveURL(/\/notes\/\d+/);
+
+    // 노트 상세 h1이 로드될 때까지 대기 후 제목 확인
+    const articleHeading = page.locator('article h1');
+    await expect(articleHeading).toBeVisible();
+    const originalTitle = await articleHeading.textContent();
 
     await page.getByRole('button', { name: '편집' }).click();
+    await expect(page.getByLabel('제목')).not.toHaveValue('');
+
     await page.getByRole('button', { name: '취소' }).click();
 
-    await expect(page.getByRole('heading', { name: originalTitle ?? '' })).toBeVisible();
+    await expect(articleHeading).toHaveText(originalTitle ?? '');
     await expect(page.getByRole('button', { name: '편집' })).toBeVisible();
   });
 });

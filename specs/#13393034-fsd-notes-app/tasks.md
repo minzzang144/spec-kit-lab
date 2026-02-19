@@ -428,16 +428,16 @@
 
 ### E2E Test Setup
 
-- [ ] T100 Setup Playwright in `apps/notes-app/`: create `apps/notes-app/playwright.config.ts` with webServer (pnpm dev), browser settings. Add `test:e2e` and `test:e2e:ui` scripts to package.json
+- [x] T100 Setup Playwright in `apps/notes-app/`: create `apps/notes-app/playwright.config.ts` with webServer (pnpm dev), browser settings. Add `test:e2e` and `test:e2e:ui` scripts to package.json
 
 ### Cross-Story E2E Tests
 
-- [ ] T101 **E2E test** in `apps/notes-app/e2e/integration-workflow.spec.ts` — E2E-INT-001: create category → create note in category → edit note → search for note → delete note — full CRUD workflow
-- [ ] T102 **E2E test** in `apps/notes-app/e2e/integration-category-cascade.spec.ts` — E2E-INT-002: create category → create notes in it → delete category → verify notes moved to uncategorized → filter by uncategorized → see moved notes
+- [x] T101 **E2E test** in `apps/notes-app/e2e/integration-workflow.spec.ts` — E2E-INT-001: create category → create note in category → edit note → search for note → delete note — full CRUD workflow
+- [x] T102 **E2E test** in `apps/notes-app/e2e/integration-category-cascade.spec.ts` — E2E-INT-002: create category → create notes in it → delete category → verify notes moved to uncategorized → filter by uncategorized → see moved notes
 
 ### E2E Verification
 
-- [ ] T103 Run all E2E tests (`pnpm run test:e2e`), verify all pass, document any failures and resolutions
+- [x] T103 Run all E2E tests (`pnpm run test:e2e`), verify all pass, document any failures and resolutions
 
 **Checkpoint**: All E2E tests pass — feature is ready for final polish
 
