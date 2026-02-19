@@ -410,11 +410,11 @@
 
 #### E2E Test (MANDATORY)
 
-- [ ] T098 [US9] **E2E test** in `apps/notes-app/e2e/sidebar-navigation.spec.ts` — E2E-US9-001: click sidebar menu items → verify navigation; click sidebar category → verify filter applied on home page (Playwright)
+- [x] T098 [US9] **E2E test** in `apps/notes-app/e2e/sidebar-navigation.spec.ts` — E2E-US9-001: click sidebar menu items → verify navigation; click sidebar category → verify filter applied on home page (Playwright)
 
 #### Verification
 
-- [ ] T099 [US9] Run frontend verification: `pnpm run type-check && pnpm run lint && pnpm run test && pnpm run build`
+- [x] T099 [US9] Run frontend verification: `pnpm run type-check && pnpm run lint && pnpm run test && pnpm run build`
 
 **Checkpoint**: User Story 9 complete — sidebar navigation with responsive behavior
 
