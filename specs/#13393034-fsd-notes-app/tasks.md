@@ -358,18 +358,18 @@
 
 ### Tests for User Story 8 (MANDATORY - TDD Required)
 
-- [ ] T087 [P] [US8] Unit test for SearchBar widget in `apps/notes-app/src/Widgets/SearchBar/Ui/SearchBar/SearchBar.test.tsx` — test input rendering, keyword change callback, clear functionality (Vitest + Testing Library)
+- [x] T087 [P] [US8] Unit test for SearchBar widget in `apps/notes-app/src/Widgets/SearchBar/Ui/SearchBar/SearchBar.test.tsx` — test input rendering, keyword change callback, clear functionality (Vitest + Testing Library)
 
 ### Implementation for User Story 8
 
 #### Features/NoteSearch
 
-- [ ] T088 [P] [US8] Create `apps/notes-app/src/Features/NoteSearch/Type/NoteSearch.ts` with NoteSearchParams type. Create `apps/notes-app/src/Features/NoteSearch/index.ts` barrel export
-- [ ] T089 [US8] Create `apps/notes-app/src/Features/NoteSearch/Model/Hook/useNoteSearch.ts` with debounced search keyword state management (useState + useCallback with debounce). Update barrel export
+- [x] T088 [P] [US8] Create `apps/notes-app/src/Features/NoteSearch/Type/NoteSearch.ts` with NoteSearchParams type. Create `apps/notes-app/src/Features/NoteSearch/index.ts` barrel export. **Note**: NoteSearch 검색어 공유는 useNoteSearchStore(Zustand)로 관리 (SearchBar Widget + useNoteListFilter 양쪽에서 접근)
+- [x] T089 [US8] Create `apps/notes-app/src/Features/NoteSearch/Model/Hook/useNoteSearch.ts` with debounced search keyword state management (inputValue with useState + debounce to useNoteSearchStore via setTimeout). Create `apps/notes-app/src/Features/NoteSearch/Model/Store/SearchSlice.ts` + `useNoteSearchStore.ts`. Update barrel export
 
 #### Widgets/SearchBar
 
-- [ ] T090 [US8] Create `apps/notes-app/src/Widgets/SearchBar/Model/Hook/useSearchKeyword.ts` consuming useNoteSearch for search state. Create `apps/notes-app/src/Widgets/SearchBar/Ui/SearchBar/SearchBar.tsx` + `index.ts` with search input field and clear button. Create `apps/notes-app/src/Widgets/SearchBar/index.ts` barrel export
+- [x] T090 [US8] Create `apps/notes-app/src/Widgets/SearchBar/Model/Hook/useSearchKeyword.ts` consuming useNoteSearch for search state. Create `apps/notes-app/src/Widgets/SearchBar/Ui/SearchBar/SearchBar.tsx` + `index.ts` with search input field and clear button. Create `apps/notes-app/src/Widgets/SearchBar/index.ts` barrel export
 
 #### NoteList Page Integration
 
