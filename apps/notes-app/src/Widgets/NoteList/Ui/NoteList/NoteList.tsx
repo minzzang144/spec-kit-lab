@@ -1,8 +1,8 @@
 import { useNoteList } from '#/Entities/Note';
 import { useCategoryList } from '#/Entities/Category';
 import { NoteListLoading } from './NoteList.loading';
-import { NoteListEmpty } from './NoteListEmpty';
-import { NoteListItem } from './NoteListItem';
+import { NoteListEmpty } from '../NoteListEmpty';
+import { NoteListItem } from '../NoteListItem';
 
 export function NoteList() {
   const { data: noteList, isLoading } = useNoteList();
