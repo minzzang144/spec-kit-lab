@@ -1,2 +1,2 @@
-export { useFilterStore } from './useFilterStore';
+export { useCategoryFilterStore } from './useCategoryFilterStore';
 export type { FilterSlice } from './FilterSlice';

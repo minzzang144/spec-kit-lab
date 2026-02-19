@@ -1,2 +1,2 @@
 export type { FilterState } from './Type';
-export { useFilterStore, useCategoryFilter } from './Model';
+export { useCategoryFilterStore, useCategoryFilter } from './Model';
