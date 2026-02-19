@@ -267,11 +267,11 @@
 
 #### E2E Test (MANDATORY)
 
-- [ ] T069 [US5] **E2E test** in `apps/notes-app/e2e/note-delete.spec.ts` — E2E-US5-001: delete note with confirm → verify removed from list; E2E-US5-002: cancel delete → note preserved (Playwright)
+- [x] T069 [US5] **E2E test** in `apps/notes-app/e2e/note-delete.spec.ts` — E2E-US5-001: delete note with confirm → verify removed from list; E2E-US5-002: cancel delete → note preserved (Playwright)
 
 #### Verification
 
-- [ ] T070 [US5] Run frontend verification: `pnpm run type-check && pnpm run lint && pnpm run test && pnpm run build`
+- [x] T070 [US5] Run frontend verification: `pnpm run type-check && pnpm run lint && pnpm run test && pnpm run build`
 
 **Checkpoint**: User Stories 3-5 complete — full CRUD for notes functional
 
