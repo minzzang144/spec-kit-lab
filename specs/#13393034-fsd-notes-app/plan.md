@@ -232,27 +232,27 @@ apps/notes-app/
     │   │   │   │   └── index.ts
     │   │   │   └── index.ts
     │   │   └── index.ts
-    │   ├── SearchBar/
+    │   ├── NoteSearch/              # Note 도메인 + Search 관심사 (concern-based naming)
     │   │   ├── Model/
     │   │   │   ├── Hook/
     │   │   │   │   ├── useSearchKeyword.ts
     │   │   │   │   └── index.ts
     │   │   │   └── index.ts
     │   │   ├── Ui/
-    │   │   │   ├── SearchBar/
-    │   │   │   │   ├── SearchBar.tsx
+    │   │   │   ├── NoteSearchInput/  # 컴포넌트 파일명은 구체적 역할명 사용
+    │   │   │   │   ├── NoteSearchInput.tsx
     │   │   │   │   └── index.ts
     │   │   │   └── index.ts
     │   │   └── index.ts
-    │   ├── Sidebar/
+    │   ├── CategorySidebar/         # Category 도메인 + Sidebar 관심사 (concern-based naming)
     │   │   ├── Model/
     │   │   │   ├── Hook/
     │   │   │   │   ├── useSidebarState.ts
     │   │   │   │   └── index.ts
     │   │   │   └── index.ts
     │   │   ├── Ui/
-    │   │   │   ├── Sidebar/
-    │   │   │   │   ├── Sidebar.tsx
+    │   │   │   ├── CategorySidebar/
+    │   │   │   │   ├── CategorySidebar.tsx
     │   │   │   │   └── index.ts
     │   │   │   └── index.ts
     │   │   └── index.ts
@@ -332,15 +332,16 @@ apps/notes-app/
     │   │   └── index.ts
     │   └── CategoryFilter/      # 하위 도메인 (Category의 서브도메인)
     │       ├── Model/
-    │       │   ├── Store/
-    │       │   │   ├── FilterSlice.ts
-    │       │   │   ├── useCategoryFilterStore.ts   # use{Domain}Store 규칙 준수
+    │       │   ├── Logic/               # Zustand 업데이트 로직 (Section 9: Logic → Features)
+    │       │   │   ├── useCategoryFilterLogic.ts   # setSelectedCategoryId (useCategoryStore.setState 호출)
     │       │   │   └── index.ts
     │       │   └── index.ts
     │       ├── Type/
     │       │   ├── CategoryFilter.ts
     │       │   └── index.ts
     │       └── index.ts
+    │         # NOTE: Zustand 상태 선언(FilterSlice, useCategoryStore)은 Entities/Category/Model/Store에 위치
+    │         # (custom-fsd-architecture.md Section 9: 상태 선언 → Entities, 업데이트 로직 → Features/Logic)
     │
     ├── Entities/                # Domain layer: business entities (read-oriented)
     │   ├── Note/                # 상위 도메인
@@ -362,12 +363,19 @@ apps/notes-app/
     │   │   │   │   ├── useNoteList.ts
     │   │   │   │   ├── useNote.ts
     │   │   │   │   └── index.ts
+    │   │   │   ├── Store/               # Zustand 상태 선언 (Section 9: 상태 → Entities)
+    │   │   │   │   ├── SearchSlice.ts       # keyword 상태 (setter 없음)
+    │   │   │   │   ├── useNoteStore.ts      # create() 조합
+    │   │   │   │   └── index.ts
     │   │   │   └── index.ts
     │   │   ├── Type/
     │   │   │   ├── Note.ts
     │   │   │   └── index.ts
     │   │   ├── Ui/
-    │   │   │   ├── NoteContentPreview/   # 순수 표시: note.content 미리보기
+    │   │   │   ├── NoteContent/          # 기본 렌더러 (className prop으로 재사용)
+    │   │   │   │   ├── NoteContent.tsx
+    │   │   │   │   └── index.ts
+    │   │   │   ├── NoteContentPreview/   # 순수 표시: note.content 미리보기 (NoteContent 래핑)
     │   │   │   │   ├── NoteContentPreview.tsx
     │   │   │   │   └── index.ts
     │   │   │   ├── NoteDate/             # 순수 표시: note.createdAt 포맷팅
@@ -392,6 +400,10 @@ apps/notes-app/
     │       ├── Model/
     │       │   ├── Hook/
     │       │   │   ├── useCategoryList.ts
+    │       │   │   └── index.ts
+    │       │   ├── Store/               # Zustand 상태 선언 (Section 9: 상태 → Entities)
+    │       │   │   ├── FilterSlice.ts       # selectedCategoryId 상태 (setter 없음)
+    │       │   │   ├── useCategoryStore.ts  # create() 조합 (use{Domain}Store 규칙)
     │       │   │   └── index.ts
     │       │   └── index.ts
     │       ├── Type/
@@ -458,10 +470,11 @@ apps/notes-app/
 | __Mock__ 슬라이스 barrel re-export 금지 | 슬라이스 index.ts에서 __Mock__ re-export 안 함; `#/Entities/Note/__Mock__`으로 직접 import | 코드 리뷰 |
 | App/Mock 조합 전용 | App/Mock/browser.ts에서 핸들러 직접 정의 금지 — import + setupWorker만 | 코드 리뷰 |
 | TanStack Query 통합 | Entities/*/Api: Get+Key+Query, Features/*/Api: Post/Put/Delete+Key+Mutation | queryOptions/mutationOptions factory |
-| Zustand slices pattern | Features/CategoryFilter/Model/Store/FilterSlice+useCategoryFilterStore | 여러 Widget에서 공유 상태 (use{Domain}Store 규칙 준수) |
+| Zustand 상태 선언 → Entities/Model/Store | Entities/Category/Model/Store/useCategoryStore, Entities/Note/Model/Store/useNoteStore | Section 9: 상태 선언은 Entities, setter 없는 slice |
+| Zustand 업데이트 로직 → Features/Model/Logic | Features/CategoryFilter/Model/Logic/useCategoryFilterLogic, Features/NoteSearch/Model/Logic/useNoteSearchLogic | Section 9: 업데이트 로직은 Features/Logic |
 | 파일 네이밍 (PascalCase/camelCase) | 디렉토리 PascalCase, Hook camelCase, Slice PascalCase | 전체 파일 구조 |
 | No-plurals 네이밍 | useNoteList (not useNotes), useCategoryList (not useCategories) | 복수형 접미사 금지 |
-| UI 컴포넌트 구조 | NoteContentPreview/, SearchBar/ 등 | ComponentName.tsx + index.ts (sibling vs 별도 폴더 기준 적용) |
+| UI 컴포넌트 구조 | NoteContentPreview/, NoteSearchInput/ 등 | ComponentName.tsx + index.ts (sibling vs 별도 폴더 기준 적용) |
 | Entity Ui 순수성 | NoteContentPreview, NoteDate (순수 표시만) | onClick/라우팅/다른 도메인 금지 |
 | Feature Ui 자기완결성 | SendButton, DeleteButton | 단일 액션, children 래퍼 금지 |
 | Widget Ui 조합/래핑 | NoteList (Entity Ui + Feature 조합) | 네비게이션, 래퍼 컴포넌트 |

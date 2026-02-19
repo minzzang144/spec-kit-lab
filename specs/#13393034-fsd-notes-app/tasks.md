@@ -70,8 +70,8 @@
 
 ### MSW Mock API Setup
 
-- [x] T022 Create `apps/notes-app/src/App/Mock/noteHandler.ts` with MSW handlers for GET /api/notes (with categoryId, keyword, sort query params) and GET /api/notes/:id — reads from centralized mockStore
-- [x] T023 [P] Create `apps/notes-app/src/App/Mock/categoryHandler.ts` with MSW handlers for GET /api/categories and GET /api/categories/:id/notes-count — reads from centralized mockStore
+- [x] T022 Create `apps/notes-app/src/Entities/Note/__Mock__/Handler.ts` with MSW handlers for GET /api/notes (with categoryId, keyword, sort query params) and GET /api/notes/:id. **[수정됨: GET 핸들러는 Entity __Mock__에 위치, custom-fsd-architecture.md Section 10 준수]**
+- [x] T023 [P] Create `apps/notes-app/src/Entities/Category/__Mock__/Handler.ts` with MSW handlers for GET /api/categories. **[수정됨: GET 핸들러는 Entity __Mock__에 위치, Section 10 준수]**
 - [x] T024 Create `apps/notes-app/src/App/Mock/browser.ts` combining all MSW handlers (note + category read/write handlers), initializing ServiceWorker. Centralized mockStore in App/Mock for cross-entity data access
 - [x] T025 Create `apps/notes-app/src/main.tsx` with async MSW initialization (dev mode only), then React app render
 
@@ -216,7 +216,7 @@
 
 ### Tests for User Story 4 (MANDATORY - TDD Required)
 
-- [ ] T056 [P] [US4] Unit test for NoteWrite edit mutation in `apps/notes-app/src/Features/NoteWrite/Api/Put.test.ts` — test updateNote PUT request format and response (Vitest + MSW server)
+- [x] T056 [P] [US4] Unit test for NoteWrite edit mutation in `apps/notes-app/src/Features/NoteWrite/Api/Put.test.ts` — test updateNote PUT request format and response (Vitest + MSW server)
 
 ### Implementation for User Story 4
 
@@ -358,7 +358,7 @@
 
 ### Tests for User Story 8 (MANDATORY - TDD Required)
 
-- [x] T087 [P] [US8] Unit test for SearchBar widget in `apps/notes-app/src/Widgets/SearchBar/Ui/SearchBar/SearchBar.test.tsx` — test input rendering, keyword change callback, clear functionality (Vitest + Testing Library)
+- [x] T087 [P] [US8] Unit test for NoteSearchInput widget in `apps/notes-app/src/Widgets/NoteSearch/Ui/NoteSearchInput/NoteSearchInput.test.tsx` — test input rendering, keyword change callback, clear functionality (Vitest + Testing Library). **[수정됨: SearchBar→NoteSearch (concern-based naming)]**
 
 ### Implementation for User Story 8
 
@@ -367,9 +367,9 @@
 - [x] T088 [P] [US8] Create `apps/notes-app/src/Features/NoteSearch/Type/NoteSearch.ts` with NoteSearchParams type. Create `apps/notes-app/src/Features/NoteSearch/index.ts` barrel export. **Note**: NoteSearch 검색어 공유는 useNoteSearchStore(Zustand)로 관리 (SearchBar Widget + useNoteListFilter 양쪽에서 접근)
 - [x] T089 [US8] Create `apps/notes-app/src/Entities/Note/Model/Store/SearchSlice.ts` + `useNoteStore.ts` (state-only). Create `apps/notes-app/src/Features/NoteSearch/Model/Logic/useNoteSearchLogic.ts` (setKeyword, clearKeyword via useNoteStore.setState). Create `apps/notes-app/src/Features/NoteSearch/Model/Hook/useNoteSearch.ts` with debounced search (inputValue with useState + debounce to useNoteSearchLogic). **[수정됨: 상태→Entities/Note, 로직→Features/Logic]**
 
-#### Widgets/SearchBar
+#### Widgets/NoteSearch
 
-- [x] T090 [US8] Create `apps/notes-app/src/Widgets/SearchBar/Model/Hook/useSearchKeyword.ts` consuming useNoteSearch for search state. Create `apps/notes-app/src/Widgets/SearchBar/Ui/SearchBar/SearchBar.tsx` + `index.ts` with search input field and clear button. Create `apps/notes-app/src/Widgets/SearchBar/index.ts` barrel export
+- [x] T090 [US8] Create `apps/notes-app/src/Widgets/NoteSearch/Model/Hook/useSearchKeyword.ts` consuming useNoteSearch for search state. Create `apps/notes-app/src/Widgets/NoteSearch/Ui/NoteSearchInput/NoteSearchInput.tsx` + `index.ts` with search input field and clear button. Create `apps/notes-app/src/Widgets/NoteSearch/index.ts` barrel export. **[수정됨: SearchBar→NoteSearch/NoteSearchInput]**
 
 #### NoteList Page Integration
 
@@ -395,14 +395,14 @@
 
 ### Tests for User Story 9 (MANDATORY - TDD Required)
 
-- [x] T094 [P] [US9] Unit test for Sidebar widget in `apps/notes-app/src/Widgets/Sidebar/Ui/Sidebar/Sidebar.test.tsx` — test menu items rendering, category list, navigation links, responsive toggle (Vitest + Testing Library)
+- [x] T094 [P] [US9] Unit test for CategorySidebar widget in `apps/notes-app/src/Widgets/CategorySidebar/Ui/CategorySidebar/CategorySidebar.test.tsx` — test menu items rendering, category list, navigation links, responsive toggle (Vitest + Testing Library). **[수정됨: Sidebar→CategorySidebar (concern-based naming)]**
 
 ### Implementation for User Story 9
 
-#### Widgets/Sidebar
+#### Widgets/CategorySidebar
 
-- [x] T095 [US9] Create `apps/notes-app/src/Widgets/Sidebar/Model/Hook/useSidebarState.ts` with sidebar open/close state (useState for single Widget scope)
-- [x] T096 [US9] Create `apps/notes-app/src/Widgets/Sidebar/Ui/Sidebar/Sidebar.tsx` + `index.ts` with navigation links (Home, Category Manage), category list with filter click (uses useCategoryList + useCategoryStore from Entities/Category for read, useCategoryFilterLogic from Features/CategoryFilter for write), responsive sidebar (desktop persistent, mobile overlay with toggle). Create `apps/notes-app/src/Widgets/Sidebar/index.ts` barrel export
+- [x] T095 [US9] Create `apps/notes-app/src/Widgets/CategorySidebar/Model/Hook/useSidebarState.ts` with sidebar open/close state (useState for single Widget scope)
+- [x] T096 [US9] Create `apps/notes-app/src/Widgets/CategorySidebar/Ui/CategorySidebar/CategorySidebar.tsx` + `index.ts` with navigation links (Home, Category Manage), category list with filter click (uses useCategoryList + useCategoryStore from Entities/Category for read, useCategoryFilterLogic from Features/CategoryFilter for write), responsive sidebar (desktop persistent, mobile overlay with toggle). Create `apps/notes-app/src/Widgets/CategorySidebar/index.ts` barrel export. **[수정됨: Sidebar→CategorySidebar]**
 
 #### App Layout Integration
 
