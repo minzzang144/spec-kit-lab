@@ -298,7 +298,7 @@
 
 #### Pages/CategoryManage
 
-- [ ] T076 [US6] Create `apps/notes-app/src/Pages/CategoryManage/Ui/CategoryManagePage/CategoryManagePage.tsx` + `index.ts` with category list (useCategories), create form (input + add button), delete button per category (disabled for isDefault, ConfirmDialog with notes count). Create `apps/notes-app/src/Pages/CategoryManage/index.ts` barrel export. Wire into AppRouter
+- [x] T076 [US6] Create `apps/notes-app/src/Pages/CategoryManage/Ui/CategoryManagePage/CategoryManagePage.tsx` + `index.ts` with category list (useCategories), create form (input + add button), delete button per category (disabled for isDefault, ConfirmDialog with notes count). Create `apps/notes-app/src/Pages/CategoryManage/index.ts` barrel export. Wire into AppRouter. DeleteCategoryAction Feature Ui handles confirm dialog.
 
 #### E2E Test (MANDATORY)
 
