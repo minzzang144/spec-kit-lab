@@ -516,6 +516,7 @@
 | Sub-component: sibling vs folder | T047 (NoteList.loading=sibling, NoteListItem=별도 폴더) | 자체 hook/외부 import 유무로 판단 |
 | Path alias (#/) | T002, T003 | tsconfig.json, vite.config.ts |
 | __Mock__ export forbidden | T016-T017, T022-T024 | index.ts files exclude __Mock__ |
+| Api 테스트 1:1 매핑 | T031, T056, T064, T071, T073 | Post.ts→Post.test.ts, Delete.ts→Delete.test.ts |
 
 ---
 

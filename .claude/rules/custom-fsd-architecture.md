@@ -1362,6 +1362,37 @@ Ui/ChatMessageItem/
 | 테스트 파일은 index.ts에서 export 안 함  | public API에 테스트 노출 금지                  |
 | `__Mock__` 직접 import 허용             | 테스트 파일에서만 예외적으로 허용               |
 
+### Api 세그먼트 테스트 파일 규칙
+
+**소스 파일 1:1 매핑**: `Post.ts` → `Post.test.ts`, `Delete.ts` → `Delete.test.ts`
+
+각 HTTP 함수 파일마다 독립적인 테스트 파일을 생성한다:
+
+```
+Api/
+├── Post.ts
+├── Post.test.ts      ← POST 핸들러만 등록
+├── Delete.ts
+├── Delete.test.ts    ← DELETE 핸들러만 등록
+├── Put.ts
+└── Put.test.ts       ← PUT 핸들러만 등록
+```
+
+**이유**:
+1. **격리성**: 각 파일이 자신에게 필요한 핸들러만 `setupServer`에 등록 → 다른 테스트의 핸들러와 충돌 없음
+2. **명확성**: 파일명만 보면 무엇을 테스트하는지 즉시 파악 가능
+3. **독립 실행**: Vitest는 파일별로 격리된 환경에서 실행하므로 `beforeAll/afterAll`이 파일마다 있어야 함
+
+**`beforeAll/afterAll/afterEach` 패턴**은 각 파일에서 반복된다. 핸들러 내용이 다르므로 공유가 어렵고, 명시적으로 두는 것이 가독성에 좋다:
+
+```typescript
+// 각 파일마다 이 패턴 반복 (격리 보장)
+const server = setupServer(/* 이 파일에서 필요한 핸들러만 */);
+beforeAll(() => server.listen());
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
+```
+
 ---
 
 ## 17. Quick Reference

@@ -95,3 +95,4 @@ MSW(Mock Service Worker)를 사용하여 백엔드 없이 동작합니다:
 12. **서브 컴포넌트 기준**: 자체 hook/외부 import 없음 → sibling, 있음 → 별도 폴더
 13. **Dialog/Dropdown 배치**: 관심사 1개 → Feature Ui 내부, 관심사 2개+ → Widget Ui 내부, 범용 → Shared/Ui
 14. **순수 UI 인터랙션**: Dialog 닫기·취소·스크롤 등 비즈니스 의미 없는 인터랙션은 컴포넌트 내부 로컬 상태 또는 Shared/Ui
+15. **Api 테스트 1:1 매핑**: `Post.ts → Post.test.ts`, `Delete.ts → Delete.test.ts` — 소스 파일마다 독립 테스트 파일, 필요한 핸들러만 등록
