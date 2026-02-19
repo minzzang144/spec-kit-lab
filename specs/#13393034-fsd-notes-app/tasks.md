@@ -373,7 +373,7 @@
 
 #### NoteList Page Integration
 
-- [ ] T091 [US8] Update `apps/notes-app/src/Pages/NoteList/Ui/NoteListPage/NoteListPage.tsx` to include SearchBar widget. Update `apps/notes-app/src/Widgets/NoteList/Model/Hook/useNoteListFilter.ts` to also read keyword from search state and pass to useNotes query params
+- [x] T091 [US8] Update `apps/notes-app/src/Pages/NoteList/Ui/NoteListPage/NoteListPage.tsx` to include SearchBar widget. Update `apps/notes-app/src/Widgets/NoteList/Model/Hook/useNoteListFilter.ts` to also read keyword from useNoteSearchStore and pass to useNotes query params
 
 #### E2E Test (MANDATORY)
 
