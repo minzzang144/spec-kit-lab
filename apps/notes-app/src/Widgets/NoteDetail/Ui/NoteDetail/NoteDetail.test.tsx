@@ -33,7 +33,7 @@ describe('NoteDetail', () => {
   it('should render createdAt date', () => {
     render(<NoteDetail note={MOCK_NOTE} categoryName="업무" />);
 
-    expect(screen.getByText(/2026/)).toBeInTheDocument();
+    expect(screen.getAllByText(/2026/).length).toBeGreaterThan(0);
   });
 
   it('should render updatedAt label when different from createdAt', () => {

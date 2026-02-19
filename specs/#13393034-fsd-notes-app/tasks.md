@@ -184,17 +184,17 @@
 
 ### Tests for User Story 3 (MANDATORY - TDD Required)
 
-- [ ] T051 [P] [US3] Unit test for NoteDetail widget in `apps/notes-app/src/Widgets/NoteDetail/Ui/NoteDetail/NoteDetail.test.tsx` — test rendering all note fields (title, content, category badge, dates). Edit/delete button tests are deferred to US4/US5 (Vitest + Testing Library)
+- [x] T051 [P] [US3] Unit test for NoteDetail widget in `apps/notes-app/src/Widgets/NoteDetail/Ui/NoteDetail/NoteDetail.test.tsx` — test rendering all note fields (title, content, category badge, dates). Edit/delete button tests are deferred to US4/US5 (Vitest + Testing Library)
 
 ### Implementation for User Story 3
 
 #### Widgets/NoteDetail
 
-- [ ] T052 [US3] Create `apps/notes-app/src/Widgets/NoteDetail/Ui/NoteDetail/NoteDetail.tsx` + `index.ts` composing Entity Ui (NoteContentPreview, NoteDate) + CategoryBadge for read-only note display (title, content, category badge, createdAt, updatedAt). Create `apps/notes-app/src/Widgets/NoteDetail/index.ts` barrel export. Note: 편집/삭제 버튼은 US4/US5에서 Feature Ui(자기완결적 단일 액션)로 추가
+- [x] T052 [US3] Create `apps/notes-app/src/Widgets/NoteDetail/Ui/NoteDetail/NoteDetail.tsx` + `index.ts` composing Entity Ui (NoteDate) + CategoryBadge for read-only note display (title, content, category badge, createdAt, updatedAt). Create `apps/notes-app/src/Widgets/NoteDetail/index.ts` barrel export. Note: 편집/삭제 버튼은 US4/US5에서 Feature Ui(자기완결적 단일 액션)로 추가
 
 #### Pages/NoteDetail
 
-- [ ] T053 [US3] Create `apps/notes-app/src/Pages/NoteDetail/Ui/NoteDetailPage/NoteDetailPage.tsx` + `index.ts` composing NoteDetail widget with useNote(id) hook, loading/error states. Create `apps/notes-app/src/Pages/NoteDetail/index.ts` barrel export. Wire into AppRouter
+- [x] T053 [US3] Create `apps/notes-app/src/Pages/NoteDetail/Ui/NoteDetailPage/NoteDetailPage.tsx` + `index.ts` composing NoteDetail widget with useNote(id) hook, loading/error states. Create `apps/notes-app/src/Pages/NoteDetail/index.ts` barrel export. Wire into AppRouter
 
 #### E2E Test (MANDATORY)
 
