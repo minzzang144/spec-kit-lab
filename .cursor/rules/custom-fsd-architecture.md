@@ -878,15 +878,56 @@ ComponentName/
 
 - 컴포넌트 전용 상수/유틸 → `.constant.ts`, `.util.ts` 파일로 분리
 - 슬라이스 전체에서 재사용 가능하면 → `Model` 세그먼트로 이동
-- **서브 컴포넌트 (TBD)**: 임시 규칙 - 같은 폴더에 sibling 파일로 배치
+
+### 서브 컴포넌트: Sibling vs 별도 폴더
+
+서브 컴포넌트의 배치는 **자체 로직 유무**로 결정한다:
+
+| 기준 | 배치 | 예시 |
+|------|------|------|
+| 자체 hook/외부 import **없음** (순수 UI 조각) | **Sibling** — 메인 컴포넌트 폴더 안에 파일로 배치 | `.loading.tsx`, `.constant.ts`, 시각적 파트 |
+| 자체 hook/외부 import **있음** (독립 로직) | **별도 폴더** — Ui 세그먼트 안에 독립 컴포넌트 폴더로 분리 | 네비게이션, 데이터 조합, 라우팅 포함 컴포넌트 |
+
+**Sibling 패턴** — 메인 컴포넌트의 부속물 (로직 없음):
 
 ```
 ChatMessageItem/
 ├── ChatMessageItem.tsx
-├── ChatMessageBubble.tsx          ← 서브 컴포넌트 (sibling)
-├── ChatMessageTimestamp.tsx       ← 서브 컴포넌트 (sibling)
+├── ChatMessageBubble.tsx          ← sibling (순수 렌더링 조각)
+├── ChatMessageTimestamp.tsx       ← sibling (순수 렌더링 조각)
 ├── ChatMessageItem.test.tsx
 └── index.ts
+```
+
+**별도 폴더 패턴** — 독립 컴포넌트 (자체 로직 있음):
+
+```
+Widgets/NoteList/Ui/
+├── NoteList/
+│   ├── NoteList.tsx               ← 데이터 fetch + 상태 분기
+│   ├── NoteList.loading.tsx       ← sibling (순수 스켈레톤, 로직 없음)
+│   ├── NoteList.test.tsx
+│   └── index.ts
+├── NoteListItem/                  ← 별도 폴더 (useNavigate + Entity Ui 조합)
+│   ├── NoteListItem.tsx
+│   └── index.ts
+├── NoteListEmpty/                 ← 별도 폴더 (Link + ROUTES 사용)
+│   ├── NoteListEmpty.tsx
+│   └── index.ts
+└── index.ts
+```
+
+**판단 기준 요약**:
+
+```
+Q: 서브 컴포넌트가 자체 hook(useState, useNavigate 등)을 사용?
+  → YES → 별도 폴더
+
+Q: 서브 컴포넌트가 외부 슬라이스를 import? (Entity, Feature 등)
+  → YES → 별도 폴더
+
+Q: 서브 컴포넌트가 순수하게 props → JSX만?
+  → YES → sibling 파일
 ```
 
 ### shadcn/ui 통합 패턴
