@@ -285,16 +285,16 @@
 
 ### Tests for User Story 6 (MANDATORY - TDD Required)
 
-- [ ] T071 [P] [US6] Unit test for CategoryWrite mutations in `apps/notes-app/src/Features/CategoryWrite/Api/Mutation.test.ts` — test createCategory POST and deleteCategory DELETE (Vitest + MSW server)
+- [x] T071 [P] [US6] Unit test for CategoryWrite mutations in `apps/notes-app/src/Features/CategoryWrite/Api/Mutation.test.ts` — test createCategory POST and deleteCategory DELETE (Vitest + MSW server)
 
 ### Implementation for User Story 6
 
 #### Features/CategoryWrite (하위 도메인 of Category)
 
-- [ ] T072 [P] [US6] Create `apps/notes-app/src/Features/CategoryWrite/Type/CategoryWrite.ts` with CreateCategoryRequest/Response types. Create `apps/notes-app/src/Features/CategoryWrite/index.ts` barrel export
-- [ ] T073 [US6] Create `apps/notes-app/src/Features/CategoryWrite/Api/Post.ts` with postCategory HTTP function, `apps/notes-app/src/Features/CategoryWrite/Api/Delete.ts` with deleteCategory HTTP function, `apps/notes-app/src/Features/CategoryWrite/Api/Key.ts` with categoryWriteMutationKey factory, and `apps/notes-app/src/Features/CategoryWrite/Api/Mutation.ts` with categoryWriteMutationOption factory (create + delete). Update barrel export
-- [ ] T074 [US6] Create `apps/notes-app/src/Features/CategoryWrite/__Mock__/categoryWriteHandlers.ts` with MSW handlers for POST /api/categories (validate unique name, generate id) and DELETE /api/categories/:id (reject default, move notes to uncategorized, return movedNotesCount). Update browser.ts
-- [ ] T075 [US6] Create `apps/notes-app/src/Features/CategoryWrite/Model/Hook/useCreateCategory.ts` and `apps/notes-app/src/Features/CategoryWrite/Model/Hook/useDeleteCategory.ts` with mutation hooks (invalidate categoryQueryKeys on success). Update barrel export
+- [x] T072 [P] [US6] Create `apps/notes-app/src/Features/CategoryWrite/Type/CategoryWrite.ts` with CreateCategoryRequest/Response types. Create `apps/notes-app/src/Features/CategoryWrite/index.ts` barrel export
+- [x] T073 [US6] Create `apps/notes-app/src/Features/CategoryWrite/Api/Post.ts` with postCategory HTTP function, `apps/notes-app/src/Features/CategoryWrite/Api/Delete.ts` with deleteCategory HTTP function, `apps/notes-app/src/Features/CategoryWrite/Api/Key.ts` with categoryWriteMutationKey factory, and `apps/notes-app/src/Features/CategoryWrite/Api/Mutation.ts` with categoryWriteMutationOption factory (create + delete). Update barrel export
+- [x] T074 [US6] MSW handlers already exist in `apps/notes-app/src/Features/CategoryWrite/__Mock__/Handler.ts` and browser.ts already imports them. No additional work needed.
+- [x] T075 [US6] Create `apps/notes-app/src/Features/CategoryWrite/Model/Hook/useCreateCategory.ts` and `apps/notes-app/src/Features/CategoryWrite/Model/Hook/useDeleteCategory.ts` with mutation hooks (invalidate categoryQueryKeys on success). Update barrel export
 
 #### Pages/CategoryManage
 
