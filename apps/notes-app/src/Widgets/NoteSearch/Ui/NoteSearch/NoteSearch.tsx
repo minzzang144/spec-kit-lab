@@ -1,7 +1,7 @@
 import { Input, Button } from '#/Shared/Ui';
 import { useSearchKeyword } from '../../Model';
 
-export function NoteSearchInput() {
+export function NoteSearch() {
   const { inputValue, handleInputChange, handleClear } = useSearchKeyword();
 
   return (
