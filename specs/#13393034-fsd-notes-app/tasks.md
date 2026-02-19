@@ -302,11 +302,11 @@
 
 #### E2E Test (MANDATORY)
 
-- [ ] T077 [US6] **E2E test** in `apps/notes-app/e2e/category-manage.spec.ts` — E2E-US6-001: create category → verify in list and note form select; E2E-US6-002: delete category with notes → verify notes moved to uncategorized (Playwright)
+- [x] T077 [US6] **E2E test** in `apps/notes-app/e2e/category-manage.spec.ts` — E2E-US6-001: create category → verify in list and note form select; E2E-US6-002: delete category with notes → verify notes moved to uncategorized (Playwright)
 
 #### Verification
 
-- [ ] T078 [US6] Run frontend verification: `pnpm run type-check && pnpm run lint && pnpm run test && pnpm run build`
+- [x] T078 [US6] Run frontend verification: `pnpm run type-check && pnpm run lint && pnpm run test && pnpm run build`
 
 **Checkpoint**: User Story 6 complete — category CRUD functional
 
