@@ -54,29 +54,52 @@
 ### Decision: TanStack Query for server state, Zustand for UI state
 
 ### Rationale
-- **Custom FSD 규칙 준수**:
+- **Custom FSD 규칙 준수** (`custom-fsd-architecture.md` Section 9):
   - Entities/Api: `queryOptions` factory (읽기)
   - Features/Api: `mutationOptions` factory (비즈니스 가치 있는 사용자 시나리오: CRUD, 필터, 검색, 네비게이션)
-  - Features/Model/Store: Zustand slices (UI 상태)
+  - **Entities/Model/Store**: Zustand 상태 선언 (state-only, setter 없음)
+  - **Features/Model/Logic**: Zustand 업데이트 로직 (setState 호출)
 - **서버 상태와 UI 상태의 명확한 분리**:
   - 서버 상태: 노트 목록, 카테고리 목록 → TanStack Query
-  - UI 상태: 사이드바 열림/닫힘, 선택된 카테고리 필터 → Zustand
+  - UI 상태: 선택된 카테고리 필터, 검색 키워드 → Zustand (Entities Store)
 
 ### Zustand 사용 범위
 | 상태 | 관리 방식 | 이유 |
 |---|---|---|
 | 노트 목록 데이터 | TanStack Query | 서버 상태 |
 | 카테고리 목록 데이터 | TanStack Query | 서버 상태 |
-| 선택된 카테고리 필터 | Zustand (FilterSlice) | 여러 Widget에서 공유하는 UI 상태 |
+| 선택된 카테고리 필터 | Zustand — `Entities/Category/Model/Store/useCategoryStore` | 여러 Widget에서 공유하는 UI 상태 |
+| 검색 키워드 | Zustand — `Entities/Note/Model/Store/useNoteStore` | SearchBar Widget + NoteList Widget이 공유 |
 | 사이드바 열림/닫힘 | useState (Widget 내부) | 단일 컴포넌트 상태 |
-| 검색 키워드 | useState (Widget 내부) | 단일 컴포넌트 상태 → URL query param으로 관리 가능 |
 | 노트 폼 데이터 | React Hook Form | 폼 상태 |
 
-### Zustand Store 설계 (Custom FSD slices pattern)
+### Zustand Store 설계 (Custom FSD Section 9 준수)
+
+**상태 선언 (Entities)**:
 ```
-Features/CategoryFilter/Model/Store/
-├── FilterSlice.ts        ← 슬라이스 정의
-└── useCategoryFilterStore.ts  ← 슬라이스 조합, store 생성 (use{Domain}Store 규칙)
+Entities/Category/Model/Store/
+├── FilterSlice.ts        ← 상태 타입 + createFilterSlice (setter 없음)
+└── useCategoryStore.ts   ← create() 조합 (use{Domain}Store 규칙)
+
+Entities/Note/Model/Store/
+├── SearchSlice.ts        ← 상태 타입 + createSearchSlice (setter 없음)
+└── useNoteStore.ts       ← create() 조합
+```
+
+**업데이트 로직 (Features)**:
+```
+Features/CategoryFilter/Model/Logic/
+└── useCategoryFilterLogic.ts  ← setSelectedCategoryId (useCategoryStore.setState 호출)
+
+Features/NoteSearch/Model/Logic/
+└── useNoteSearchLogic.ts      ← setKeyword, clearKeyword (useNoteStore.setState 호출)
+```
+
+**소비 패턴**:
+```typescript
+// Widget에서
+const selected = useCategoryStore((s) => s.selectedCategoryId); // Entities (읽기)
+const { setSelectedCategoryId } = useCategoryFilterLogic();      // Features (쓰기)
 ```
 
 ---

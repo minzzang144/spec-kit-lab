@@ -320,23 +320,23 @@
 
 ### Tests for User Story 7 (MANDATORY - TDD Required)
 
-- [x] T079 [P] [US7] Unit test for FilterSlice and useCategoryFilterStore in `apps/notes-app/src/Features/CategoryFilter/Model/Store/useCategoryFilterStore.test.ts` — test initial state (selectedCategoryId = 'all'), setSelectedCategoryId action (Vitest)
+- [x] T079 [P] [US7] Unit test for useCategoryStore in `apps/notes-app/src/Entities/Category/Model/Store/useCategoryStore.test.ts` — test initial state (selectedCategoryId = ALL_CATEGORY_ID), setState (Vitest). **[수정됨: Store는 Entities에 위치, custom-fsd-architecture.md Section 9 준수]**
 
 ### Implementation for User Story 7
 
-#### Features/CategoryFilter (하위 도메인 of Category, Zustand)
+#### Entities/Category (상태 선언) + Features/CategoryFilter (업데이트 로직)
 
 - [x] T080 [P] [US7] Create `apps/notes-app/src/Features/CategoryFilter/Type/CategoryFilter.ts` with FilterState type. Create `apps/notes-app/src/Features/CategoryFilter/index.ts` barrel export
-- [x] T081 [US7] Create `apps/notes-app/src/Features/CategoryFilter/Model/Store/FilterSlice.ts` with FilterSlice type and createFilterSlice (selectedCategoryId state + setSelectedCategoryId action). Create `apps/notes-app/src/Features/CategoryFilter/Model/Store/useCategoryFilterStore.ts` combining slices with Zustand create(). Update barrel export
-- [x] T082 [US7] ~~useCategoryFilter hook 삭제~~ (YAGNI: 실제 사용처 없음. isAllSelected는 필요한 곳에서 인라인 계산. 컴포넌트는 useCategoryFilterStore 직접 사용)
+- [x] T081 [US7] Create `apps/notes-app/src/Entities/Category/Model/Store/FilterSlice.ts` with FilterSlice type and createFilterSlice (state-only, setter 없음). Create `apps/notes-app/src/Entities/Category/Model/Store/useCategoryStore.ts`. Create `apps/notes-app/src/Features/CategoryFilter/Model/Logic/useCategoryFilterLogic.ts` (setSelectedCategoryId via useCategoryStore.setState). **[수정됨: 상태→Entities, 로직→Features/Logic]**
+- [x] T082 [US7] ~~useCategoryFilter hook 삭제~~ (YAGNI: 실제 사용처 없음. isAllSelected는 필요한 곳에서 인라인 계산. 컴포넌트는 useCategoryStore 직접 사용)
 
 #### Widgets/CategoryFilter
 
-- [x] T083 [US7] Create `apps/notes-app/src/Widgets/CategoryFilter/Ui/CategoryFilter/CategoryFilter.tsx` + `index.ts` rendering category tabs/buttons (using useCategoryList + useCategoryFilterStore directly), highlighting active filter. Create `apps/notes-app/src/Widgets/CategoryFilter/index.ts` barrel export
+- [x] T083 [US7] Create `apps/notes-app/src/Widgets/CategoryFilter/Ui/CategoryFilter/CategoryFilter.tsx` + `index.ts` rendering category tabs/buttons (using useCategoryList + useCategoryStore for read, useCategoryFilterLogic for write), highlighting active filter. Create `apps/notes-app/src/Widgets/CategoryFilter/index.ts` barrel export
 
 #### NoteList Page Integration
 
-- [x] T084 [US7] Update `apps/notes-app/src/Pages/NoteList/Ui/NoteListPage/NoteListPage.tsx` to include CategoryFilter widget above NoteList. Update `apps/notes-app/src/Widgets/NoteList/Model/Hook/useNoteListFilter.ts` to read selectedCategoryId from useCategoryFilterStore and pass to useNotes query params
+- [x] T084 [US7] Update `apps/notes-app/src/Pages/NoteList/Ui/NoteListPage/NoteListPage.tsx` to include CategoryFilter widget above NoteList. Update `apps/notes-app/src/Widgets/NoteList/Model/Hook/useNoteListFilter.ts` to read selectedCategoryId from useCategoryStore (Entities) and pass to useNotes query params
 
 #### E2E Test (MANDATORY)
 
@@ -365,7 +365,7 @@
 #### Features/NoteSearch
 
 - [x] T088 [P] [US8] Create `apps/notes-app/src/Features/NoteSearch/Type/NoteSearch.ts` with NoteSearchParams type. Create `apps/notes-app/src/Features/NoteSearch/index.ts` barrel export. **Note**: NoteSearch 검색어 공유는 useNoteSearchStore(Zustand)로 관리 (SearchBar Widget + useNoteListFilter 양쪽에서 접근)
-- [x] T089 [US8] Create `apps/notes-app/src/Features/NoteSearch/Model/Hook/useNoteSearch.ts` with debounced search keyword state management (inputValue with useState + debounce to useNoteSearchStore via setTimeout). Create `apps/notes-app/src/Features/NoteSearch/Model/Store/SearchSlice.ts` + `useNoteSearchStore.ts`. Update barrel export
+- [x] T089 [US8] Create `apps/notes-app/src/Entities/Note/Model/Store/SearchSlice.ts` + `useNoteStore.ts` (state-only). Create `apps/notes-app/src/Features/NoteSearch/Model/Logic/useNoteSearchLogic.ts` (setKeyword, clearKeyword via useNoteStore.setState). Create `apps/notes-app/src/Features/NoteSearch/Model/Hook/useNoteSearch.ts` with debounced search (inputValue with useState + debounce to useNoteSearchLogic). **[수정됨: 상태→Entities/Note, 로직→Features/Logic]**
 
 #### Widgets/SearchBar
 
@@ -373,7 +373,7 @@
 
 #### NoteList Page Integration
 
-- [x] T091 [US8] Update `apps/notes-app/src/Pages/NoteList/Ui/NoteListPage/NoteListPage.tsx` to include SearchBar widget. Update `apps/notes-app/src/Widgets/NoteList/Model/Hook/useNoteListFilter.ts` to also read keyword from useNoteSearchStore and pass to useNotes query params
+- [x] T091 [US8] Update `apps/notes-app/src/Pages/NoteList/Ui/NoteListPage/NoteListPage.tsx` to include SearchBar widget. Update `apps/notes-app/src/Widgets/NoteList/Model/Hook/useNoteListFilter.ts` to also read keyword from useNoteStore (Entities/Note) and pass to useNotes query params
 
 #### E2E Test (MANDATORY)
 
@@ -402,7 +402,7 @@
 #### Widgets/Sidebar
 
 - [x] T095 [US9] Create `apps/notes-app/src/Widgets/Sidebar/Model/Hook/useSidebarState.ts` with sidebar open/close state (useState for single Widget scope)
-- [x] T096 [US9] Create `apps/notes-app/src/Widgets/Sidebar/Ui/Sidebar/Sidebar.tsx` + `index.ts` with navigation links (Home, Category Manage), category list with filter click (uses useCategoryList + useCategoryFilterStore from Features/CategoryFilter), responsive sidebar (desktop persistent, mobile overlay with toggle). Create `apps/notes-app/src/Widgets/Sidebar/index.ts` barrel export
+- [x] T096 [US9] Create `apps/notes-app/src/Widgets/Sidebar/Ui/Sidebar/Sidebar.tsx` + `index.ts` with navigation links (Home, Category Manage), category list with filter click (uses useCategoryList + useCategoryStore from Entities/Category for read, useCategoryFilterLogic from Features/CategoryFilter for write), responsive sidebar (desktop persistent, mobile overlay with toggle). Create `apps/notes-app/src/Widgets/Sidebar/index.ts` barrel export
 
 #### App Layout Integration
 
@@ -502,12 +502,13 @@
 | Domain layers (slice→segment) | T013-T021, T033-T036 | Entities/*, Features/* |
 | Parent/child sub-domains | T033-T036 (NoteWrite create), T057-T060 (NoteWrite edit addition), T065-T067 (NoteDelete), T072-T075 (CategoryWrite), T080-T082 (CategoryFilter) | Features/NoteWrite→Entities/Note, Features/CategoryFilter→Entities/Category |
 | Segment types (__Mock__, Api, Config, Model, Type, Ui) | T013-T023 | Entities/Note has ALL 6 segments |
-| 1-level segment grouping | T020, T036, T081 | Model/Hook/, Model/Store/ |
+| 1-level segment grouping | T020, T036, T081 | Model/Hook/, Model/Store/, Model/Logic/ |
 | Public API (index.ts) | Every slice creation task | All index.ts files |
 | Import rules (relative/absolute) | Every implementation task | `#/Entities/Note` vs `../../Type/Note` |
 | TanStack Query (queryOptions in Entities) | T018-T021 | Entities/*/Api/Query.ts |
 | TanStack Query (mutationOptions in Features) | T034, T058, T065, T073 | Features/*/Api/Mutation.ts |
-| Zustand slices pattern | T081 | Features/CategoryFilter/Model/Store/ |
+| Zustand 상태 선언 → Entities/Model/Store | T081, T089 | Entities/Category/Model/Store/useCategoryStore, Entities/Note/Model/Store/useNoteStore |
+| Zustand 업데이트 로직 → Features/Model/Logic | T081, T089 | Features/CategoryFilter/Model/Logic/useCategoryFilterLogic, Features/NoteSearch/Model/Logic/useNoteSearchLogic |
 | File naming (PascalCase dirs, camelCase hooks) | All tasks | Directory names vs hook filenames |
 | UI component structure | T044-T046, T052, T083, T096 | ComponentName/ + ComponentName.tsx + index.ts |
 | Entity Ui purity (순수 표시만) | T044 (NoteContentPreview, NoteDate) | 단일 도메인, onClick/라우팅/다른 도메인 금지 |
