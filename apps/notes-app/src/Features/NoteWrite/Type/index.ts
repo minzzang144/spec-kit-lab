@@ -1,1 +1,1 @@
-export type { CreateNoteRequest, CreateNoteResponse } from './NoteWrite';
+export type { CreateNoteRequest, CreateNoteResponse, UpdateNoteRequest, UpdateNoteResponse } from './NoteWrite';

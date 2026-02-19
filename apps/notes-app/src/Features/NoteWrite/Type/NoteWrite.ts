@@ -7,3 +7,11 @@ export type CreateNoteRequest = {
 };
 
 export type CreateNoteResponse = Note;
+
+export type UpdateNoteRequest = {
+  readonly title?: string;
+  readonly content?: string;
+  readonly categoryId?: string;
+};
+
+export type UpdateNoteResponse = Note;

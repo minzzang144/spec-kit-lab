@@ -222,10 +222,10 @@
 
 #### Features/NoteWrite (Edit 기능 추가)
 
-- [ ] T057 [P] [US4] Add UpdateNoteRequest and UpdateNoteResponse types to `apps/notes-app/src/Features/NoteWrite/Type/NoteWrite.ts`. Update barrel export
-- [ ] T058 [US4] Create `apps/notes-app/src/Features/NoteWrite/Api/Put.ts` with putNote HTTP function. Add edit entries to existing `apps/notes-app/src/Features/NoteWrite/Api/Key.ts` (noteWriteMutationKey) and `apps/notes-app/src/Features/NoteWrite/Api/Mutation.ts` (noteWriteMutationOption). Update barrel export
-- [ ] T059 [US4] Create MSW handler for PUT /api/notes/:id in `apps/notes-app/src/Entities/Note/__Mock__/noteHandlers.ts` (add to existing handlers — validate, update in-memory store, update updatedAt). Update `apps/notes-app/src/App/Mock/browser.ts` if needed
-- [ ] T060 [US4] Create `apps/notes-app/src/Features/NoteWrite/Model/Hook/useUpdateNote.ts` with mutation hook (uses noteWriteMutationOption, invalidates noteQueryKeys on success). Update barrel export
+- [x] T057 [P] [US4] Add UpdateNoteRequest and UpdateNoteResponse types to `apps/notes-app/src/Features/NoteWrite/Type/NoteWrite.ts`. Update barrel export
+- [x] T058 [US4] Create `apps/notes-app/src/Features/NoteWrite/Api/Put.ts` with putNote HTTP function. Add edit entries to existing `apps/notes-app/src/Features/NoteWrite/Api/Key.ts` (noteWriteMutationKey) and `apps/notes-app/src/Features/NoteWrite/Api/Mutation.ts` (noteWriteMutationOption). Update barrel export
+- [x] T059 [US4] PUT /api/notes/:id handler already exists in `apps/notes-app/src/Features/NoteWrite/__Mock__/Handler.ts` from Phase 2 foundation setup. No additional work needed.
+- [x] T060 [US4] Create `apps/notes-app/src/Features/NoteWrite/Model/Hook/useUpdateNote.ts` with mutation hook (uses noteWriteMutationOption, invalidates noteQueryKeys on success). Update barrel export
 
 #### NoteDetail Edit Mode Integration
 

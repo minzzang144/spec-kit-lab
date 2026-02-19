@@ -1,3 +1,3 @@
-export type { CreateNoteRequest, CreateNoteResponse } from './Type';
-export { postNote, noteWriteMutationKey, noteWriteMutationOption } from './Api';
-export { useCreateNote } from './Model';
+export type { CreateNoteRequest, CreateNoteResponse, UpdateNoteRequest, UpdateNoteResponse } from './Type';
+export { postNote, putNote, noteWriteMutationKey, noteWriteMutationOption } from './Api';
+export { useCreateNote, useUpdateNote } from './Model';
