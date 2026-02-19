@@ -251,15 +251,15 @@
 
 ### Tests for User Story 5 (MANDATORY - TDD Required)
 
-- [ ] T064 [P] [US5] Unit test for NoteDelete mutation in `apps/notes-app/src/Features/NoteDelete/Api/Delete.test.ts` — test deleteNote DELETE request and response (Vitest + MSW server)
+- [x] T064 [P] [US5] Unit test for NoteDelete mutation in `apps/notes-app/src/Features/NoteDelete/Api/Delete.test.ts` — test deleteNote DELETE request and response (Vitest + MSW server)
 
 ### Implementation for User Story 5
 
 #### Features/NoteDelete (하위 도메인 of Note)
 
-- [ ] T065 [P] [US5] Create `apps/notes-app/src/Features/NoteDelete/Api/Delete.ts` with deleteNote HTTP function, `apps/notes-app/src/Features/NoteDelete/Api/Key.ts` with noteDeleteMutationKey factory, and `apps/notes-app/src/Features/NoteDelete/Api/Mutation.ts` with noteDeleteMutationOption factory. Create `apps/notes-app/src/Features/NoteDelete/index.ts` barrel export
-- [ ] T066 [US5] Create MSW handler for DELETE /api/notes/:id in `apps/notes-app/src/Entities/Note/__Mock__/noteHandlers.ts` (add to existing handlers — remove from in-memory store). Update browser.ts if needed
-- [ ] T067 [US5] Create `apps/notes-app/src/Features/NoteDelete/Model/Hook/useDeleteNote.ts` with mutation hook (uses noteDeleteMutationOptions, invalidates noteQueryKeys on success, navigates to home). Update barrel export
+- [x] T065 [P] [US5] Create `apps/notes-app/src/Features/NoteDelete/Api/Delete.ts` with deleteNote HTTP function, `apps/notes-app/src/Features/NoteDelete/Api/Key.ts` with noteDeleteMutationKey factory, and `apps/notes-app/src/Features/NoteDelete/Api/Mutation.ts` with noteDeleteMutationOption factory. Create `apps/notes-app/src/Features/NoteDelete/index.ts` barrel export
+- [x] T066 [US5] DELETE /api/notes/:id handler already exists in `apps/notes-app/src/Features/NoteWrite/__Mock__/Handler.ts` from Phase 2. No additional work needed.
+- [x] T067 [US5] Create `apps/notes-app/src/Features/NoteDelete/Model/Hook/useDeleteNote.ts` with mutation hook (uses noteDeleteMutationOptions, invalidates noteQueryKeys on success, navigates to home). Update barrel export
 
 #### NoteDetail Delete Integration
 

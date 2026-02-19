@@ -23,10 +23,8 @@ afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
 describe('deleteNote', () => {
-  it('should send DELETE request and return success message', async () => {
-    const result = await deleteNote('note-1');
-
-    expect(result).toEqual({ message: '노트가 삭제되었습니다.' });
+  it('should send DELETE request without error', async () => {
+    await expect(deleteNote('note-1')).resolves.toBeUndefined();
   });
 
   it('should throw error when note not found', async () => {
