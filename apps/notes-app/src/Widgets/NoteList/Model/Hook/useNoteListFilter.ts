@@ -1,11 +1,11 @@
 import { useNoteList } from '#/Entities/Note';
-import { useCategoryFilterStore } from '#/Features/CategoryFilter';
-import { useNoteSearchStore } from '#/Features/NoteSearch';
+import { useCategoryStore } from '#/Entities/Category';
+import { useNoteStore } from '#/Entities/Note';
 import { ALL_CATEGORY_ID } from '#/Entities/Category';
 
 export function useNoteListFilter() {
-  const selectedCategoryId = useCategoryFilterStore((s) => s.selectedCategoryId);
-  const keyword = useNoteSearchStore((s) => s.keyword);
+  const selectedCategoryId = useCategoryStore((s) => s.selectedCategoryId);
+  const keyword = useNoteStore((s) => s.keyword);
 
   const categoryId = selectedCategoryId === ALL_CATEGORY_ID
     ? undefined

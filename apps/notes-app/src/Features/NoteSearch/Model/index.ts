@@ -1,2 +1,2 @@
 export { useNoteSearch } from './Hook';
-export { useNoteSearchStore } from './Store';
+export { useNoteSearchLogic } from './Logic';

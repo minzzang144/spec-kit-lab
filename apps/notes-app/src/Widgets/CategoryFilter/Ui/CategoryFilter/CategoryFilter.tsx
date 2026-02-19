@@ -1,11 +1,11 @@
-import { useCategoryList, ALL_CATEGORY_ID } from '#/Entities/Category';
-import { useCategoryFilterStore } from '#/Features/CategoryFilter';
+import { useCategoryList, ALL_CATEGORY_ID, useCategoryStore } from '#/Entities/Category';
+import { useCategoryFilterLogic } from '#/Features/CategoryFilter';
 import { Button } from '#/Shared/Ui';
 
 export function CategoryFilter() {
   const { data: categoryList } = useCategoryList();
-  const selectedCategoryId = useCategoryFilterStore((s) => s.selectedCategoryId);
-  const setSelectedCategoryId = useCategoryFilterStore((s) => s.setSelectedCategoryId);
+  const selectedCategoryId = useCategoryStore((s) => s.selectedCategoryId);
+  const { setSelectedCategoryId } = useCategoryFilterLogic();
 
   return (
     <div className="flex flex-wrap gap-2">

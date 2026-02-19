@@ -1,9 +1,8 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { useNoteSearchStore } from '../Store';
+import { useNoteSearchLogic } from '../Logic';
 
 export function useNoteSearch() {
-  const setKeyword = useNoteSearchStore((s) => s.setKeyword);
-  const clearKeyword = useNoteSearchStore((s) => s.clearKeyword);
+  const { setKeyword, clearKeyword } = useNoteSearchLogic();
   const [inputValue, setInputValue] = useState('');
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 

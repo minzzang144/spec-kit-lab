@@ -5,5 +5,5 @@ export {
   UNCATEGORIZED_CATEGORY_ID,
 } from './Config';
 export { getCategoryList, categoryQueryKey, categoryQueryOption } from './Api';
-export { useCategoryList } from './Model';
+export { useCategoryList, useCategoryStore } from './Model';
 export { CategoryBadge } from './Ui';

@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router';
 import { useCategoryList, ALL_CATEGORY_ID } from '#/Entities/Category';
-import { useCategoryFilterStore } from '#/Features/CategoryFilter';
+import { useCategoryFilterLogic } from '#/Features/CategoryFilter';
 import { ROUTES } from '#/Shared/Config';
 import { Button } from '#/Shared/Ui';
 import { useSidebarState } from '../../Model';
@@ -8,9 +8,7 @@ import { useSidebarState } from '../../Model';
 export function Sidebar() {
   const { isOpen, open, close } = useSidebarState();
   const { data: categoryList } = useCategoryList();
-  const setSelectedCategoryId = useCategoryFilterStore(
-    (s) => s.setSelectedCategoryId,
-  );
+  const { setSelectedCategoryId } = useCategoryFilterLogic();
   const navigate = useNavigate();
 
   function handleCategoryClick(categoryId: string) {

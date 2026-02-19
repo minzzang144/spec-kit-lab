@@ -1,11 +1,11 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, test, expect, beforeEach } from 'vitest';
 import { SearchBar } from './SearchBar';
-import { useNoteSearchStore } from '#/Features/NoteSearch';
+import { useNoteStore } from '#/Entities/Note';
 
 describe('SearchBar', () => {
   beforeEach(() => {
-    useNoteSearchStore.getState().clearKeyword();
+    useNoteStore.setState({ keyword: '' });
   });
 
   test('검색 입력창을 렌더링한다', () => {
