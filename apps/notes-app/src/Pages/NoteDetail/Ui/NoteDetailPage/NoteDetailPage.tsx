@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { useNote } from '#/Entities/Note';
+import type { Note } from '#/Entities/Note';
 import { useCategoryList } from '#/Entities/Category';
 import { useUpdateNote } from '#/Features/NoteWrite';
 import { DeleteNoteAction } from '#/Features/NoteDelete';
@@ -10,6 +11,27 @@ import type { NoteFormData } from '#/Widgets/NoteWrite';
 import { ROUTES } from '#/Shared/Config';
 import { Button } from '#/Shared/Ui';
 
+type NoteEditSectionProps = {
+  readonly note: Note;
+  readonly onSave: (data: NoteFormData) => void;
+  readonly onCancel: () => void;
+  readonly isSubmitting: boolean;
+};
+
+// note가 확실히 로드된 후에만 마운트 → useNoteForm defaultValues 정상 동작
+function NoteEditSection({ note, onSave, onCancel, isSubmitting }: NoteEditSectionProps) {
+  const form = useNoteForm({ existingNote: note });
+  return (
+    <NoteWrite
+      form={form}
+      onSubmit={onSave}
+      onCancel={onCancel}
+      isSubmitting={isSubmitting}
+      submitLabel="저장"
+    />
+  );
+}
+
 export function NoteDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -18,18 +40,6 @@ export function NoteDetailPage() {
   const { data: note, isLoading, isError } = useNote(id ?? '');
   const { data: categoryList } = useCategoryList();
   const updateNote = useUpdateNote(id ?? '');
-  const form = useNoteForm({ existingNote: note });
-
-  // note 데이터가 로드된 후 form 값을 동기화 (RHF defaultValues는 첫 렌더에만 적용됨)
-  useEffect(() => {
-    if (note) {
-      form.reset({
-        title: note.title,
-        content: note.content ?? '',
-        categoryId: note.categoryId,
-      });
-    }
-  }, [note?.id]);
 
   if (isLoading) {
     return (
@@ -80,12 +90,11 @@ export function NoteDetailPage() {
       </div>
 
       {isEditMode ? (
-        <NoteWrite
-          form={form}
-          onSubmit={handleSave}
+        <NoteEditSection
+          note={note}
+          onSave={handleSave}
           onCancel={() => setIsEditMode(false)}
           isSubmitting={updateNote.isPending}
-          submitLabel="저장"
         />
       ) : (
         <NoteDetail note={note} categoryName={categoryName} />
