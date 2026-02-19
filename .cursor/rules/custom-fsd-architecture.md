@@ -43,9 +43,9 @@
 ├─────────────────────────────────┤
 │          Widgets                │  ← 독립적 UI 블록 조합
 ├─────────────────────────────────┤
-│         Features                │  ← 사용자 시나리오 (쓰기 액션)
+│         Features                │  ← 사용자 액션 (mutation, 필터, 검색, 상태 변경)
 ├─────────────────────────────────┤
-│         Entities                │  ← 비즈니스 엔티티 (읽기 중심)
+│         Entities                │  ← 비즈니스 엔티티 (순수 표시, 읽기 전용)
 ├─────────────────────────────────┤
 │          Shared                 │  ← 공유 유틸, UI 킷, 설정
 └─────────────────────────────────┘
@@ -219,9 +219,36 @@ Domain 레이어 슬라이스 내 세그먼트 종류:
 | `Config`     | 상수 모음                                                     |
 | `Model`      | hook, util, lib, 비즈니스 로직(상태관리, 소켓 등), Zustand store/logic |
 | `Type`       | TypeScript 타입/인터페이스                                     |
-| `Ui`         | React 컴포넌트                                                |
+| `Ui`         | React 컴포넌트 (레이어별 Ui 규칙 참조)                         |
 
 **확장**: 팀 논의를 통해 세그먼트를 추가할 수 있다. 모든 슬라이스에 모든 세그먼트가 필수는 아니며, 필요한 세그먼트만 생성한다.
+
+### Ui 세그먼트 레이어별 규칙
+
+| 레이어 | Ui 컴포넌트 역할 | 허용 | 금지 |
+|--------|----------------|------|------|
+| **Entities** | 단일 도메인 데이터의 **순수 표시** | 도메인 데이터 → 렌더링만 | onClick/onSubmit 등 인터랙션 props, 다른 도메인 정보, 라우팅(Link, useNavigate) |
+| **Features** | 사용자 액션의 **자기완결적 컴포넌트** | 버튼형 단일 액션 (SendButton, DeleteButton) | children 래퍼, 범용 조합 컴포넌트 |
+| **Widgets** | Entity Ui + Feature를 **조합/래핑** | 여러 Entity/Feature 조합, 래퍼, 네비게이션, children | - |
+| **Pages** | Widget을 **페이지 단위로 배치** | 여러 Widget 조합, 레이아웃 | 비즈니스 로직 직접 구현 |
+
+**Entity Ui 순수성 원칙**:
+- Entity Ui는 **단일 도메인의 단일 정보만** 표시한다
+- 예: `CategoryBadge`(카테고리 이름 뱃지), `NoteContentPreview`(노트 본문 미리보기), `NoteDate`(날짜 포맷팅)
+- 여러 도메인 정보를 조합하는 "카드" 형태는 Entity가 아닌 **Widget**의 책임
+
+**Feature Ui vs Widget Ui 판단 기준**:
+
+```
+Q: 컴포넌트가 자기완결적이고 단일 액션을 수행?
+  → YES → Feature Ui (예: SendButton, DeleteButton)
+
+Q: 컴포넌트가 children을 받아 래핑/조합?
+  → YES → Widget Ui (예: NoteList, CategoryFilter dropdown)
+
+Q: 컴포넌트가 여러 Entity/Feature를 조합?
+  → YES → Widget Ui
+```
 
 **App 전용 세그먼트**: App 레이어는 위 6종 외에 `Style`(글로벌 CSS), `Provider`(Context Provider), `Router`(라우팅), `Mock`(MSW 설정) 등 앱 초기화 전용 슬라이스를 사용할 수 있다.
 

@@ -1,5 +1,4 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
@@ -55,12 +54,29 @@ function renderWithProvider(ui: React.ReactElement) {
 }
 
 describe('NoteList', () => {
-  it('should render note cards after loading', async () => {
+  it('should render note titles after loading', async () => {
     renderWithProvider(<NoteList />);
 
     await waitFor(() => {
       expect(screen.getByText('최신 노트')).toBeInTheDocument();
       expect(screen.getByText('이전 노트')).toBeInTheDocument();
+    });
+  });
+
+  it('should render category badge for each note', async () => {
+    renderWithProvider(<NoteList />);
+
+    await waitFor(() => {
+      expect(screen.getByText('업무')).toBeInTheDocument();
+      expect(screen.getByText('미분류')).toBeInTheDocument();
+    });
+  });
+
+  it('should render formatted date for each note', async () => {
+    renderWithProvider(<NoteList />);
+
+    await waitFor(() => {
+      expect(screen.getAllByText(/2026/).length).toBeGreaterThan(0);
     });
   });
 
@@ -77,16 +93,16 @@ describe('NoteList', () => {
     });
   });
 
-  it('should render CTA button in empty state', async () => {
+  it('should render CTA link in empty state', async () => {
     server.use(
       http.get('/api/notes', () => HttpResponse.json({ data: [] })),
     );
     renderWithProvider(<NoteList />);
 
     await waitFor(() => {
-      expect(
-        screen.getByRole('link', { name: '첫 노트 작성하기' }),
-      ).toBeInTheDocument();
+      const ctaLink = screen.getByRole('link', { name: '첫 노트 작성하기' });
+      expect(ctaLink).toBeInTheDocument();
+      expect(ctaLink).toHaveAttribute('href', '/notes/new');
     });
   });
 
@@ -96,20 +112,12 @@ describe('NoteList', () => {
     expect(document.querySelectorAll('[data-testid="note-card-skeleton"]').length).toBeGreaterThan(0);
   });
 
-  it('should navigate to note write on CTA click', async () => {
-    server.use(
-      http.get('/api/notes', () => HttpResponse.json({ data: [] })),
-    );
-    const user = userEvent.setup();
+  it('should render note items as clickable articles', async () => {
     renderWithProvider(<NoteList />);
 
     await waitFor(() => {
-      expect(screen.getByRole('link', { name: '첫 노트 작성하기' })).toBeInTheDocument();
+      const articleList = screen.getAllByRole('article');
+      expect(articleList.length).toBe(2);
     });
-
-    const ctaLink = screen.getByRole('link', { name: '첫 노트 작성하기' });
-    expect(ctaLink).toHaveAttribute('href', '/notes/new');
-
-    await user.click(ctaLink);
   });
 });

@@ -1,7 +1,7 @@
 import { Link } from 'react-router';
 import { ROUTES } from '#/Shared/Config';
 
-export function EmptyNoteState() {
+export function NoteListEmpty() {
   return (
     <div className="flex flex-col items-center gap-4 py-16 text-center text-muted-foreground">
       <p className="text-lg">아직 작성된 노트가 없습니다</p>

@@ -1,2 +1,1 @@
 export { NoteContentPreview } from './NoteContentPreview';
-export { NoteDate } from './NoteDate';
