@@ -332,11 +332,11 @@
 
 #### Widgets/CategoryFilter
 
-- [ ] T083 [US7] Create `apps/notes-app/src/Widgets/CategoryFilter/Ui/CategoryFilter/CategoryFilter.tsx` + `index.ts` rendering category tabs/buttons (using useCategories + useCategoryFilter), highlighting active filter. Create `apps/notes-app/src/Widgets/CategoryFilter/index.ts` barrel export
+- [x] T083 [US7] Create `apps/notes-app/src/Widgets/CategoryFilter/Ui/CategoryFilter/CategoryFilter.tsx` + `index.ts` rendering category tabs/buttons (using useCategories + useCategoryFilter), highlighting active filter. Create `apps/notes-app/src/Widgets/CategoryFilter/index.ts` barrel export
 
 #### NoteList Page Integration
 
-- [ ] T084 [US7] Update `apps/notes-app/src/Pages/NoteList/Ui/NoteListPage/NoteListPage.tsx` to include CategoryFilter widget above NoteList. Update `apps/notes-app/src/Widgets/NoteList/Model/Hook/useNoteListFilter.ts` to read selectedCategoryId from useFilterStore and pass to useNotes query params
+- [x] T084 [US7] Update `apps/notes-app/src/Pages/NoteList/Ui/NoteListPage/NoteListPage.tsx` to include CategoryFilter widget above NoteList. Update `apps/notes-app/src/Widgets/NoteList/Model/Hook/useNoteListFilter.ts` to read selectedCategoryId from useFilterStore and pass to useNotes query params
 
 #### E2E Test (MANDATORY)
 

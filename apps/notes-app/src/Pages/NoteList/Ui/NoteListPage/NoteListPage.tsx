@@ -1,5 +1,6 @@
 import { Link } from 'react-router';
 import { NoteList } from '#/Widgets/NoteList';
+import { CategoryFilter } from '#/Widgets/CategoryFilter';
 import { ROUTES } from '#/Shared/Config';
 import { Button } from '#/Shared/Ui';
 
@@ -11,6 +12,9 @@ export function NoteListPage() {
         <Button asChild>
           <Link to={ROUTES.NOTE_WRITE}>새 노트 작성</Link>
         </Button>
+      </div>
+      <div className="mb-4">
+        <CategoryFilter />
       </div>
       <NoteList />
     </div>

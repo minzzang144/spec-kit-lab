@@ -1,11 +1,11 @@
-import { useNoteList } from '#/Entities/Note';
 import { useCategoryList } from '#/Entities/Category';
+import { useNoteListFilter } from '../../Model';
 import { NoteListLoading } from './NoteList.loading';
 import { NoteListEmpty } from '../NoteListEmpty';
 import { NoteListItem } from '../NoteListItem';
 
 export function NoteList() {
-  const { data: noteList, isLoading } = useNoteList();
+  const { data: noteList, isLoading } = useNoteListFilter();
   const { data: categoryList } = useCategoryList();
 
   if (isLoading) {
