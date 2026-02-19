@@ -915,10 +915,32 @@ ComponentName/
 | 상황 | 훅 생성? | 이유 |
 |------|----------|------|
 | 여러 소스를 조합해 **새로운 derived state/로직**이 나올 때 | ✅ | `useNoteListFilter = useFilterStore + useNoteList → 필터 적용 결과` |
-| 이미 **실제로 여러 곳에서 쓰이고 있어서** 공통 추출이 필요할 때 | ✅ | 현재 중복이 확인된 시점에 추출 |
+| 이미 **실제로 여러 곳에서 쓰이고 있어서** 공통 추출이 필요할 때 | ✅ | 현재 중복이 확인된 시점에 추출 (미래 예측 금지) |
 | **컴포넌트 파일이 너무 커져서** 로직 분리가 필요할 때 | ✅ | `Component.hook.ts` 파일로 이동 (재사용 목적 아님) |
 | 미래의 재사용을 **예상해서** 미리 추상화할 때 | ❌ YAGNI | "나중에 쓸 것 같아서" 만든 훅은 대부분 사용되지 않음 |
 | store 값을 **그대로 re-export**할 때 | ❌ | indirection만 추가, 직접 import가 더 명확 |
+| **반환값이 훅 이름과 범위가 불일치**할 때 | ❌ 훅 이름 재검토 | `useCategoryFilter`가 `categoryList`를 반환 → 이름 불일치 |
+
+**훅 반환값 기준**:
+
+훅이 반환하는 값은 훅 이름이 암시하는 범위와 일치해야 한다.
+
+```typescript
+// ❌ 이름 불일치: "카테고리 필터"인데 카테고리 목록도 반환
+function useCategoryFilter() {
+  const { data: categoryList } = useCategoryList(); // 범위 벗어남
+  return { categoryList, selectedCategoryId };
+}
+
+// ✅ 이름 일치: 필터 상태만 반환
+function useCategoryFilter() {
+  const selectedCategoryId = useCategoryFilterStore((s) => s.selectedCategoryId);
+  const setSelectedCategoryId = useCategoryFilterStore((s) => s.setSelectedCategoryId);
+  const isAllSelected = selectedCategoryId === ALL_CATEGORY_ID; // derived state
+  return { selectedCategoryId, setSelectedCategoryId, isAllSelected };
+}
+// 카테고리 목록이 필요하면 컴포넌트에서 useCategoryList()를 별도로 호출
+```
 
 **`Component.hook.ts` 파일 패턴**:
 
@@ -1292,6 +1314,15 @@ BEFORE creating/modifying a file:
   IF depth > Layer/Slice/Segment/Group/File (5 levels):
     STOP
     EXPLAIN: "세그먼트 내 1단계 그룹핑만 허용됩니다"
+
+  IF file_name matches pattern use*Store.ts:
+    domain = extract from slice directory name (e.g. CategoryFilter → categoryFilter)
+    IF file_name does NOT contain domain:
+      STOP
+      EXPLAIN: "Store 파일명에 도메인 이름이 없습니다"
+      SUGGEST: "use{Domain}Store.ts 형식 사용 (예: useCategoryFilterStore.ts)"
+      NOTE: "슬라이스 경로에 이미 도메인이 있어도 파일명에 반드시 포함해야 합니다"
+            "이유: 파일명만 보고 어느 도메인 store인지 알 수 있어야 합니다"
 ```
 
 ### Check 2: Import 방향
