@@ -1,4 +1,4 @@
-import { NoteDate } from '#/Entities/Note';
+import { NoteDate, NoteContent } from '#/Entities/Note';
 import type { Note } from '#/Entities/Note';
 import { CategoryBadge } from '#/Entities/Category';
 import { formatDate } from '#/Shared/Model';
@@ -25,9 +25,10 @@ export function NoteDetail({ note, categoryName }: NoteDetailProps) {
           )}
         </div>
       </div>
-      <p className="min-h-32 whitespace-pre-wrap leading-relaxed">
-        {note.content}
-      </p>
+      <NoteContent
+        content={note.content}
+        className="min-h-32 whitespace-pre-wrap leading-relaxed"
+      />
     </article>
   );
 }
