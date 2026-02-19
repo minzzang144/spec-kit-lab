@@ -340,11 +340,11 @@
 
 #### E2E Test (MANDATORY)
 
-- [ ] T085 [US7] **E2E test** in `apps/notes-app/e2e/category-filter.spec.ts` — E2E-US7-001: select category filter → verify only matching notes shown; select "전체" → all notes shown; select empty category → empty state shown (Playwright)
+- [x] T085 [US7] **E2E test** in `apps/notes-app/e2e/category-filter.spec.ts` — E2E-US7-001: select category filter → verify only matching notes shown; select "전체" → all notes shown; select empty category → empty state shown (Playwright)
 
 #### Verification
 
-- [ ] T086 [US7] Run frontend verification: `pnpm run type-check && pnpm run lint && pnpm run test && pnpm run build`
+- [x] T086 [US7] Run frontend verification: `pnpm run type-check && pnpm run lint && pnpm run test && pnpm run build`
 
 **Checkpoint**: User Story 7 complete — category filtering functional with Zustand state
 
