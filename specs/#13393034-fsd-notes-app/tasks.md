@@ -395,18 +395,18 @@
 
 ### Tests for User Story 9 (MANDATORY - TDD Required)
 
-- [ ] T094 [P] [US9] Unit test for Sidebar widget in `apps/notes-app/src/Widgets/Sidebar/Ui/Sidebar/Sidebar.test.tsx` — test menu items rendering, category list, navigation links, responsive toggle (Vitest + Testing Library)
+- [x] T094 [P] [US9] Unit test for Sidebar widget in `apps/notes-app/src/Widgets/Sidebar/Ui/Sidebar/Sidebar.test.tsx` — test menu items rendering, category list, navigation links, responsive toggle (Vitest + Testing Library)
 
 ### Implementation for User Story 9
 
 #### Widgets/Sidebar
 
-- [ ] T095 [US9] Create `apps/notes-app/src/Widgets/Sidebar/Model/Hook/useSidebarState.ts` with sidebar open/close state (useState for single Widget scope)
-- [ ] T096 [US9] Create `apps/notes-app/src/Widgets/Sidebar/Ui/Sidebar/Sidebar.tsx` + `index.ts` with navigation links (Home, Category Manage), category list with filter click (uses useCategoryList + useCategoryFilterStore from Features/CategoryFilter), responsive sidebar (desktop persistent, mobile overlay with toggle). Create `apps/notes-app/src/Widgets/Sidebar/index.ts` barrel export
+- [x] T095 [US9] Create `apps/notes-app/src/Widgets/Sidebar/Model/Hook/useSidebarState.ts` with sidebar open/close state (useState for single Widget scope)
+- [x] T096 [US9] Create `apps/notes-app/src/Widgets/Sidebar/Ui/Sidebar/Sidebar.tsx` + `index.ts` with navigation links (Home, Category Manage), category list with filter click (uses useCategoryList + useCategoryFilterStore from Features/CategoryFilter), responsive sidebar (desktop persistent, mobile overlay with toggle). Create `apps/notes-app/src/Widgets/Sidebar/index.ts` barrel export
 
 #### App Layout Integration
 
-- [ ] T097 [US9] Create layout wrapper in `apps/notes-app/src/App/Router/AppLayout.tsx` composing Sidebar widget with main content area (React Router Outlet). Update AppRouter to use this layout for all routes
+- [x] T097 [US9] Create layout wrapper in `apps/notes-app/src/App/Router/AppLayout.tsx` composing Sidebar widget with main content area (React Router Outlet). Update AppRouter to use this layout for all routes
 
 #### E2E Test (MANDATORY)
 
