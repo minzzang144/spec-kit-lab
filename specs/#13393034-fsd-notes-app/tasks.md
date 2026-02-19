@@ -229,7 +229,7 @@
 
 #### NoteDetail Edit Mode Integration
 
-- [ ] T061 [US4] Update `apps/notes-app/src/Pages/NoteDetail/Ui/NoteDetailPage/NoteDetailPage.tsx` to integrate edit mode toggle — reuse NoteWrite widget with existing note data pre-filled, useUpdateNote hook for save
+- [x] T061 [US4] Update `apps/notes-app/src/Pages/NoteDetail/Ui/NoteDetailPage/NoteDetailPage.tsx` to integrate edit mode toggle — reuse NoteWrite widget with existing note data pre-filled, useUpdateNote hook for save
 
 #### E2E Test (MANDATORY)
 

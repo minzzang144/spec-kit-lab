@@ -1,15 +1,23 @@
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { useNote } from '#/Entities/Note';
 import { useCategoryList } from '#/Entities/Category';
+import { useUpdateNote } from '#/Features/NoteWrite';
 import { NoteDetail } from '#/Widgets/NoteDetail';
+import { NoteWrite, useNoteForm } from '#/Widgets/NoteWrite';
+import type { NoteFormData } from '#/Widgets/NoteWrite';
 import { ROUTES } from '#/Shared/Config';
 import { Button } from '#/Shared/Ui';
 
 export function NoteDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [isEditMode, setIsEditMode] = useState(false);
+
   const { data: note, isLoading, isError } = useNote(id ?? '');
   const { data: categoryList } = useCategoryList();
+  const updateNote = useUpdateNote(id ?? '');
+  const form = useNoteForm({ existingNote: note });
 
   if (isLoading) {
     return (
@@ -33,14 +41,35 @@ export function NoteDetailPage() {
   const categoryName =
     categoryList?.find((c) => c.id === note.categoryId)?.name ?? '미분류';
 
+  function handleSave(data: NoteFormData) {
+    updateNote.mutate(data, {
+      onSuccess: () => setIsEditMode(false),
+    });
+  }
+
   return (
     <div className="mx-auto max-w-2xl p-6">
-      <div className="mb-6">
+      <div className="mb-6 flex items-center justify-between">
         <Button variant="ghost" size="sm" onClick={() => navigate(ROUTES.HOME)}>
           ← 목록으로
         </Button>
+        {!isEditMode && (
+          <Button variant="outline" size="sm" onClick={() => setIsEditMode(true)}>
+            편집
+          </Button>
+        )}
       </div>
-      <NoteDetail note={note} categoryName={categoryName} />
+      {isEditMode ? (
+        <NoteWrite
+          form={form}
+          onSubmit={handleSave}
+          onCancel={() => setIsEditMode(false)}
+          isSubmitting={updateNote.isPending}
+          submitLabel="저장"
+        />
+      ) : (
+        <NoteDetail note={note} categoryName={categoryName} />
+      )}
     </div>
   );
 }
