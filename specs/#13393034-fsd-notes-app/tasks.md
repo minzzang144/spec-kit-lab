@@ -233,11 +233,11 @@
 
 #### E2E Test (MANDATORY)
 
-- [ ] T062 [US4] **E2E test** in `apps/notes-app/e2e/note-edit.spec.ts` — E2E-US4-001: navigate to detail → edit title → save → verify title updated in detail and list (Playwright)
+- [x] T062 [US4] **E2E test** in `apps/notes-app/e2e/note-edit.spec.ts` — E2E-US4-001: navigate to detail → edit title → save → verify title updated in detail and list (Playwright)
 
 #### Verification
 
-- [ ] T063 [US4] Run frontend verification: `pnpm run type-check && pnpm run lint && pnpm run test && pnpm run build`
+- [x] T063 [US4] Run frontend verification: `pnpm run type-check && pnpm run lint && pnpm run test && pnpm run build`
 
 **Checkpoint**: User Story 4 complete — notes can be edited with changes reflected
 
