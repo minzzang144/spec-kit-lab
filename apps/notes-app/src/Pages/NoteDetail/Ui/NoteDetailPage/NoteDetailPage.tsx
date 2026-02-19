@@ -3,31 +3,21 @@ import { useParams, useNavigate } from 'react-router';
 import { useNote } from '#/Entities/Note';
 import { useCategoryList } from '#/Entities/Category';
 import { useUpdateNote } from '#/Features/NoteWrite';
-import { useDeleteNote } from '#/Features/NoteDelete';
+import { DeleteNoteButton } from '#/Features/NoteDelete';
 import { NoteDetail } from '#/Widgets/NoteDetail';
 import { NoteWrite, useNoteForm } from '#/Widgets/NoteWrite';
 import type { NoteFormData } from '#/Widgets/NoteWrite';
 import { ROUTES } from '#/Shared/Config';
-import {
-  Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '#/Shared/Ui';
+import { Button } from '#/Shared/Ui';
 
 export function NoteDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [isEditMode, setIsEditMode] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const { data: note, isLoading, isError } = useNote(id ?? '');
   const { data: categoryList } = useCategoryList();
   const updateNote = useUpdateNote(id ?? '');
-  const deleteNote = useDeleteNote(id ?? '');
   const form = useNoteForm({ existingNote: note });
 
   if (isLoading) {
@@ -58,10 +48,6 @@ export function NoteDetailPage() {
     });
   }
 
-  function handleDeleteConfirm() {
-    deleteNote.mutate();
-  }
-
   return (
     <div className="mx-auto max-w-2xl p-6">
       <div className="mb-6 flex items-center justify-between">
@@ -77,13 +63,7 @@ export function NoteDetailPage() {
             >
               편집
             </Button>
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => setIsDeleteDialogOpen(true)}
-            >
-              삭제
-            </Button>
+            <DeleteNoteButton noteId={id ?? ''} />
           </div>
         )}
       </div>
@@ -99,32 +79,6 @@ export function NoteDetailPage() {
       ) : (
         <NoteDetail note={note} categoryName={categoryName} />
       )}
-
-      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>노트 삭제</DialogTitle>
-            <DialogDescription>
-              이 노트를 삭제하시겠습니까? 삭제된 노트는 복구할 수 없습니다.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setIsDeleteDialogOpen(false)}
-            >
-              취소
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDeleteConfirm}
-              disabled={deleteNote.isPending}
-            >
-              {deleteNote.isPending ? '삭제 중...' : '삭제'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
