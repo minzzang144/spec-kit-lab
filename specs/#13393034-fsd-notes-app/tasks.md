@@ -263,7 +263,7 @@
 
 #### NoteDetail Delete Integration
 
-- [ ] T068 [US5] Update `apps/notes-app/src/Widgets/NoteDetail/Ui/NoteDetail/NoteDetail.tsx` to wire delete button → ConfirmDialog ("이 노트를 삭제하시겠습니까?") → useDeleteNote hook on confirm
+- [x] T068 [US5] Add delete button + ConfirmDialog to `apps/notes-app/src/Pages/NoteDetail/Ui/NoteDetailPage/NoteDetailPage.tsx` (NoteDetail widget stays pure display; delete button = Page-level responsibility with Dialog wrapper)
 
 #### E2E Test (MANDATORY)
 
