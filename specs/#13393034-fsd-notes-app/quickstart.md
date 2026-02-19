@@ -89,3 +89,7 @@ MSW(Mock Service Worker)를 사용하여 백엔드 없이 동작합니다:
 6. **Zustand**: slices pattern, Features/Model/Store
 7. **파일 네이밍**: PascalCase 디렉토리, camelCase hooks
 8. **UI 컴포넌트 구조**: ComponentName/ 폴더 + index.ts
+9. **Entity Ui 순수성**: 단일 도메인의 순수 표시만 (onClick/라우팅/다른 도메인 금지)
+10. **Feature Ui 자기완결성**: 단일 액션 컴포넌트만 (children 래퍼 금지 → Widget으로)
+11. **Widget Ui 조합/래핑**: Entity Ui + Feature를 조합, 네비게이션 처리
+12. **서브 컴포넌트 기준**: 자체 hook/외부 import 없음 → sibling, 있음 → 별도 폴더

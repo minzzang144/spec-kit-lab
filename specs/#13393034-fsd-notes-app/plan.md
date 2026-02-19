@@ -264,7 +264,7 @@ apps/notes-app/
     │       │   └── index.ts
     │       └── index.ts
     │
-    ├── Features/                # Domain layer: user write actions
+    ├── Features/                # Domain layer: user actions (mutations, filters, searches, state changes)
     │   ├── NoteWrite/           # 하위 도메인 (Note의 서브도메인) — create + edit 통합
     │   │   ├── __Mock__/
     │   │   │   ├── Handler.ts       # POST /api/notes + PUT /api/notes/:id 핸들러
@@ -370,12 +370,11 @@ apps/notes-app/
     │   │   │   ├── Note.ts
     │   │   │   └── index.ts
     │   │   ├── Ui/
-    │   │   │   ├── NoteCard/
-    │   │   │   │   ├── NoteCard.tsx
-    │   │   │   │   ├── NoteCard.test.tsx
+    │   │   │   ├── NoteContentPreview/   # 순수 표시: note.content 미리보기
+    │   │   │   │   ├── NoteContentPreview.tsx
     │   │   │   │   └── index.ts
-    │   │   │   ├── EmptyNoteState/
-    │   │   │   │   ├── EmptyNoteState.tsx
+    │   │   │   ├── NoteDate/             # 순수 표시: note.createdAt 포맷팅
+    │   │   │   │   ├── NoteDate.tsx
     │   │   │   │   └── index.ts
     │   │   │   └── index.ts
     │   │   └── index.ts
@@ -465,7 +464,10 @@ apps/notes-app/
 | Zustand slices pattern | Features/CategoryFilter/Model/Store/FilterSlice+useFilterStore | 여러 Widget에서 공유 상태 |
 | 파일 네이밍 (PascalCase/camelCase) | 디렉토리 PascalCase, Hook camelCase, Slice PascalCase | 전체 파일 구조 |
 | No-plurals 네이밍 | useNoteList (not useNotes), useCategoryList (not useCategories) | 복수형 접미사 금지 |
-| UI 컴포넌트 구조 | NoteCard/, SearchBar/ 등 | ComponentName.tsx + index.ts |
+| UI 컴포넌트 구조 | NoteContentPreview/, SearchBar/ 등 | ComponentName.tsx + index.ts (sibling vs 별도 폴더 기준 적용) |
+| Entity Ui 순수성 | NoteContentPreview, NoteDate (순수 표시만) | onClick/라우팅/다른 도메인 금지 |
+| Feature Ui 자기완결성 | SendButton, DeleteButton | 단일 액션, children 래퍼 금지 |
+| Widget Ui 조합/래핑 | NoteList (Entity Ui + Feature 조합) | 네비게이션, 래퍼 컴포넌트 |
 | shadcn/ui Shadcn/ 그룹 | Shared/Ui/Shadcn/ (소문자 파일, barrel 없음); Shared/Model/Shadcn/Utils.ts | CLI 생성 파일 예외 |
 | Path Alias (#/) | tsconfig.json paths: `#/*` → `src/*` | 빌드 검증 |
 

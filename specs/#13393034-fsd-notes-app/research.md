@@ -56,7 +56,7 @@
 ### Rationale
 - **Custom FSD 규칙 준수**:
   - Entities/Api: `queryOptions` factory (읽기)
-  - Features/Api: `mutationOptions` factory (쓰기)
+  - Features/Api: `mutationOptions` factory (사용자 액션: mutation, 필터, 검색, 상태 변경)
   - Features/Model/Store: Zustand slices (UI 상태)
 - **서버 상태와 UI 상태의 명확한 분리**:
   - 서버 상태: 노트 목록, 카테고리 목록 → TanStack Query
@@ -163,15 +163,15 @@ export const httpClient = {
 
 ## R7: Custom FSD 서브도메인 설계
 
-### Decision: Note와 Category를 각각 상위 도메인으로, 쓰기/필터 기능을 하위 도메인으로 분리
+### Decision: Note와 Category를 각각 상위 도메인으로, 사용자 액션을 하위 도메인으로 분리
 
 ### Rationale
 - **Note 도메인**:
-  - `Entities/Note` (상위): 공통 타입, 읽기 API, UI 컴포넌트
+  - `Entities/Note` (상위): 공통 타입, 읽기 API, 순수 표시 Ui (NoteContentPreview, NoteDate — onClick/다른 도메인 금지)
   - `Features/NoteWrite` (하위): 노트 생성 + 수정 mutation (create + edit = Write 관심사)
   - `Features/NoteDelete` (하위): 노트 삭제 mutation
 - **Category 도메인**:
-  - `Entities/Category` (상위): 공통 타입, 읽기 API, UI 컴포넌트
+  - `Entities/Category` (상위): 공통 타입, 읽기 API, 순수 표시 Ui (CategoryBadge)
   - `Features/CategoryWrite` (하위): 카테고리 생성/삭제 mutation
   - `Features/CategoryFilter` (하위): 필터 상태 관리 (Zustand)
 

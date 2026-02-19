@@ -142,15 +142,15 @@
 
 ### Tests for User Story 2 (MANDATORY - TDD Required)
 
-- [x] T042 [P] [US2] Unit test for NoteCard component in `apps/notes-app/src/Entities/Note/Ui/NoteCard/NoteCard.test.tsx` — test rendering title, category badge, date, click handler (Vitest + Testing Library)
-- [x] T043 [P] [US2] Unit test for NoteList widget in `apps/notes-app/src/Widgets/NoteList/Ui/NoteList/NoteList.test.tsx` — test list rendering, loading state, empty state with CTA button (Vitest + Testing Library)
+- [x] T042 [P] [US2] ~~Unit test for NoteCard~~ → NoteList widget 테스트에 통합: title, category badge, date 렌더링 테스트 포함 (Entity Ui 순수성 리팩토링으로 NoteCard 삭제)
+- [x] T043 [P] [US2] Unit test for NoteList widget in `apps/notes-app/src/Widgets/NoteList/Ui/NoteList/NoteList.test.tsx` — test list rendering, category badge, date, loading state, empty state with CTA (Vitest + Testing Library)
 
 ### Implementation for User Story 2
 
 #### Entities/Note/Ui
 
-- [x] T044 [P] [US2] Create `apps/notes-app/src/Entities/Note/Ui/NoteCard/NoteCard.tsx` + `index.ts` displaying note title, category badge (using CategoryBadge), formatted createdAt, onClick navigation. Update Entities/Note barrel export
-- [x] T045 [P] [US2] Create `apps/notes-app/src/Entities/Note/Ui/EmptyNoteState/EmptyNoteState.tsx` + `index.ts` with "아직 작성된 노트가 없습니다" message and "첫 노트 작성하기" CTA button. Update barrel export
+- [x] T044 [P] [US2] Create `apps/notes-app/src/Entities/Note/Ui/NoteContentPreview/` (순수 표시: note.content) + `apps/notes-app/src/Entities/Note/Ui/NoteDate/` (순수 표시: note.createdAt 포맷팅). Update Entities/Note barrel export. (Entity Ui 순수성 원칙: onClick/다른 도메인 금지)
+- [x] T045 [P] [US2] Create `apps/notes-app/src/Widgets/NoteList/Ui/NoteListEmpty/NoteListEmpty.tsx` + `index.ts` with "아직 작성된 노트가 없습니다" message and "첫 노트 작성하기" CTA button. (Widget 내부: 라우팅 포함이므로 Entity가 아닌 Widget 책임)
 
 #### Entities/Category/Ui
 
@@ -158,7 +158,7 @@
 
 #### Widgets/NoteList
 
-- [x] T047 [US2] Create `apps/notes-app/src/Widgets/NoteList/Ui/NoteList/NoteList.tsx` + `NoteList.loading.tsx` + `index.ts` composing useNotes hook, rendering NoteCard list (sorted by createdAt desc) with loading skeleton and EmptyNoteState. Create `apps/notes-app/src/Widgets/NoteList/index.ts` barrel export
+- [x] T047 [US2] Create `apps/notes-app/src/Widgets/NoteList/Ui/NoteList/NoteList.tsx` + `NoteList.loading.tsx` (sibling) + `apps/notes-app/src/Widgets/NoteList/Ui/NoteListItem/NoteListItem.tsx` (별도 폴더: useNavigate + Entity Ui 조합) composing useNoteList + useCategoryList, rendering sorted list with loading skeleton and NoteListEmpty. Create barrel export chain
 
 #### Pages/NoteList
 
@@ -184,13 +184,13 @@
 
 ### Tests for User Story 3 (MANDATORY - TDD Required)
 
-- [ ] T051 [P] [US3] Unit test for NoteDetail widget in `apps/notes-app/src/Widgets/NoteDetail/Ui/NoteDetail/NoteDetail.test.tsx` — test rendering all note fields, edit/delete button presence (Vitest + Testing Library)
+- [ ] T051 [P] [US3] Unit test for NoteDetail widget in `apps/notes-app/src/Widgets/NoteDetail/Ui/NoteDetail/NoteDetail.test.tsx` — test rendering all note fields (title, content, category badge, dates). Edit/delete button tests are deferred to US4/US5 (Vitest + Testing Library)
 
 ### Implementation for User Story 3
 
 #### Widgets/NoteDetail
 
-- [ ] T052 [US3] Create `apps/notes-app/src/Widgets/NoteDetail/Ui/NoteDetail/NoteDetail.tsx` + `index.ts` displaying note title, content, category badge, createdAt, updatedAt, with "편집" and "삭제" action buttons. Create `apps/notes-app/src/Widgets/NoteDetail/index.ts` barrel export
+- [ ] T052 [US3] Create `apps/notes-app/src/Widgets/NoteDetail/Ui/NoteDetail/NoteDetail.tsx` + `index.ts` composing Entity Ui (NoteContentPreview, NoteDate) + CategoryBadge for read-only note display (title, content, category badge, createdAt, updatedAt). Create `apps/notes-app/src/Widgets/NoteDetail/index.ts` barrel export. Note: 편집/삭제 버튼은 US4/US5에서 Feature Ui(자기완결적 단일 액션)로 추가
 
 #### Pages/NoteDetail
 
@@ -510,6 +510,10 @@
 | Zustand slices pattern | T081 | Features/CategoryFilter/Model/Store/ |
 | File naming (PascalCase dirs, camelCase hooks) | All tasks | Directory names vs hook filenames |
 | UI component structure | T044-T046, T052, T083, T096 | ComponentName/ + ComponentName.tsx + index.ts |
+| Entity Ui purity (순수 표시만) | T044 (NoteContentPreview, NoteDate) | 단일 도메인, onClick/라우팅/다른 도메인 금지 |
+| Feature Ui self-contained (자기완결적) | T036 (useCreateNote), US4-US5 (edit/delete buttons) | 단일 액션, children 래퍼 금지 |
+| Widget Ui composition (조합/래핑) | T047 (NoteList), T052 (NoteDetail) | Entity Ui + Feature 조합, 네비게이션 |
+| Sub-component: sibling vs folder | T047 (NoteList.loading=sibling, NoteListItem=별도 폴더) | 자체 hook/외부 import 유무로 판단 |
 | Path alias (#/) | T002, T003 | tsconfig.json, vite.config.ts |
 | __Mock__ export forbidden | T016-T017, T022-T024 | index.ts files exclude __Mock__ |
 
