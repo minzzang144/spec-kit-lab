@@ -1,8 +1,8 @@
+import { useNoteSearch } from '#/Features/NoteSearch';
 import { Input, Button } from '#/Shared/Ui';
-import { useSearchKeyword } from '../../Model';
 
 export function NoteSearch() {
-  const { inputValue, handleInputChange, handleClear } = useSearchKeyword();
+  const { inputValue, handleInputChange, handleClear } = useNoteSearch();
 
   return (
     <div className="relative flex items-center">
