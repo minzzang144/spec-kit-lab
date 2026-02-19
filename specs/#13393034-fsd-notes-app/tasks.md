@@ -198,11 +198,11 @@
 
 #### E2E Test (MANDATORY)
 
-- [ ] T054 [US3] **E2E test** in `apps/notes-app/e2e/note-view.spec.ts` — E2E-US3-001: click note from list → verify detail screen shows all fields (Playwright)
+- [x] T054 [US3] **E2E test** in `apps/notes-app/e2e/note-view.spec.ts` — E2E-US3-001: click note from list → verify detail screen shows all fields (Playwright)
 
 #### Verification
 
-- [ ] T055 [US3] Run frontend verification: `pnpm run type-check && pnpm run lint && pnpm run test && pnpm run build`
+- [x] T055 [US3] Run frontend verification: `pnpm run type-check && pnpm run lint && pnpm run test && pnpm run build`
 
 **Checkpoint**: User Story 3 complete — full note detail view functional
 
