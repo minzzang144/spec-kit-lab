@@ -5,7 +5,7 @@ import { ROUTES } from '#/Shared/Config';
 import { Button } from '#/Shared/Ui';
 import { useSidebarState } from '../../Model';
 
-export function Sidebar() {
+export function CategorySidebar() {
   const { isOpen, open, close } = useSidebarState();
   const { data: categoryList } = useCategoryList();
   const { setSelectedCategoryId } = useCategoryFilterLogic();

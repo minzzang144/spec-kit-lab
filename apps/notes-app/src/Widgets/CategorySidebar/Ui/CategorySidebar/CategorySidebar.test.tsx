@@ -4,7 +4,7 @@ import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { MemoryRouter } from 'react-router';
 import { afterAll, afterEach, beforeAll, describe, expect, test } from 'vitest';
-import { Sidebar } from './Sidebar';
+import { CategorySidebar } from './CategorySidebar';
 
 const MOCK_CATEGORY_LIST = [
   { id: 'uncategorized', name: '미분류', isDefault: true },
@@ -30,13 +30,13 @@ function renderSidebar() {
   return render(
     <MemoryRouter>
       <QueryClientProvider client={queryClient}>
-        <Sidebar />
+        <CategorySidebar />
       </QueryClientProvider>
     </MemoryRouter>,
   );
 }
 
-describe('Sidebar', () => {
+describe('CategorySidebar', () => {
   test('네비게이션 링크를 렌더링한다', () => {
     renderSidebar();
 

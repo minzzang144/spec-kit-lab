@@ -1,7 +1,7 @@
 import { Link } from 'react-router';
 import { NoteList } from '#/Widgets/NoteList';
 import { CategoryFilter } from '#/Widgets/CategoryFilter';
-import { SearchBar } from '#/Widgets/SearchBar';
+import { NoteSearchInput } from '#/Widgets/NoteSearch';
 import { ROUTES } from '#/Shared/Config';
 import { Button } from '#/Shared/Ui';
 
@@ -15,7 +15,7 @@ export function NoteListPage() {
         </Button>
       </div>
       <div className="mb-3">
-        <SearchBar />
+        <NoteSearchInput />
       </div>
       <div className="mb-4">
         <CategoryFilter />
