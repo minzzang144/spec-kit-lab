@@ -377,11 +377,11 @@
 
 #### E2E Test (MANDATORY)
 
-- [ ] T092 [US8] **E2E test** in `apps/notes-app/e2e/note-search.spec.ts` — E2E-US8-001: type keyword → matching notes shown; clear keyword → all notes restored; no match → empty state (Playwright)
+- [x] T092 [US8] **E2E test** in `apps/notes-app/e2e/note-search.spec.ts` — E2E-US8-001: type keyword → matching notes shown; clear keyword → all notes restored; no match → empty state (Playwright)
 
 #### Verification
 
-- [ ] T093 [US8] Run frontend verification: `pnpm run type-check && pnpm run lint && pnpm run test && pnpm run build`
+- [x] T093 [US8] Run frontend verification: `pnpm run type-check && pnpm run lint && pnpm run test && pnpm run build`
 
 **Checkpoint**: User Story 8 complete — search functional
 
