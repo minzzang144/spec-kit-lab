@@ -2,9 +2,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import type { Note } from '#/Entities/Note';
-
-const NOTE_TITLE_MAX_LENGTH = 100;
-const NOTE_CONTENT_MAX_LENGTH = 50_000;
+import { NOTE_TITLE_MAX_LENGTH, NOTE_CONTENT_MAX_LENGTH } from '#/Entities/Note';
 
 export const noteFormSchema = z.object({
   title: z

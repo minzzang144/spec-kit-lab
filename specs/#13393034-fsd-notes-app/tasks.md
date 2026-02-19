@@ -447,10 +447,10 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T104 [P] Add loading states and error boundaries to all pages — wrap with Suspense + ErrorBoundary from Shared/Ui
-- [ ] T105 [P] Accessibility audit: verify all interactive elements have proper ARIA labels, keyboard navigation works across all pages (WCAG 2.1 AA)
-- [ ] T106 [P] Note Config: Create `apps/notes-app/src/Entities/Note/Config/NoteConfig.ts` with NOTE_TITLE_MAX_LENGTH, NOTE_CONTENT_MAX_LENGTH constants. Refactor Zod schemas to use these constants
-- [ ] T107 Responsive design polish: verify all pages work at desktop (1024px+) and mobile (320px-768px) breakpoints per SC-006
+- [x] T104 [P] Add loading states and error boundaries to all pages — wrap with Suspense + ErrorBoundary from Shared/Ui
+- [x] T105 [P] Accessibility audit: verify all interactive elements have proper ARIA labels, keyboard navigation works across all pages (WCAG 2.1 AA)
+- [x] T106 [P] Note Config: Create `apps/notes-app/src/Entities/Note/Config/NoteConfig.ts` with NOTE_TITLE_MAX_LENGTH, NOTE_CONTENT_MAX_LENGTH constants. Refactor Zod schemas to use these constants
+- [x] T107 Responsive design polish: verify all pages work at desktop (1024px+) and mobile (320px-768px) breakpoints per SC-006
 - [ ] T108 Run quickstart.md validation: follow all steps in quickstart.md from scratch and confirm they work
 - [ ] T109 Final full verification: `pnpm run type-check && pnpm run lint && pnpm run test && pnpm run test:e2e && pnpm run build`
 

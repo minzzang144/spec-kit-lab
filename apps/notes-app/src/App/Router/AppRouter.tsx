@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider } from 'react-router';
 import { lazy, Suspense } from 'react';
 import { AppLayout } from './AppLayout';
+import { ErrorBoundary } from '#/Shared/Ui';
 
 const NoteListPage = lazy(() =>
   import('#/Pages/NoteList').then((m) => ({ default: m.NoteListPage })),
@@ -28,33 +29,41 @@ const router = createBrowserRouter([
       {
         path: '/',
         element: (
-          <Suspense fallback={<PageFallback />}>
-            <NoteListPage />
-          </Suspense>
+          <ErrorBoundary>
+            <Suspense fallback={<PageFallback />}>
+              <NoteListPage />
+            </Suspense>
+          </ErrorBoundary>
         ),
       },
       {
         path: '/notes/new',
         element: (
-          <Suspense fallback={<PageFallback />}>
-            <NoteWritePage />
-          </Suspense>
+          <ErrorBoundary>
+            <Suspense fallback={<PageFallback />}>
+              <NoteWritePage />
+            </Suspense>
+          </ErrorBoundary>
         ),
       },
       {
         path: '/notes/:id',
         element: (
-          <Suspense fallback={<PageFallback />}>
-            <NoteDetailPage />
-          </Suspense>
+          <ErrorBoundary>
+            <Suspense fallback={<PageFallback />}>
+              <NoteDetailPage />
+            </Suspense>
+          </ErrorBoundary>
         ),
       },
       {
         path: '/categories',
         element: (
-          <Suspense fallback={<PageFallback />}>
-            <CategoryManagePage />
-          </Suspense>
+          <ErrorBoundary>
+            <Suspense fallback={<PageFallback />}>
+              <CategoryManagePage />
+            </Suspense>
+          </ErrorBoundary>
         ),
       },
     ],

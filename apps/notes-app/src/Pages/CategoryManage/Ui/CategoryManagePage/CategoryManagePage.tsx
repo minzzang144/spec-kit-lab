@@ -8,7 +8,7 @@ export function CategoryManagePage() {
   const [newCategoryName, setNewCategoryName] = useState('');
   const [error, setError] = useState('');
 
-  const { data: categoryList } = useCategoryList();
+  const { data: categoryList, isLoading } = useCategoryList();
   const { data: noteList } = useNoteList();
   const createCategory = useCreateCategory();
 
@@ -59,6 +59,13 @@ export function CategoryManagePage() {
         )}
       </div>
 
+      {isLoading ? (
+        <div className="flex flex-col gap-2" aria-busy="true" aria-label="카테고리 목록 로딩 중">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="h-12 animate-pulse rounded-lg border bg-muted" />
+          ))}
+        </div>
+      ) : (
       <ul className="flex flex-col gap-2">
         {categoryList?.map((category) => (
           <li
@@ -85,6 +92,7 @@ export function CategoryManagePage() {
           </li>
         ))}
       </ul>
+      )}
     </div>
   );
 }
