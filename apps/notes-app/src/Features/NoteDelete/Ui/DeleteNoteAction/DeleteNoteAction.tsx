@@ -10,11 +10,11 @@ import {
   DialogTitle,
 } from '#/Shared/Ui';
 
-type DeleteNoteButtonProps = {
+type DeleteNoteActionProps = {
   noteId: string;
 };
 
-export function DeleteNoteButton({ noteId }: DeleteNoteButtonProps) {
+export function DeleteNoteAction({ noteId }: DeleteNoteActionProps) {
   const [isOpen, setIsOpen] = useState(false);
   const deleteNote = useDeleteNote(noteId);
 

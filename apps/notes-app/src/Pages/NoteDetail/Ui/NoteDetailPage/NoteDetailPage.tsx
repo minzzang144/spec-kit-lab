@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router';
 import { useNote } from '#/Entities/Note';
 import { useCategoryList } from '#/Entities/Category';
 import { useUpdateNote } from '#/Features/NoteWrite';
-import { DeleteNoteButton } from '#/Features/NoteDelete';
+import { DeleteNoteAction } from '#/Features/NoteDelete';
 import { NoteDetail } from '#/Widgets/NoteDetail';
 import { NoteWrite, useNoteForm } from '#/Widgets/NoteWrite';
 import type { NoteFormData } from '#/Widgets/NoteWrite';
@@ -63,7 +63,7 @@ export function NoteDetailPage() {
             >
               편집
             </Button>
-            <DeleteNoteButton noteId={id ?? ''} />
+            <DeleteNoteAction noteId={id ?? ''} />
           </div>
         )}
       </div>
