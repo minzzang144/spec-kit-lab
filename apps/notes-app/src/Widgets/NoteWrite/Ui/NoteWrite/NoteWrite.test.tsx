@@ -5,7 +5,6 @@ import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { NoteWrite } from './NoteWrite';
-import { useNoteForm } from '../../Model';
 
 const MOCK_CATEGORY_LIST = [
   { id: 'uncategorized', name: '미분류', isDefault: true },
@@ -31,23 +30,6 @@ function createQueryClient() {
   });
 }
 
-function NoteWriteTestWrapper({
-  onSubmit = vi.fn(),
-  onCancel = vi.fn(),
-}: {
-  onSubmit?: (data: unknown) => void;
-  onCancel?: () => void;
-}) {
-  const form = useNoteForm();
-  return (
-    <NoteWrite
-      form={form}
-      onSubmit={onSubmit}
-      onCancel={onCancel}
-    />
-  );
-}
-
 function renderWithProvider(ui: React.ReactElement) {
   const queryClient = createQueryClient();
   return render(
@@ -57,7 +39,9 @@ function renderWithProvider(ui: React.ReactElement) {
 
 describe('NoteWrite', () => {
   it('should render title input, content textarea, and buttons', () => {
-    renderWithProvider(<NoteWriteTestWrapper />);
+    renderWithProvider(
+      <NoteWrite onSubmit={vi.fn()} onCancel={vi.fn()} />,
+    );
 
     expect(screen.getByLabelText('제목')).toBeInTheDocument();
     expect(screen.getByLabelText('내용')).toBeInTheDocument();
@@ -67,7 +51,9 @@ describe('NoteWrite', () => {
 
   it('should show validation error when title is empty', async () => {
     const user = userEvent.setup();
-    renderWithProvider(<NoteWriteTestWrapper />);
+    renderWithProvider(
+      <NoteWrite onSubmit={vi.fn()} onCancel={vi.fn()} />,
+    );
 
     await user.click(screen.getByRole('button', { name: '저장' }));
 
@@ -79,7 +65,9 @@ describe('NoteWrite', () => {
   it('should call onSubmit with form data when valid', async () => {
     const handleSubmit = vi.fn();
     const user = userEvent.setup();
-    renderWithProvider(<NoteWriteTestWrapper onSubmit={handleSubmit} />);
+    renderWithProvider(
+      <NoteWrite onSubmit={handleSubmit} onCancel={vi.fn()} />,
+    );
 
     await user.type(screen.getByLabelText('제목'), '테스트 노트');
     await user.type(screen.getByLabelText('내용'), '테스트 내용');
@@ -99,7 +87,9 @@ describe('NoteWrite', () => {
   it('should call onCancel when cancel button is clicked', async () => {
     const handleCancel = vi.fn();
     const user = userEvent.setup();
-    renderWithProvider(<NoteWriteTestWrapper onCancel={handleCancel} />);
+    renderWithProvider(
+      <NoteWrite onSubmit={vi.fn()} onCancel={handleCancel} />,
+    );
 
     await user.click(screen.getByRole('button', { name: '취소' }));
 
@@ -107,7 +97,9 @@ describe('NoteWrite', () => {
   });
 
   it('should render category select with options from API', async () => {
-    renderWithProvider(<NoteWriteTestWrapper />);
+    renderWithProvider(
+      <NoteWrite onSubmit={vi.fn()} onCancel={vi.fn()} />,
+    );
 
     await waitFor(() => {
       expect(screen.getByLabelText('카테고리 선택')).toBeInTheDocument();

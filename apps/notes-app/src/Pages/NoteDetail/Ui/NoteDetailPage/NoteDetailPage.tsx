@@ -1,36 +1,14 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { useNote } from '#/Entities/Note';
-import type { Note } from '#/Entities/Note';
 import { useCategoryList } from '#/Entities/Category';
 import { useUpdateNote } from '#/Features/NoteWrite';
 import { DeleteNoteAction } from '#/Features/NoteDelete';
 import { NoteDetail } from '#/Widgets/NoteDetail';
-import { NoteWrite, useNoteForm } from '#/Widgets/NoteWrite';
+import { NoteWrite } from '#/Widgets/NoteWrite';
 import type { NoteFormData } from '#/Widgets/NoteWrite';
 import { ROUTES } from '#/Shared/Config';
 import { Button } from '#/Shared/Ui';
-
-type NoteEditSectionProps = {
-  readonly note: Note;
-  readonly onSave: (data: NoteFormData) => void;
-  readonly onCancel: () => void;
-  readonly isSubmitting: boolean;
-};
-
-// note가 확실히 로드된 후에만 마운트 → useNoteForm defaultValues 정상 동작
-function NoteEditSection({ note, onSave, onCancel, isSubmitting }: NoteEditSectionProps) {
-  const form = useNoteForm({ existingNote: note });
-  return (
-    <NoteWrite
-      form={form}
-      onSubmit={onSave}
-      onCancel={onCancel}
-      isSubmitting={isSubmitting}
-      submitLabel="저장"
-    />
-  );
-}
 
 export function NoteDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -90,11 +68,12 @@ export function NoteDetailPage() {
       </div>
 
       {isEditMode ? (
-        <NoteEditSection
-          note={note}
-          onSave={handleSave}
+        <NoteWrite
+          existingNote={note}
+          onSubmit={handleSave}
           onCancel={() => setIsEditMode(false)}
           isSubmitting={updateNote.isPending}
+          submitLabel="저장"
         />
       ) : (
         <NoteDetail note={note} categoryName={categoryName} />

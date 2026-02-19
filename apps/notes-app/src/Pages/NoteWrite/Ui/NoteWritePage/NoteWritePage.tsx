@@ -1,13 +1,12 @@
 import { useNavigate } from 'react-router';
 import { useCreateNote } from '#/Features/NoteWrite';
-import { NoteWrite, useNoteForm } from '#/Widgets/NoteWrite';
+import { NoteWrite } from '#/Widgets/NoteWrite';
 import type { NoteFormData } from '#/Widgets/NoteWrite';
 import { ROUTES } from '#/Shared/Config';
 
 export function NoteWritePage() {
   const navigate = useNavigate();
   const createNote = useCreateNote();
-  const form = useNoteForm();
 
   function handleSubmit(data: NoteFormData) {
     createNote.mutate({
@@ -25,7 +24,6 @@ export function NoteWritePage() {
     <div className="mx-auto max-w-2xl p-8">
       <h1 className="mb-6 text-2xl font-bold">새 노트 작성</h1>
       <NoteWrite
-        form={form}
         onSubmit={handleSubmit}
         onCancel={handleCancel}
         isSubmitting={createNote.isPending}

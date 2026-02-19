@@ -1,5 +1,4 @@
-import type { UseFormReturn } from 'react-hook-form';
-import { useCategoryList, ALL_CATEGORY_ID } from '#/Entities/Category';
+import type { Note } from '#/Entities/Note';
 import {
   Button,
   Input,
@@ -11,10 +10,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '#/Shared/Ui';
+import { useCategoryList, ALL_CATEGORY_ID } from '#/Entities/Category';
+import { useNoteForm } from '../../Model';
 import type { NoteFormData } from '../../Model';
 
 type NoteWriteProps = {
-  form: UseFormReturn<NoteFormData>;
+  existingNote?: Note;
   onSubmit: (data: NoteFormData) => void;
   onCancel: () => void;
   isSubmitting?: boolean;
@@ -22,7 +23,7 @@ type NoteWriteProps = {
 };
 
 export function NoteWrite({
-  form,
+  existingNote,
   onSubmit,
   onCancel,
   isSubmitting = false,
@@ -35,7 +36,7 @@ export function NoteWrite({
     setValue,
     watch,
     formState: { errors },
-  } = form;
+  } = useNoteForm({ existingNote });
 
   const selectedCategoryId = watch('categoryId');
 
