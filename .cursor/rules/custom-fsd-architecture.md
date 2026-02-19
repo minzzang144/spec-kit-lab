@@ -245,8 +245,10 @@ Dialog, Dropdown 자체는 `Shared/Ui`의 범용 컴포넌트이며, Feature/Wid
 ```
 Q: 컴포넌트가 단일 비즈니스 관심사를 수행?
   → YES → Feature Ui
-  예: DeleteNoteButton (삭제 관심사 1개, 내부에서 확인 Dialog 사용 가능)
+  예: DeleteNoteAction (삭제 관심사 1개, 내부에서 확인 Dialog 사용 가능)
       SendButton (전송 관심사 1개)
+  네이밍: 내부에 Dialog/Dropdown 플로우를 포함하면 Action 접미사가 더 정확함
+  (Button은 단순 클릭, Action은 내부 플로우가 있는 자기완결적 비즈니스 실행)
 
 Q: 컴포넌트가 두 개 이상의 비즈니스 관심사를 조합?
   → YES → Widget Ui
