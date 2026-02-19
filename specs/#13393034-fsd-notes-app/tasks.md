@@ -320,15 +320,15 @@
 
 ### Tests for User Story 7 (MANDATORY - TDD Required)
 
-- [ ] T079 [P] [US7] Unit test for FilterSlice and useFilterStore in `apps/notes-app/src/Features/CategoryFilter/Model/Store/useFilterStore.test.ts` — test initial state (selectedCategoryId = 'all'), setSelectedCategoryId action (Vitest)
+- [x] T079 [P] [US7] Unit test for FilterSlice and useFilterStore in `apps/notes-app/src/Features/CategoryFilter/Model/Store/useFilterStore.test.ts` — test initial state (selectedCategoryId = 'all'), setSelectedCategoryId action (Vitest)
 
 ### Implementation for User Story 7
 
 #### Features/CategoryFilter (하위 도메인 of Category, Zustand)
 
-- [ ] T080 [P] [US7] Create `apps/notes-app/src/Features/CategoryFilter/Type/CategoryFilter.ts` with FilterState type. Create `apps/notes-app/src/Features/CategoryFilter/index.ts` barrel export
-- [ ] T081 [US7] Create `apps/notes-app/src/Features/CategoryFilter/Model/Store/FilterSlice.ts` with FilterSlice type and createFilterSlice (selectedCategoryId state + setSelectedCategoryId action). Create `apps/notes-app/src/Features/CategoryFilter/Model/Store/useFilterStore.ts` combining slices with Zustand create(). Update barrel export
-- [ ] T082 [US7] Create `apps/notes-app/src/Features/CategoryFilter/Model/Hook/useCategoryFilter.ts` hook wrapping useFilterStore + useCategories for UI consumption. Update barrel export
+- [x] T080 [P] [US7] Create `apps/notes-app/src/Features/CategoryFilter/Type/CategoryFilter.ts` with FilterState type. Create `apps/notes-app/src/Features/CategoryFilter/index.ts` barrel export
+- [x] T081 [US7] Create `apps/notes-app/src/Features/CategoryFilter/Model/Store/FilterSlice.ts` with FilterSlice type and createFilterSlice (selectedCategoryId state + setSelectedCategoryId action). Create `apps/notes-app/src/Features/CategoryFilter/Model/Store/useFilterStore.ts` combining slices with Zustand create(). Update barrel export
+- [x] T082 [US7] Create `apps/notes-app/src/Features/CategoryFilter/Model/Hook/useCategoryFilter.ts` hook wrapping useFilterStore + useCategories for UI consumption. Update barrel export
 
 #### Widgets/CategoryFilter
 
