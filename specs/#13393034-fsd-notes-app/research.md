@@ -56,7 +56,7 @@
 ### Rationale
 - **Custom FSD 규칙 준수**:
   - Entities/Api: `queryOptions` factory (읽기)
-  - Features/Api: `mutationOptions` factory (사용자 액션: mutation, 필터, 검색, 상태 변경)
+  - Features/Api: `mutationOptions` factory (비즈니스 가치 있는 사용자 시나리오: CRUD, 필터, 검색, 네비게이션)
   - Features/Model/Store: Zustand slices (UI 상태)
 - **서버 상태와 UI 상태의 명확한 분리**:
   - 서버 상태: 노트 목록, 카테고리 목록 → TanStack Query
@@ -163,7 +163,7 @@ export const httpClient = {
 
 ## R7: Custom FSD 서브도메인 설계
 
-### Decision: Note와 Category를 각각 상위 도메인으로, 사용자 액션을 하위 도메인으로 분리
+### Decision: Note와 Category를 각각 상위 도메인으로, 비즈니스 시나리오를 하위 도메인으로 분리
 
 ### Rationale
 - **Note 도메인**:

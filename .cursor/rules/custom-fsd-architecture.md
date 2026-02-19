@@ -43,7 +43,7 @@
 ├─────────────────────────────────┤
 │          Widgets                │  ← 독립적 UI 블록 조합
 ├─────────────────────────────────┤
-│         Features                │  ← 사용자 액션 (mutation, 필터, 검색, 상태 변경)
+│         Features                │  ← 비즈니스 가치 있는 사용자 시나리오 (CRUD, 필터, 검색, 네비게이션)
 ├─────────────────────────────────┤
 │         Entities                │  ← 비즈니스 엔티티 (순수 표시, 읽기 전용)
 ├─────────────────────────────────┤
@@ -187,7 +187,7 @@ Entities/
 | 레이어 | 도메인 제약 | 설명 |
 |--------|-----------|------|
 | Entities | 단일 도메인 | 하나의 비즈니스 엔티티만 표현 |
-| Features | 단일 도메인 | 하나의 사용자 액션만 표현 |
+| Features | 단일 도메인 | 하나의 비즈니스 관심사(시나리오)만 표현 |
 | Widgets | 단일 도메인 | 하나의 관심사에 대한 독립 UI 블록 |
 | Pages | **복합 도메인 허용** | 여러 Widget을 조합하여 페이지 구성 |
 
@@ -228,7 +228,7 @@ Domain 레이어 슬라이스 내 세그먼트 종류:
 | 레이어 | Ui 컴포넌트 역할 | 허용 | 금지 |
 |--------|----------------|------|------|
 | **Entities** | 단일 도메인 데이터의 **순수 표시** | 도메인 데이터 → 렌더링만 | onClick/onSubmit 등 인터랙션 props, 다른 도메인 정보, 라우팅(Link, useNavigate) |
-| **Features** | 사용자 액션의 **자기완결적 컴포넌트** | 버튼형 단일 액션 (SendButton, DeleteButton) | children 래퍼, 범용 조합 컴포넌트 |
+| **Features** | 비즈니스 관심사의 **자기완결적 컴포넌트** | 단일 비즈니스 관심사 (SendButton, DeleteNoteButton) | children 래퍼, 범용 조합 컴포넌트 |
 | **Widgets** | Entity Ui + Feature를 **조합/래핑** | 여러 Entity/Feature 조합, 래퍼, 네비게이션, children | - |
 | **Pages** | Widget을 **페이지 단위로 배치** | 여러 Widget 조합, 레이아웃 | 비즈니스 로직 직접 구현 |
 
@@ -239,15 +239,41 @@ Domain 레이어 슬라이스 내 세그먼트 종류:
 
 **Feature Ui vs Widget Ui 판단 기준**:
 
+레이어를 결정하는 것은 **UI 패턴(Dialog, Dropdown, Button)이 아니라 비즈니스 관심사의 수**다.
+Dialog, Dropdown 자체는 `Shared/Ui`의 범용 컴포넌트이며, Feature/Widget이 내부에서 도구로 사용할 수 있다.
+
 ```
-Q: 컴포넌트가 자기완결적이고 단일 액션을 수행?
-  → YES → Feature Ui (예: SendButton, DeleteButton)
+Q: 컴포넌트가 단일 비즈니스 관심사를 수행?
+  → YES → Feature Ui
+  예: DeleteNoteButton (삭제 관심사 1개, 내부에서 확인 Dialog 사용 가능)
+      SendButton (전송 관심사 1개)
 
-Q: 컴포넌트가 children을 받아 래핑/조합?
-  → YES → Widget Ui (예: NoteList, CategoryFilter dropdown)
-
-Q: 컴포넌트가 여러 Entity/Feature를 조합?
+Q: 컴포넌트가 두 개 이상의 비즈니스 관심사를 조합?
   → YES → Widget Ui
+  예: NoteActionsDialog (편집 관심사 + 삭제 관심사 조합)
+
+Q: 컴포넌트가 children을 외부에서 받아 래핑?
+  → YES → Widget Ui (Feature Ui는 children 래퍼 금지)
+```
+
+**순수 UI 인터랙션(비즈니스 가치 없음)의 위치**:
+
+| 종류 | 예시 | 관리 위치 |
+|------|------|----------|
+| 범용 UI 유틸리티 | 스크롤 투 탑 버튼 | `Shared/Ui` |
+| 컴포넌트 내부 UI 흐름 | Dialog 취소 버튼, 닫기 | 소유 컴포넌트의 내부 `useState` |
+
+**Dialog/Dropdown 배치 기준 (찾기 쉬운 규칙)**:
+
+```
+관심사 1개 + Dialog/Dropdown 사용 → Feature Ui 내부 구현
+  예: DeleteNoteButton = Features/NoteDelete/Ui/DeleteNoteButton
+
+관심사 2개+ + Dialog/Dropdown 조합 → Widget Ui 내부 구현
+  예: NoteActionsDialog(편집+삭제) = Widgets/NoteDetail/Ui/NoteActionsDialog
+
+범용 Dialog/Dropdown 컴포넌트 자체 → Shared/Ui
+  예: Shared/Ui/Shadcn/dialog.tsx
 ```
 
 **App 전용 세그먼트**: App 레이어는 위 6종 외에 `Style`(글로벌 CSS), `Provider`(Context Provider), `Router`(라우팅), `Mock`(MSW 설정) 등 앱 초기화 전용 슬라이스를 사용할 수 있다.

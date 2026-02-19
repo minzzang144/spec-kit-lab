@@ -264,7 +264,7 @@ apps/notes-app/
     │       │   └── index.ts
     │       └── index.ts
     │
-    ├── Features/                # Domain layer: user actions (mutations, filters, searches, state changes)
+    ├── Features/                # Domain layer: business-meaningful user scenarios (CRUD, filters, search, navigation)
     │   ├── NoteWrite/           # 하위 도메인 (Note의 서브도메인) — create + edit 통합
     │   │   ├── __Mock__/
     │   │   │   ├── Handler.ts       # POST /api/notes + PUT /api/notes/:id 핸들러
