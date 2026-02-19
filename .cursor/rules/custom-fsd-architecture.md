@@ -881,8 +881,8 @@ export const worker = setupWorker(
 | 디렉토리 (예외)          | `__Mock__`       | `__Mock__/`                             |
 | 일반 파일                | PascalCase       | `UserProfile.tsx`, `ChatApi.ts`, `Get.ts`, `Query.ts` |
 | Hook 파일               | camelCase        | `useChat.ts`, `useUserList.ts`          |
-| Zustand Store 파일       | camelCase        | `useChatStore.ts`                       |
-| Zustand Logic 파일       | camelCase        | `useChatLogic.ts`                       |
+| Zustand Store 파일       | camelCase        | `use{Domain}Store.ts` — **도메인 이름 필수** (`useChatStore.ts`, `useCategoryFilterStore.ts`) |
+| Zustand Logic 파일       | camelCase        | `use{Domain}Logic.ts` (`useChatLogic.ts`)  |
 | Zustand Slice 파일       | PascalCase       | `MessageSlice.ts`, `ConnectionSlice.ts` |
 | Barrel 파일              | `index.ts`       | `index.ts`                              |
 | shadcn 생성 파일 (예외)   | 소문자 허용       | `button.tsx`, `dialog.tsx` (`Shadcn/` 그룹 내부에서만) |
@@ -896,6 +896,7 @@ ComponentName/
 ├── ComponentName.tsx              ← 메인 컴포넌트 (필수)
 ├── ComponentName.loading.tsx      ← 로딩 상태 (선택)
 ├── ComponentName.module.scss      ← 스타일 (선택)
+├── ComponentName.hook.ts          ← 컴포넌트 전용 로직 (선택, 아래 기준 참조)
 ├── ComponentName.constant.ts      ← 컴포넌트 전용 상수 (선택)
 ├── ComponentName.util.ts          ← 컴포넌트 전용 유틸 (선택)
 ├── ComponentName.test.tsx         ← 테스트 (선택)
@@ -906,6 +907,39 @@ ComponentName/
 
 - 컴포넌트 전용 상수/유틸 → `.constant.ts`, `.util.ts` 파일로 분리
 - 슬라이스 전체에서 재사용 가능하면 → `Model` 세그먼트로 이동
+
+### 훅 생성 기준
+
+훅을 만들어야 할 때와 말아야 할 때:
+
+| 상황 | 훅 생성? | 이유 |
+|------|----------|------|
+| 여러 소스를 조합해 **새로운 derived state/로직**이 나올 때 | ✅ | `useNoteListFilter = useFilterStore + useNoteList → 필터 적용 결과` |
+| 이미 **실제로 여러 곳에서 쓰이고 있어서** 공통 추출이 필요할 때 | ✅ | 현재 중복이 확인된 시점에 추출 |
+| **컴포넌트 파일이 너무 커져서** 로직 분리가 필요할 때 | ✅ | `Component.hook.ts` 파일로 이동 (재사용 목적 아님) |
+| 미래의 재사용을 **예상해서** 미리 추상화할 때 | ❌ YAGNI | "나중에 쓸 것 같아서" 만든 훅은 대부분 사용되지 않음 |
+| store 값을 **그대로 re-export**할 때 | ❌ | indirection만 추가, 직접 import가 더 명확 |
+
+**`Component.hook.ts` 파일 패턴**:
+
+컴포넌트 로직이 복잡해지면 sibling `.hook.ts`로 분리한다. **재사용 목적이 아닌 파일 크기/복잡도 관리 목적**:
+
+```
+NoteDetailPage/
+├── NoteDetailPage.tsx       ← JSX + 상태 선언 + return
+├── NoteDetailPage.hook.ts   ← 복잡한 로직 분리 (이 페이지 전용)
+└── index.ts
+```
+
+```typescript
+// NoteDetailPage.hook.ts
+export function useNoteDetailPage(id: string) {
+  const [isEditMode, setIsEditMode] = useState(false);
+  const note = useNote(id);
+  // ... 복잡한 로직
+  return { isEditMode, setIsEditMode, note, ... };
+}
+```
 
 ### 서브 컴포넌트: Sibling vs 별도 폴더
 
