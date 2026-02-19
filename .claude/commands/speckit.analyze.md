@@ -111,6 +111,25 @@ Focus on high-signal findings. Limit to 50 findings total; aggregate remainder i
 - Task ordering contradictions (e.g., integration tasks before foundational setup tasks without dependency note)
 - Conflicting requirements (e.g., one requires Next.js while other specifies Vue)
 
+#### G. Custom Architecture Alignment
+
+If `.claude/rules/custom-fsd-architecture.md` exists, load it and cross-check all spec documents against it:
+
+1. **Load** `.claude/rules/custom-fsd-architecture.md` in full
+2. **Extract** all MUST / FORBIDDEN / NON-NEGOTIABLE rules from each section
+3. **Scan** research.md, plan.md, tasks.md for:
+   - File paths that place code in the wrong layer (e.g., Zustand `create()` inside `Features/`)
+   - Import patterns that violate layer direction or path style rules
+   - Naming conventions that violate the rules (e.g., `use{Domain}Store` missing domain)
+   - MSW handler placement violations (Entity `__Mock__` for GET only; Feature `__Mock__` for write only)
+   - Barrel rules violations (layer-level `index.ts`, `export *`, `__Mock__` re-export in slice barrel)
+4. **Any violation is automatically CRITICAL** — spec documents describe wrong architecture
+
+> This pass detects the common failure mode where architecture rules were updated in
+> `.claude/rules/custom-fsd-architecture.md` but spec documents (research.md/plan.md/tasks.md)
+> still describe the old pattern. These desync issues would cause `speckit.implement` to
+> generate code that violates architecture rules.
+
 ### 5. Severity Assignment
 
 Use this heuristic to prioritize findings:

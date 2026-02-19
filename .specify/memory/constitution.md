@@ -66,28 +66,17 @@ When `/speckit.plan` generates implementation paths, the **Project root** for an
 ### Frontend Structure (FSD - Feature-Sliced Design)
 **Note**: `[APP_NAME]` is defined during spec creation with `/speckit.plan`
 
-> **⚠️ NON-NEGOTIABLE AUTHORITY**: All new frontend apps MUST follow the **Custom FSD Architecture** rules defined in `.claude/rules/custom-fsd-architecture.md`. This file is the single source of truth for FSD implementation details (layer hierarchy, segments, naming, import rules, Zustand placement, MSW patterns, etc.). Any spec document (research.md, plan.md, tasks.md) that conflicts with `.claude/rules/custom-fsd-architecture.md` is a **CRITICAL constitution violation**.
->
-> When running `speckit.analyze`, cross-check all spec documents against `.claude/rules/custom-fsd-architecture.md` as the authoritative reference.
+> **Authority**: All new frontend apps MUST follow `.claude/rules/custom-fsd-architecture.md`. Implementation details (naming, imports, MSW, segments, Zustand placement, etc.) are defined there, not here.
 
 ```
 apps/[APP_NAME]/src/
-├── App/           # Application initialization, providers, routing (PascalCase)
+├── App/           # Application initialization, providers, routing
 ├── Pages/         # Page components (route-level)
 ├── Widgets/       # Complex UI blocks (header, sidebar, etc.)
 ├── Features/      # Business-value user scenarios (CRUD, filter, search, navigation)
 ├── Entities/      # Business entities (read-only, pure display)
 ├── Shared/        # Reusable utilities, UI kit, API client
 ```
-
-**Key NON-NEGOTIABLE rules (full details in `.claude/rules/custom-fsd-architecture.md`)**:
-- Layer import direction: higher layers import from lower ONLY (`Pages → Widgets → Features → Entities → Shared`)
-- Same-layer cross-slice imports FORBIDDEN (except child→parent sub-domain)
-- All slices MUST have `index.ts` (Public API); `export *` is FORBIDDEN
-- Layer-level `index.ts` (e.g., `Entities/index.ts`) is FORBIDDEN
-- `__Mock__` handlers MUST NOT be re-exported from slice barrel
-- Directories MUST be PascalCase; hook files MUST be camelCase (`useXxx.ts`)
-- Zustand store naming: `use{Domain}Store` (domain name mandatory in filename)
 
 ### Backend Architecture (NestJS Modular)
 **Note**: `[APP_NAME]` is defined during spec creation with `/speckit.plan`
@@ -134,13 +123,10 @@ modules/[feature]/
 ```
 
 ### Layer Rules (NON-NEGOTIABLE)
-**Frontend (FSD)** — see `.claude/rules/custom-fsd-architecture.md` for full rules:
+**Frontend (FSD)**:
 - Higher layers can import from lower layers ONLY
 - ✅ `Pages → Widgets → Features → Entities → Shared`
 - ❌ `Entities → Features` (FORBIDDEN)
-- ❌ Same-layer cross-slice imports (FORBIDDEN, except child→parent sub-domain)
-- Cross-slice imports MUST use `#/Layer/Slice` absolute path (2-depth only)
-- Same-slice imports MUST use relative path via barrel (`index.ts`)
 
 **Backend (NestJS)**:
 - Controllers only handle HTTP requests/responses
@@ -168,9 +154,6 @@ modules/[feature]/
   - `queryOptions` factory → `Entities/{Domain}/Api/Query.ts`
   - `mutationOptions` factory → `Features/{Domain}/Api/Mutation.ts`
 - **Client State**: Zustand for shared UI state (2+ Widgets sharing the same state)
-  - **State declaration (slice + store create)** → `Entities/{Domain}/Model/Store/` (NON-NEGOTIABLE)
-  - **Update logic (setState calls)** → `Features/{Domain}/Model/Logic/` (NON-NEGOTIABLE)
-  - ❌ FORBIDDEN: Zustand `create()` inside `Features/` layer
   - Single-component state → `useState` (no Zustand)
 - **Form State**: React Hook Form for ALL forms
   - NO uncontrolled components without RHF
