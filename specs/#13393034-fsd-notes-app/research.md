@@ -76,7 +76,7 @@
 ```
 Features/CategoryFilter/Model/Store/
 ├── FilterSlice.ts        ← 슬라이스 정의
-└── useFilterStore.ts     ← 슬라이스 조합, store 생성
+└── useCategoryFilterStore.ts  ← 슬라이스 조합, store 생성 (use{Domain}Store 규칙)
 ```
 
 ---

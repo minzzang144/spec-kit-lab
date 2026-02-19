@@ -320,23 +320,23 @@
 
 ### Tests for User Story 7 (MANDATORY - TDD Required)
 
-- [x] T079 [P] [US7] Unit test for FilterSlice and useFilterStore in `apps/notes-app/src/Features/CategoryFilter/Model/Store/useFilterStore.test.ts` — test initial state (selectedCategoryId = 'all'), setSelectedCategoryId action (Vitest)
+- [x] T079 [P] [US7] Unit test for FilterSlice and useCategoryFilterStore in `apps/notes-app/src/Features/CategoryFilter/Model/Store/useCategoryFilterStore.test.ts` — test initial state (selectedCategoryId = 'all'), setSelectedCategoryId action (Vitest)
 
 ### Implementation for User Story 7
 
 #### Features/CategoryFilter (하위 도메인 of Category, Zustand)
 
 - [x] T080 [P] [US7] Create `apps/notes-app/src/Features/CategoryFilter/Type/CategoryFilter.ts` with FilterState type. Create `apps/notes-app/src/Features/CategoryFilter/index.ts` barrel export
-- [x] T081 [US7] Create `apps/notes-app/src/Features/CategoryFilter/Model/Store/FilterSlice.ts` with FilterSlice type and createFilterSlice (selectedCategoryId state + setSelectedCategoryId action). Create `apps/notes-app/src/Features/CategoryFilter/Model/Store/useFilterStore.ts` combining slices with Zustand create(). Update barrel export
-- [x] T082 [US7] Create `apps/notes-app/src/Features/CategoryFilter/Model/Hook/useCategoryFilter.ts` hook wrapping useFilterStore + useCategories for UI consumption. Update barrel export
+- [x] T081 [US7] Create `apps/notes-app/src/Features/CategoryFilter/Model/Store/FilterSlice.ts` with FilterSlice type and createFilterSlice (selectedCategoryId state + setSelectedCategoryId action). Create `apps/notes-app/src/Features/CategoryFilter/Model/Store/useCategoryFilterStore.ts` combining slices with Zustand create(). Update barrel export
+- [x] T082 [US7] ~~useCategoryFilter hook 삭제~~ (YAGNI: 실제 사용처 없음. isAllSelected는 필요한 곳에서 인라인 계산. 컴포넌트는 useCategoryFilterStore 직접 사용)
 
 #### Widgets/CategoryFilter
 
-- [x] T083 [US7] Create `apps/notes-app/src/Widgets/CategoryFilter/Ui/CategoryFilter/CategoryFilter.tsx` + `index.ts` rendering category tabs/buttons (using useCategories + useCategoryFilter), highlighting active filter. Create `apps/notes-app/src/Widgets/CategoryFilter/index.ts` barrel export
+- [x] T083 [US7] Create `apps/notes-app/src/Widgets/CategoryFilter/Ui/CategoryFilter/CategoryFilter.tsx` + `index.ts` rendering category tabs/buttons (using useCategoryList + useCategoryFilterStore directly), highlighting active filter. Create `apps/notes-app/src/Widgets/CategoryFilter/index.ts` barrel export
 
 #### NoteList Page Integration
 
-- [x] T084 [US7] Update `apps/notes-app/src/Pages/NoteList/Ui/NoteListPage/NoteListPage.tsx` to include CategoryFilter widget above NoteList. Update `apps/notes-app/src/Widgets/NoteList/Model/Hook/useNoteListFilter.ts` to read selectedCategoryId from useFilterStore and pass to useNotes query params
+- [x] T084 [US7] Update `apps/notes-app/src/Pages/NoteList/Ui/NoteListPage/NoteListPage.tsx` to include CategoryFilter widget above NoteList. Update `apps/notes-app/src/Widgets/NoteList/Model/Hook/useNoteListFilter.ts` to read selectedCategoryId from useCategoryFilterStore and pass to useNotes query params
 
 #### E2E Test (MANDATORY)
 
@@ -402,7 +402,7 @@
 #### Widgets/Sidebar
 
 - [ ] T095 [US9] Create `apps/notes-app/src/Widgets/Sidebar/Model/Hook/useSidebarState.ts` with sidebar open/close state (useState for single Widget scope)
-- [ ] T096 [US9] Create `apps/notes-app/src/Widgets/Sidebar/Ui/Sidebar/Sidebar.tsx` + `index.ts` with navigation links (Home, Category Manage), category list with filter click (uses useCategories + useCategoryFilter from Features/CategoryFilter), responsive sidebar (desktop persistent, mobile overlay with toggle). Create `apps/notes-app/src/Widgets/Sidebar/index.ts` barrel export
+- [ ] T096 [US9] Create `apps/notes-app/src/Widgets/Sidebar/Ui/Sidebar/Sidebar.tsx` + `index.ts` with navigation links (Home, Category Manage), category list with filter click (uses useCategoryList + useCategoryFilterStore from Features/CategoryFilter), responsive sidebar (desktop persistent, mobile overlay with toggle). Create `apps/notes-app/src/Widgets/Sidebar/index.ts` barrel export
 
 #### App Layout Integration
 

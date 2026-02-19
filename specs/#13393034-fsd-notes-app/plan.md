@@ -332,12 +332,9 @@ apps/notes-app/
     │   │   └── index.ts
     │   └── CategoryFilter/      # 하위 도메인 (Category의 서브도메인)
     │       ├── Model/
-    │       │   ├── Hook/
-    │       │   │   ├── useCategoryFilter.ts
-    │       │   │   └── index.ts
     │       │   ├── Store/
     │       │   │   ├── FilterSlice.ts
-    │       │   │   ├── useFilterStore.ts
+    │       │   │   ├── useCategoryFilterStore.ts   # use{Domain}Store 규칙 준수
     │       │   │   └── index.ts
     │       │   └── index.ts
     │       ├── Type/
@@ -461,7 +458,7 @@ apps/notes-app/
 | __Mock__ 슬라이스 barrel re-export 금지 | 슬라이스 index.ts에서 __Mock__ re-export 안 함; `#/Entities/Note/__Mock__`으로 직접 import | 코드 리뷰 |
 | App/Mock 조합 전용 | App/Mock/browser.ts에서 핸들러 직접 정의 금지 — import + setupWorker만 | 코드 리뷰 |
 | TanStack Query 통합 | Entities/*/Api: Get+Key+Query, Features/*/Api: Post/Put/Delete+Key+Mutation | queryOptions/mutationOptions factory |
-| Zustand slices pattern | Features/CategoryFilter/Model/Store/FilterSlice+useFilterStore | 여러 Widget에서 공유 상태 |
+| Zustand slices pattern | Features/CategoryFilter/Model/Store/FilterSlice+useCategoryFilterStore | 여러 Widget에서 공유 상태 (use{Domain}Store 규칙 준수) |
 | 파일 네이밍 (PascalCase/camelCase) | 디렉토리 PascalCase, Hook camelCase, Slice PascalCase | 전체 파일 구조 |
 | No-plurals 네이밍 | useNoteList (not useNotes), useCategoryList (not useCategories) | 복수형 접미사 금지 |
 | UI 컴포넌트 구조 | NoteContentPreview/, SearchBar/ 등 | ComponentName.tsx + index.ts (sibling vs 별도 폴더 기준 적용) |
