@@ -1,2 +1,2 @@
-export type { FilterState } from './Type';
 export { useCategoryFilterLogic } from './Model';
+export type { FilterState } from './Type';

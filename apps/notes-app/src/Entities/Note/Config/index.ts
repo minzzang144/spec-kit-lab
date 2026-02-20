@@ -1,1 +1,1 @@
-export { NOTE_TITLE_MAX_LENGTH, NOTE_CONTENT_MAX_LENGTH } from './NoteConfig';
+export { NOTE_CONTENT_MAX_LENGTH, NOTE_TITLE_MAX_LENGTH } from './NoteConfig';

@@ -1,10 +1,10 @@
 type NoteContentProps = {
-  content: string;
-  className?: string;
+	content: string;
+	className?: string;
 };
 
 export function NoteContent({ content, className }: NoteContentProps) {
-  if (!content) return null;
+	if (!content) return null;
 
-  return <p className={className}>{content}</p>;
+	return <p className={className}>{content}</p>;
 }

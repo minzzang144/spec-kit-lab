@@ -1,1 +1,1 @@
-export { ROUTES, noteViewPath } from './Routes';
+export { noteViewPath, ROUTES } from './Routes';

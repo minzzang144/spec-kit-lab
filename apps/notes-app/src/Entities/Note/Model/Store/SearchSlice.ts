@@ -1,9 +1,9 @@
 import type { StateCreator } from 'zustand';
 
 export type SearchSlice = {
-  keyword: string;
+	keyword: string;
 };
 
 export const createSearchSlice: StateCreator<SearchSlice> = () => ({
-  keyword: '',
+	keyword: '',
 });

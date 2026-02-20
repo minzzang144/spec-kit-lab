@@ -1,10 +1,11 @@
 import type { StateCreator } from 'zustand';
+
 import { ALL_CATEGORY_ID } from '../../Config';
 
 export type FilterSlice = {
-  selectedCategoryId: string;
+	selectedCategoryId: string;
 };
 
 export const createFilterSlice: StateCreator<FilterSlice> = () => ({
-  selectedCategoryId: ALL_CATEGORY_ID,
+	selectedCategoryId: ALL_CATEGORY_ID,
 });

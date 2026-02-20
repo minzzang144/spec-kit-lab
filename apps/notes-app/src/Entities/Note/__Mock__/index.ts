@@ -1,10 +1,10 @@
-export { INITIAL_NOTE_LIST } from './Seed';
 export {
-  getNoteList,
-  setNoteList,
-  addNote,
-  updateNote,
-  deleteNote,
-  resetNoteDb,
+	addNote,
+	deleteNote,
+	getNoteList,
+	resetNoteDb,
+	setNoteList,
+	updateNote,
 } from './Db';
 export { noteEntityHandler } from './Handler';
+export { INITIAL_NOTE_LIST } from './Seed';

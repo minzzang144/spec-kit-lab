@@ -1,2 +1,2 @@
-export { useNoteList, useNote } from './Hook';
+export { useNote, useNoteList } from './Hook';
 export { useNoteStore } from './Store';

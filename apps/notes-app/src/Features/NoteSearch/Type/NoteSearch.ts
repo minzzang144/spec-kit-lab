@@ -1,3 +1,3 @@
 export type NoteSearchParams = {
-  readonly keyword?: string;
+	readonly keyword?: string;
 };
