@@ -42,7 +42,7 @@ pnpm dev
 apps/notes-app/src/
 ├── App/         # 앱 초기화, 프로바이더, 라우팅, MSW 설정
 ├── Pages/       # 4개 페이지 (NoteList, NoteWrite, NoteDetail, CategoryManage)
-├── Widgets/     # 6개 위젯 (NoteList, NoteWrite, NoteDetail, SearchBar, Sidebar, CategoryFilter)
+├── Widgets/     # 6개 위젯 (NoteList, NoteWrite, NoteDetail, NoteSearch, CategorySidebar, CategoryFilter)
 ├── Features/    # 5개 기능 (NoteWrite, NoteDelete, NoteSearch, CategoryWrite, CategoryFilter)
 ├── Entities/    # 2개 엔티티 (Note, Category)
 └── Shared/      # 공유 유틸 (Api, Config, Lib, Type, Ui)
@@ -63,7 +63,7 @@ Cross-slice import에는 `#/` prefix를 사용합니다:
 
 ```typescript
 // Cross-slice (절대 경로)
-import { useNotes } from '#/Entities/Note';
+import { useNoteList } from '#/Entities/Note';
 import { httpClient } from '#/Shared/Api';
 
 // Same-slice (상대 경로)
@@ -86,7 +86,7 @@ MSW(Mock Service Worker)를 사용하여 백엔드 없이 동작합니다:
 3. **Import 규칙**: 상대/절대 경로, 레이어 방향, Public API
 4. **세그먼트 종류**: __Mock__, Api, Config, Model, Type, Ui
 5. **TanStack Query**: Entities=queryOptions, Features=mutationOptions
-6. **Zustand**: slices pattern, Features/Model/Store
+6. **Zustand**: slices pattern — 상태 선언은 Entities/Model/Store, 업데이트 로직은 Features/Model/Logic
 7. **파일 네이밍**: PascalCase 디렉토리, camelCase hooks
 8. **UI 컴포넌트 구조**: ComponentName/ 폴더 + index.ts
 9. **Entity Ui 순수성**: 단일 도메인의 순수 표시만 (onClick/라우팅/다른 도메인 금지)
