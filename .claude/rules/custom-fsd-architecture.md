@@ -313,16 +313,18 @@ Q: 컴포넌트가 children을 외부에서 받아 래핑?
 
 ### Barrel 생성 규칙
 
-모든 **슬라이스, 세그먼트, 그룹**에 `index.ts` barrel 파일을 생성한다.
+**슬라이스 barrel은 필수**, 세그먼트/그룹 barrel은 선택이다.
 
 | 레벨 | 필수 여부 | 예시 |
 |------|----------|------|
 | Layer (레이어) | ❌ **금지** | ~~`Entities/index.ts`~~ — 모든 슬라이스를 번들링하여 tree-shaking 불가 |
 | Slice (슬라이스) | ✅ **필수** | `Entities/Chat/index.ts` |
-| Segment (세그먼트) | ✅ **생성** | `Entities/Chat/Api/index.ts` |
-| Group (그룹) | ✅ **생성** | `Entities/Chat/Model/Hook/index.ts` |
-| `__Mock__` | ✅ **생성** | `Entities/Chat/__Mock__/index.ts` — 단, 슬라이스 barrel에서는 re-export 금지 |
+| Segment (세그먼트) | 🔵 **선택** | `Entities/Chat/Api/index.ts` — 없으면 슬라이스 barrel에서 직접 import |
+| Group (그룹) | 🔵 **선택** | `Entities/Chat/Model/Hook/index.ts` — 없으면 세그먼트 barrel에서 직접 import |
+| `__Mock__` | ✅ **필수** | `Entities/Chat/__Mock__/index.ts` — 단, 슬라이스 barrel에서는 re-export 금지 |
 | UI 컴포넌트 폴더 | ✅ **필수** | `Ui/ChatMessageItem/index.ts` (기존 규칙 유지) |
+
+**성능 고려**: barrel 체인이 깊어지면 (슬라이스 → 세그먼트 → 그룹 → 파일) TypeScript 컴파일러와 IDE 인텔리센스에 부하가 발생할 수 있다. 슬라이스가 50개 이상인 프로젝트에서는 세그먼트/그룹 barrel을 생략하고 슬라이스 barrel에서 직접 import하는 것을 권장한다.
 
 ### Export 규칙
 
@@ -347,32 +349,28 @@ export type { ChatMessage, ChatRoom } from './Chat';
 
 ### Barrel 체이닝
 
-슬라이스 barrel은 세그먼트 barrel로부터 re-export한다:
+**패턴 A — 세그먼트/그룹 barrel 사용** (소규모 프로젝트):
 
 ```typescript
-// Entities/Chat/Api/index.ts (세그먼트 barrel)
-export { getChatMessage } from './Get';
-export { chatQueryKey } from './Key';
-export { chatQueryOption } from './Query';
-```
-
-```typescript
-// Entities/Chat/Model/Hook/index.ts (그룹 barrel)
-export { useChatMessage } from './useChatMessage';
-```
-
-```typescript
-// Entities/Chat/Model/index.ts (세그먼트 barrel)
-export { useChatMessage } from './Hook';
-export { useChatStore } from './Store';
-```
-
-```typescript
-// Entities/Chat/index.ts (슬라이스 barrel)
+// Entities/Chat/index.ts (슬라이스 barrel → 세그먼트 barrel 경유)
 export type { ChatMessage, ChatRoom } from './Type';
 export { getChatMessage, chatQueryKey, chatQueryOption } from './Api';
 export { useChatMessage, useChatStore } from './Model';
 ```
+
+**패턴 B — 슬라이스 barrel에서 직접 import** (대규모 프로젝트, 성능 우선):
+
+```typescript
+// Entities/Chat/index.ts (슬라이스 barrel → 파일 직접)
+export type { ChatMessage, ChatRoom } from './Type/Chat';
+export { getChatMessage } from './Api/Get';
+export { chatQueryKey } from './Api/Key';
+export { chatQueryOption } from './Api/Query';
+export { useChatMessage } from './Model/Hook/useChatMessage';
+export { useChatStore } from './Model/Store/useChatStore';
+```
+
+두 패턴 모두 외부에서 보는 public API는 동일하다 (`#/Entities/Chat`).
 
 ### `__Mock__` barrel
 

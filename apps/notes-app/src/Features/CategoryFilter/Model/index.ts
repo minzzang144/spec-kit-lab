@@ -1,1 +1,1 @@
-export { useCategoryFilterLogic } from './Logic';
+export { useCategoryFilterLogic } from './Logic/useCategoryFilterLogic';

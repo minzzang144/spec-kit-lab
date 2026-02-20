@@ -1,1 +1,2 @@
-export { useCreateNote, useUpdateNote } from './Hook';
+export { useCreateNote } from './Hook/useCreateNote';
+export { useUpdateNote } from './Hook/useUpdateNote';

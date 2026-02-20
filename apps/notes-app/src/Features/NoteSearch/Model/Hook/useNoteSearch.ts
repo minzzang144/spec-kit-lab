@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { useNoteSearchLogic } from '../Logic';
+import { useNoteSearchLogic } from '../Logic/useNoteSearchLogic';
 
 export function useNoteSearch() {
 	const { setKeyword, clearKeyword } = useNoteSearchLogic();

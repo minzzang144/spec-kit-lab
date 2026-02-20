@@ -1,1 +1,1 @@
-export { useDeleteNote } from './Hook';
+export { useDeleteNote } from './Hook/useDeleteNote';

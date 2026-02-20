@@ -1,1 +1,0 @@
-export { useCategoryFilterLogic } from './useCategoryFilterLogic';
