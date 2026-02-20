@@ -1,1 +1,1 @@
-export { CategorySidebar } from './Ui/CategorySidebar';
+export { CategorySidebar } from './Ui';

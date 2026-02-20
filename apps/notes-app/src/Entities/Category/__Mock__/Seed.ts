@@ -1,4 +1,4 @@
-import type { Category } from '../Type/Category';
+import type { Category } from '../Type';
 
 export const INITIAL_CATEGORY_LIST: Category[] = [
 	{ id: 'uncategorized', name: '미분류', isDefault: true },

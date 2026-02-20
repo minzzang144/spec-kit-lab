@@ -1,1 +1,1 @@
-export { NoteListPage } from './Ui/NoteListPage';
+export { NoteListPage } from './Ui';

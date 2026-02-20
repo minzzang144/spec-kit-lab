@@ -1,1 +1,1 @@
-export { CategoryFilter } from './Ui/CategoryFilter';
+export { CategoryFilter } from './Ui';

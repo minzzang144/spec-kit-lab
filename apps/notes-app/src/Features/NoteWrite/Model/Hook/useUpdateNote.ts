@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { noteQueryKey } from '#/Entities/Note';
 
-import { noteWriteMutationOption } from '../../Api/Mutation';
+import { noteWriteMutationOption } from '../../Api';
 
 export function useUpdateNote(id: string) {
 	const queryClient = useQueryClient();

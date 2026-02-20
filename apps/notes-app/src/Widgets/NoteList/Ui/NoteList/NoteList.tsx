@@ -1,6 +1,6 @@
 import { useCategoryList } from '#/Entities/Category';
 
-import { useNoteListFilter } from '../../Model/Hook/useNoteListFilter';
+import { useNoteListFilter } from '../../Model';
 import { NoteListEmpty } from '../NoteListEmpty';
 import { NoteListItem } from '../NoteListItem';
 

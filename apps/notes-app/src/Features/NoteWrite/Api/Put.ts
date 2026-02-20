@@ -2,7 +2,7 @@ import type { Note } from '#/Entities/Note';
 
 import { httpClient } from '#/Shared/Api';
 
-import type { UpdateNoteRequest } from '../Type/NoteWrite';
+import type { UpdateNoteRequest } from '../Type';
 
 export async function putNote(
 	id: string,

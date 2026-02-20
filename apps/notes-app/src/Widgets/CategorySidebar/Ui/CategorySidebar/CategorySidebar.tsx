@@ -7,7 +7,7 @@ import { ALL_CATEGORY_ID, useCategoryList } from '#/Entities/Category';
 import { ROUTES } from '#/Shared/Config';
 import { Button } from '#/Shared/Ui';
 
-import { useSidebarState } from '../../Model/Hook/useSidebarState';
+import { useSidebarState } from '../../Model';
 
 export function CategorySidebar() {
 	const { isOpen, open, close } = useSidebarState();

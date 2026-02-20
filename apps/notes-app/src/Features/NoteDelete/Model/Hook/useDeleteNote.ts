@@ -6,7 +6,7 @@ import { noteQueryKey } from '#/Entities/Note';
 
 import { ROUTES } from '#/Shared/Config';
 
-import { noteDeleteMutationOption } from '../../Api/Mutation';
+import { noteDeleteMutationOption } from '../../Api';
 
 export function useDeleteNote(id: string) {
 	const queryClient = useQueryClient();

@@ -1,1 +1,1 @@
-export { NoteSearch } from './Ui/NoteSearch';
+export { NoteSearch } from './Ui';

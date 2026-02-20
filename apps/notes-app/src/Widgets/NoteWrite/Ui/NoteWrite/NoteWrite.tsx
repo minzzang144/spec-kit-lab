@@ -13,8 +13,8 @@ import {
 	Textarea,
 } from '#/Shared/Ui';
 
-import { useNoteForm } from '../../Model/Hook/useNoteForm';
-import type { NoteFormData } from '../../Model/Hook/useNoteForm';
+import { useNoteForm } from '../../Model';
+import type { NoteFormData } from '../../Model';
 
 type NoteWriteProps = {
 	existingNote?: Note;

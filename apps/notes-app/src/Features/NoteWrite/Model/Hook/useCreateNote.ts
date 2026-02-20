@@ -6,7 +6,7 @@ import { noteQueryKey } from '#/Entities/Note';
 
 import { ROUTES } from '#/Shared/Config';
 
-import { noteWriteMutationOption } from '../../Api/Mutation';
+import { noteWriteMutationOption } from '../../Api';
 
 export function useCreateNote() {
 	const queryClient = useQueryClient();
