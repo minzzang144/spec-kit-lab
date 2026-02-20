@@ -318,7 +318,7 @@ specify → clarify → plan → tasks → implement → analyze
 - ✅ `Read` - Read existing files
 - ✅ `Glob` - Find files by patterns
 - ✅ `Grep` - Search file contents
-- ✅ 사용자에게 질문하여 요구사항 명확화
+- ✅ `AskUserQuestion` - Clarify requirements
 
 **Forbidden Tools**:
 - ❌ `Write` - Create new files
