@@ -1,5 +1,0 @@
-export {
-	ALL_CATEGORY_ID,
-	DEFAULT_CATEGORY_LIST,
-	UNCATEGORIZED_CATEGORY_ID,
-} from './CategoryConfig';

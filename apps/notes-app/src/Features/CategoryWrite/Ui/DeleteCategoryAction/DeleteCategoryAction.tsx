@@ -10,7 +10,7 @@ import {
 	DialogTrigger,
 } from '#/Shared/Ui';
 
-import { useDeleteCategory } from '../../Model';
+import { useDeleteCategory } from '../../Model/Hook/useDeleteCategory';
 
 type DeleteCategoryActionProps = {
 	categoryId: string;

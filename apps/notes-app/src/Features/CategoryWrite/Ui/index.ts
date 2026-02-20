@@ -1,1 +1,0 @@
-export { DeleteCategoryAction } from './DeleteCategoryAction';

@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { categoryQueryKey } from '#/Entities/Category';
 
-import { categoryWriteMutationOption } from '../../Api';
+import { categoryWriteMutationOption } from '../../Api/Mutation';
 
 export function useCreateCategory() {
 	const queryClient = useQueryClient();

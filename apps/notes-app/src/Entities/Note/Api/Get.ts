@@ -1,6 +1,6 @@
 import { httpClient } from '#/Shared/Api';
 
-import type { Note } from '../Type';
+import type { Note } from '../Type/Note';
 
 type GetNoteListParam = {
 	readonly categoryId?: string;

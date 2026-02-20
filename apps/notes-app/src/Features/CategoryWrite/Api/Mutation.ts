@@ -1,4 +1,4 @@
-import type { CreateCategoryRequest } from '../Type';
+import type { CreateCategoryRequest } from '../Type/CategoryWrite';
 
 import { deleteCategory } from './Delete';
 import { categoryWriteMutationKey } from './Key';

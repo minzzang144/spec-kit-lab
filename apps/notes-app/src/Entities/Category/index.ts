@@ -1,9 +1,12 @@
-export { categoryQueryKey, categoryQueryOption, getCategoryList } from './Api';
+export { getCategoryList } from './Api/Get';
+export { categoryQueryKey } from './Api/Key';
+export { categoryQueryOption } from './Api/Query';
 export {
 	ALL_CATEGORY_ID,
 	DEFAULT_CATEGORY_LIST,
 	UNCATEGORIZED_CATEGORY_ID,
-} from './Config';
-export { useCategoryList, useCategoryStore } from './Model';
-export type { Category } from './Type';
-export { CategoryBadge } from './Ui';
+} from './Config/CategoryConfig';
+export { useCategoryList } from './Model/Hook/useCategoryList';
+export { useCategoryStore } from './Model/Store/useCategoryStore';
+export type { Category } from './Type/Category';
+export { CategoryBadge } from './Ui/CategoryBadge';

@@ -1,4 +1,4 @@
-import type { Note } from '../Type';
+import type { Note } from '../Type/Note';
 
 export const INITIAL_NOTE_LIST: Note[] = [
 	{

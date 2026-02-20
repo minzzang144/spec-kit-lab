@@ -1,6 +1,6 @@
 import { getNoteList } from '#/Entities/Note/__Mock__';
 
-import type { Category } from '../Type';
+import type { Category } from '../Type/Category';
 
 import { INITIAL_CATEGORY_LIST } from './Seed';
 

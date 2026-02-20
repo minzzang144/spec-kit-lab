@@ -1,4 +1,4 @@
-import type { CreateNoteRequest, UpdateNoteRequest } from '../Type';
+import type { CreateNoteRequest, UpdateNoteRequest } from '../Type/NoteWrite';
 
 import { noteWriteMutationKey } from './Key';
 import { postNote } from './Post';

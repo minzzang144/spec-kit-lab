@@ -1,1 +1,0 @@
-export { CategoryBadge } from './CategoryBadge';

@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { ALL_CATEGORY_ID } from '../../Config';
+import { ALL_CATEGORY_ID } from '../../Config/CategoryConfig';
 
 import { useCategoryStore } from './useCategoryStore';
 

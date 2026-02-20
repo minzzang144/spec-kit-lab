@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { categoryQueryKey } from '#/Entities/Category';
 import { noteQueryKey } from '#/Entities/Note';
 
-import { categoryWriteMutationOption } from '../../Api';
+import { categoryWriteMutationOption } from '../../Api/Mutation';
 
 export function useDeleteCategory(id: string) {
 	const queryClient = useQueryClient();

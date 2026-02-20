@@ -313,18 +313,18 @@ Q: 컴포넌트가 children을 외부에서 받아 래핑?
 
 ### Barrel 생성 규칙
 
-**슬라이스 barrel은 필수**, 세그먼트/그룹 barrel은 선택이다.
+barrel(index.ts)은 **외부에서 import하는 진입점에만** 생성한다.
 
 | 레벨 | 필수 여부 | 예시 |
 |------|----------|------|
 | Layer (레이어) | ❌ **금지** | ~~`Entities/index.ts`~~ — 모든 슬라이스를 번들링하여 tree-shaking 불가 |
-| Slice (슬라이스) | ✅ **필수** | `Entities/Chat/index.ts` |
-| Segment (세그먼트) | 🔵 **선택** | `Entities/Chat/Api/index.ts` — 없으면 슬라이스 barrel에서 직접 import |
-| Group (그룹) | 🔵 **선택** | `Entities/Chat/Model/Hook/index.ts` — 없으면 세그먼트 barrel에서 직접 import |
-| `__Mock__` | ✅ **필수** | `Entities/Chat/__Mock__/index.ts` — 단, 슬라이스 barrel에서는 re-export 금지 |
-| UI 컴포넌트 폴더 | ✅ **필수** | `Ui/ChatMessageItem/index.ts` (기존 규칙 유지) |
+| Slice (슬라이스) | ✅ **필수** | `Entities/Chat/index.ts` — 외부 public API |
+| Segment (세그먼트) | ❌ **생성하지 않음** | ~~`Entities/Chat/Api/index.ts`~~ — 슬라이스 barrel에서 파일 직접 import |
+| Group (그룹) | ❌ **생성하지 않음** | ~~`Entities/Chat/Model/Hook/index.ts`~~ — 상동 |
+| `__Mock__` | ✅ **필수** | `Entities/Chat/__Mock__/index.ts` — 외부(App/Mock, 테스트)에서 import |
+| UI 컴포넌트 폴더 | ✅ **필수** | `Ui/ChatMessageItem/index.ts` — 컴포넌트 export 진입점 |
 
-**성능 고려**: barrel 체인이 깊어지면 (슬라이스 → 세그먼트 → 그룹 → 파일) TypeScript 컴파일러와 IDE 인텔리센스에 부하가 발생할 수 있다. 슬라이스가 50개 이상인 프로젝트에서는 세그먼트/그룹 barrel을 생략하고 슬라이스 barrel에서 직접 import하는 것을 권장한다.
+**기준**: barrel이 존재하는 이유는 하나 — **다른 슬라이스에서 import하는가?** 세그먼트/그룹 barrel은 슬라이스 내부에서만 사용되는 중간 체이닝이므로 생성하지 않는다. 이로써 TypeScript 컴파일러와 IDE 인텔리센스의 모듈 해석 부하를 줄인다.
 
 ### Export 규칙
 
@@ -399,17 +399,17 @@ import { chatEntityHandler } from '#/Entities/Chat/__Mock__';
 
 ## 7. Import Rules
 
-### 같은 슬라이스: 상대 경로 (barrel 경유)
+### 같은 슬라이스: 상대 경로 (파일 직접 import)
 
-같은 슬라이스 내에서 다른 세그먼트/그룹을 참조할 때는 **barrel(index.ts)을 경유**하는 상대 경로를 사용한다:
+같은 슬라이스 내에서는 **파일을 직접 import**한다 (세그먼트/그룹 barrel이 없으므로):
 
 ```typescript
 // Entities/Chat/Model/Hook/useChat.ts
-import type { ChatMessage } from '../../Type';       // ✅ 세그먼트 barrel 경유
-import { chatQueryOption } from '../../Api';          // ✅ 세그먼트 barrel 경유
+import type { ChatMessage } from '../../Type/Chat';        // ✅ 파일 직접
+import { chatQueryOption } from '../../Api/Query';          // ✅ 파일 직접
 ```
 
-같은 세그먼트/그룹 내부에서는 **직접 import**:
+같은 세그먼트 내부에서도 **파일 직접 import**:
 
 ```typescript
 // Entities/Chat/Api/Query.ts
@@ -417,11 +417,11 @@ import { getChatMessage } from './Get';               // ✅ 같은 세그먼트
 import { chatQueryKey } from './Key';                  // ✅ 같은 세그먼트 내 직접 import
 ```
 
-같은 세그먼트 내 다른 그룹은 **그룹 barrel 경유**:
+같은 세그먼트 내 다른 그룹도 **파일 직접 import**:
 
 ```typescript
 // Entities/Chat/Model/Logic/useChatLogic.ts
-import { useChatStore } from '../Store';              // ✅ 그룹 barrel 경유
+import { useChatStore } from '../Store/useChatStore';  // ✅ 파일 직접
 ```
 
 ### 다른 슬라이스: 절대 경로 (2-depth 고정)
@@ -1362,11 +1362,8 @@ BEFORE adding an import:
     STOP
     EXPLAIN: "다른 슬라이스는 index.ts(public API)만 import 가능합니다 (__Mock__은 __Mock__/index.ts 경유)"
 
-  IF same_slice_import AND different_segment AND NOT targeting_barrel:
-    WARN: "다른 세그먼트는 barrel(index.ts) 경유를 권장합니다 (예: '../../Api' not '../../Api/Get')"
-
-  IF same_segment_import AND different_group AND NOT targeting_barrel:
-    WARN: "다른 그룹은 barrel(index.ts) 경유를 권장합니다 (예: '../Store' not '../Store/useChatStore')"
+  IF same_slice_import AND targeting_segment_barrel:
+    WARN: "세그먼트/그룹 barrel은 사용하지 않습니다. 파일을 직접 import하세요 (예: '../../Api/Get' not '../../Api')"
 ```
 
 ### Check 4: Public API (Barrel)
@@ -1376,13 +1373,9 @@ AFTER creating a slice:
   IF slice_root does NOT have index.ts:
     WARN: "index.ts(public API)를 생성해야 합니다"
 
-AFTER creating a segment:
-  IF segment_root does NOT have index.ts:
-    WARN: "세그먼트 barrel(index.ts)를 생성해야 합니다"
-
-AFTER creating a group:
-  IF group_root does NOT have index.ts:
-    WARN: "그룹 barrel(index.ts)를 생성해야 합니다"
+AFTER creating a segment or group:
+  IF segment_or_group_root has index.ts:
+    WARN: "세그먼트/그룹 barrel은 생성하지 않습니다. 슬라이스 barrel에서 파일을 직접 import하세요"
 
 AFTER creating a layer-level index.ts (e.g., Entities/index.ts):
   STOP
@@ -1511,8 +1504,8 @@ Q: 테스트 전용 목 데이터 / MSW?
 | 상황               | 형식                          | 예시                                |
 |-------------------|-----------------------------|-------------------------------------|
 | 같은 세그먼트/그룹 내부 | 직접 import                 | `import { x } from './Get'`         |
-| 같은 슬라이스, 다른 그룹 | 상대 경로 + 그룹 barrel    | `import { x } from '../Store'`      |
-| 같은 슬라이스, 다른 세그먼트 | 상대 경로 + 세그먼트 barrel | `import { x } from '../../Api'`     |
+| 같은 슬라이스, 다른 그룹 | 상대 경로 + 파일 직접      | `import { x } from '../Store/useChatStore'` |
+| 같은 슬라이스, 다른 세그먼트 | 상대 경로 + 파일 직접   | `import { x } from '../../Api/Get'` |
 | 다른 슬라이스       | `#/Layer/Slice`              | `import { x } from '#/Entities/Chat'` |
 | Entity 간 타입 참조 | `import type` + `#/Entities/Slice` | `import type { Note } from '#/Entities/Note'` |
 | 외부 라이브러리     | 패키지 이름                    | `import { x } from 'zustand'`       |

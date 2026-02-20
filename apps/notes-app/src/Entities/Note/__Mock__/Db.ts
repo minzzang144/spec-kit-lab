@@ -1,4 +1,4 @@
-import type { Note } from '../Type';
+import type { Note } from '../Type/Note';
 
 import { INITIAL_NOTE_LIST } from './Seed';
 

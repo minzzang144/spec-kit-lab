@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { noteQueryOption } from '../../Api';
+import { noteQueryOption } from '../../Api/Query';
 
 type UseNoteListParam = {
 	readonly categoryId?: string;

@@ -1,6 +1,6 @@
 import type { StateCreator } from 'zustand';
 
-import { ALL_CATEGORY_ID } from '../../Config';
+import { ALL_CATEGORY_ID } from '../../Config/CategoryConfig';
 
 export type FilterSlice = {
 	selectedCategoryId: string;
