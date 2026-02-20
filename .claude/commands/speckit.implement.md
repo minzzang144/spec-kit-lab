@@ -22,6 +22,10 @@ You **MUST** consider the user input before proceeding (if not empty).
 
    b. **If on `spec/#ticket-*` branch** (specification phase):
       - You need to create or switch to a feature branch before implementation.
+      - **Push spec branch to remote** (if not already pushed):
+        - Run: `git push -u origin $(git branch --show-current)`
+        - This ensures spec branch with planning artifacts (spec.md, plan.md, tasks.md) is available on remote before implementation starts.
+        - If push fails (e.g., already up to date), continue without error.
       - **ASK user for implementation mode** using AskUserQuestion:
         - Question: "어떤 모드로 구현을 진행할까요?"
         - Header: "구현 모드"

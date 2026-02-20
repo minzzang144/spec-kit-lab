@@ -22,18 +22,16 @@ You **MUST** consider the user input before proceeding (if not empty).
 
    b. **If on `spec/#ticket-*` branch** (specification phase):
       - You need to create or switch to a feature branch before implementation.
-      - **사용자에게 구현 모드를 질문합니다**:
-
-        > **어떤 모드로 구현을 진행할까요?**
-        >
-        > | 옵션 | 모드 | 설명 |
-        > |------|------|------|
-        > | 1 | 단일 모드 (Single Mode) | 하나의 feature 브랜치에서 모든 작업. 작은 기능, 1-2 User Story, 한 사람 작업에 적합 |
-        > | 2 | 병렬 모드 (Parallel Mode) | User Story별로 브랜치 분리. 큰 기능, 3+ User Story, 팀 협업 또는 단계별 PR 리뷰에 적합 |
-        >
-        > 번호 또는 모드명으로 응답해주세요.
-
-        - 사용자 응답을 대기한 후 선택에 따라 진행합니다.
+      - **Push spec branch to remote** (if not already pushed):
+        - Run: `git push -u origin $(git branch --show-current)`
+        - This ensures spec branch with planning artifacts (spec.md, plan.md, tasks.md) is available on remote before implementation starts.
+        - If push fails (e.g., already up to date), continue without error.
+      - **ASK user for implementation mode** using AskUserQuestion:
+        - Question: "어떤 모드로 구현을 진행할까요?"
+        - Header: "구현 모드"
+        - Options:
+          1. Label: "단일 모드 (Single Mode)", Description: "하나의 feature 브랜치에서 모든 작업. 작은 기능, 1-2 User Story, 한 사람 작업에 적합"
+          2. Label: "병렬 모드 (Parallel Mode)", Description: "User Story별로 브랜치 분리. 큰 기능, 3+ User Story, 팀 협업 또는 단계별 PR 리뷰에 적합"
 
       - Based on user choice, create feature branch:
         - **단일 모드**: Run `.specify/scripts/bash/create-feature-branch.sh --json --mode single`
@@ -42,13 +40,8 @@ You **MUST** consider the user input before proceeding (if not empty).
       - The script will create the branch(es) and switch to the feature branch (single mode) or stay on spec (parallel mode).
 
       - **For parallel mode**: After foundation tasks (Phase 1-2), ask which User Story to work on:
-
-        > **작업할 User Story를 선택해주세요:**
-        >
-        > `tasks.md`에서 사용 가능한 User Story 목록을 표시합니다.
-        > 번호 또는 User Story 이름으로 응답해주세요.
-
-        - 사용자 응답을 대기한 후 해당 브랜치로 checkout: `git checkout feature/#ticket-usN-feature-name`
+        - Use AskUserQuestion with available User Story options from `tasks.md`
+        - Then checkout that specific branch: `git checkout feature/#ticket-usN-feature-name`
 
    c. **If already on `feature/#ticket-*` branch** (implementation phase):
       - Already on a feature branch, continue with implementation.
@@ -166,12 +159,17 @@ You **MUST** consider the user input before proceeding (if not empty).
 
    a. **Announce completion**: "User Story [N] 구현이 완료되었습니다. 코드 리뷰를 진행합니다."
 
-   b. **코드 리뷰 수행**: 다음 체크리스트 기준으로 해당 User Story의 변경 파일을 직접 리뷰합니다:
-      - **코드 품질**: 프로젝트 rules(`.cursor/rules/`)의 코딩 표준 준수 여부
-      - **보안**: 입력 검증, 인젝션 방지, 인증/인가 처리
-      - **성능**: 불필요한 연산, N+1 쿼리, 메모리 누수 가능성
-      - **테스트**: 핵심 로직의 테스트 커버리지 확인
-      - 리뷰 결과를 요약하여 사용자에게 보고합니다.
+   b. **Run code review**: Execute `/everything-claude-code:code-review` skill
+      - If the skill is not available (command fails), inform the user:
+        ```
+        ⚠️ code-review 스킬을 사용할 수 없습니다.
+        다음 명령어로 everything-claude-code 플러그인을 설치해주세요:
+
+        claude mcp add everything-claude-code -- npx -y @anthropic-ai/claude-code-mcp@latest
+
+        설치 후 다시 시도하거나, 수동으로 코드를 리뷰해주세요.
+        ```
+      - Wait for user to confirm installation and retry, or skip review
 
    c. **Address findings**: If review identifies issues:
       - Critical/High issues: Fix before proceeding to next User Story
@@ -212,12 +210,17 @@ You **MUST** consider the user input before proceeding (if not empty).
 
     a. **Announce PR review**: "모든 구현이 완료되었습니다. PR 생성 전 종합 리뷰를 진행합니다."
 
-    b. **종합 PR 리뷰 수행**: `git diff [base-branch]...HEAD`로 전체 변경사항을 분석합니다:
-       - **코드 품질 및 표준 준수**: `.cursor/rules/` 기준 검증
-       - **보안 취약점**: OWASP Top 10 관련 패턴 확인
-       - **성능 이슈**: 병목 가능성, 비효율적 패턴 탐지
-       - **테스트 커버리지 갭**: 누락된 테스트 케이스 식별
-       - 리뷰 결과를 Critical/High/Medium/Low로 분류하여 보고합니다.
+    b. **Run comprehensive PR review**: Execute `/pr-review-toolkit:review-pr` skill
+       - If the skill is not available (command fails), inform the user:
+         ```
+         ⚠️ pr-review-toolkit 스킬을 사용할 수 없습니다.
+         다음 명령어로 pr-review-toolkit 플러그인을 설치해주세요:
+
+         claude mcp add pr-review-toolkit -- npx -y @anthropic-ai/pr-review-toolkit-mcp@latest
+
+         설치 후 다시 시도하거나, 기본 코드 리뷰로 대체할 수 있습니다.
+         ```
+       - If plugin unavailable, offer alternative: Run `/everything-claude-code:code-review` on full changeset
 
     c. **Review findings**: The PR review provides multi-agent analysis covering:
        - Code quality and standards compliance
@@ -238,20 +241,14 @@ You **MUST** consider the user input before proceeding (if not empty).
          - `feature/#ticket-*` → base: `spec/#ticket-*` (same ticket)
          - `spec/#ticket-*` → base: `develop` or `main` (depends on project)
 
-    b. **사용자에게 base 브랜치를 확인합니다**:
-
-       > **PR의 base 브랜치를 확인해주세요:**
-       >
-       > | 옵션 | 브랜치 | 설명 |
-       > |------|--------|------|
-       > | 1 | `[detected-base-branch]` | 자동 감지된 브랜치 (권장) |
-       > | 2 | `develop` | develop 브랜치로 병합 |
-       > | 3 | `main` | main 브랜치로 병합 |
-       > | 4 | 직접 입력 | 다른 브랜치명을 직접 입력 |
-       >
-       > 번호 또는 브랜치명으로 응답해주세요.
-
-       - 사용자 응답을 대기한 후 선택된 브랜치를 base로 사용합니다.
+    b. **Ask user for base branch confirmation** using AskUserQuestion:
+       - Question: "PR의 base 브랜치를 확인해주세요."
+       - Header: "Base 브랜치"
+       - Options:
+         1. Label: "[detected-base-branch]", Description: "자동 감지된 브랜치 (권장)"
+         2. Label: "develop", Description: "develop 브랜치로 병합"
+         3. Label: "main", Description: "main 브랜치로 병합"
+         4. (Option to enter custom branch via "Other")
 
     c. **Push and create PR**:
        - Push current branch: `git push -u origin [current-branch]`
