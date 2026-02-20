@@ -25,9 +25,10 @@
 14. [Full Directory Tree](#14-full-directory-tree)
 15. [Enforcement Mechanisms](#15-enforcement-mechanisms)
 16. [Test Code Management](#16-test-code-management)
-17. [Quick Reference](#17-quick-reference)
-18. [Migration Strategy](#18-migration-strategy)
-19. [Relationship to Other Rules](#19-relationship-to-other-rules)
+17. [Error Handling Patterns](#17-error-handling-patterns)
+18. [Quick Reference](#18-quick-reference)
+19. [Migration Strategy](#19-migration-strategy)
+20. [Relationship to Other Rules](#20-relationship-to-other-rules)
 
 ---
 
@@ -1460,7 +1461,105 @@ afterAll(() => server.close());
 
 ---
 
-## 17. Quick Reference
+## 17. Error Handling Patterns
+
+에러 처리는 **catch는 가장 가까운 곳, 표시는 사용자에게 의미 있는 곳** 원칙을 따른다.
+
+### 레이어별 에러 처리 책임
+
+| 에러 유형 | catch 위치 | 표시 위치 | 설명 |
+|----------|-----------|----------|------|
+| API 네트워크 에러 | `Shared/Api` (httpClient) | throw → 상위에서 처리 | httpClient가 HTTP 에러를 Error 객체로 변환하여 throw. 표시하지 않음 |
+| Mutation 실패 | `Features/Model/Hook` (onError) | Feature Ui 또는 toast | `useMutation({ onError })` 콜백에서 처리. 비즈니스 에러 판단 |
+| Query 실패 (Widget) | `Widgets/Ui` (isError 분기) | Widget 내 에러 UI | `if (isError) return <에러 메시지>` |
+| Query 실패 (Page) | `Pages/Ui` (isError 분기) | Page 내 에러 UI | Page가 직접 query를 호출하는 경우 동일하게 처리 |
+| 폼 검증 에러 | `Widgets/Ui` (RHF resolver) | 필드 옆 인라인 | Zod schema → React Hook Form field error |
+| 런타임 크래시 | `App/Router` (ErrorBoundary) | 페이지 대체 UI | `<ErrorBoundary>` 래핑 — 최후의 안전망 |
+
+### 에러 흐름
+
+```
+Shared/Api (변환) → Features (판단) → Widgets/Pages (표시) → App (안전망)
+```
+
+- **Shared/Api**: HTTP 응답을 파싱하여 에러 객체로 변환. `throw`만 하고 표시하지 않음
+- **Features**: mutation의 `onError`에서 비즈니스 실패를 판단하고, toast 알림이나 상태 롤백 등의 후속 처리
+- **Widgets/Pages**: query의 `isError`를 분기하여 사용자에게 에러 UI를 표시. Page가 직접 query를 호출하면 (예: `useNote(id)`) Widget과 동일하게 에러 분기
+- **App/Router**: ErrorBoundary로 예상치 못한 런타임 크래시를 catch하여 fallback UI 표시
+
+### httpClient 에러 변환 패턴
+
+```typescript
+// Shared/Api/httpClient.ts
+async function request<T>(url: string, options?: RequestInit): Promise<T> {
+  const response = await fetch(`${BASE_URL}${url}`, { ...options });
+
+  if (!response.ok) {
+    const errorBody = await response.json();
+    throw errorBody; // 상위 레이어에서 catch
+  }
+
+  const result = await response.json();
+  return result.data;
+}
+```
+
+### Feature Mutation 에러 처리 패턴
+
+```typescript
+// Features/NoteDelete/Model/Hook/useDeleteNote.ts
+export function useDeleteNote(noteId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    ...noteDeleteMutationOption.delete(noteId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: noteQueryKey.all });
+    },
+    onError: (error) => {
+      // 비즈니스 에러 처리 (toast, 롤백 등)
+      // 표시 방법은 소비자(Widget/Page)에서 결정할 수도 있음
+    },
+  });
+}
+```
+
+### Widget Query 에러 처리 패턴
+
+```typescript
+// Widgets/NoteList/Ui/NoteList/NoteList.tsx
+export function NoteList() {
+  const { data, isLoading, isError } = useNoteListFilter();
+
+  if (isLoading) return <NoteListLoading />;
+  if (isError) return <p>노트를 불러오지 못했습니다.</p>;
+  if (!data || data.length === 0) return <NoteListEmpty />;
+
+  return <ul>{/* ... */}</ul>;
+}
+```
+
+### ErrorBoundary 배치
+
+```typescript
+// App/Router/AppRouter.tsx — 각 라우트를 ErrorBoundary로 래핑
+{
+  path: '/',
+  element: (
+    <ErrorBoundary>
+      <Suspense fallback={<PageFallback />}>
+        <NoteListPage />
+      </Suspense>
+    </ErrorBoundary>
+  ),
+}
+```
+
+ErrorBoundary 컴포넌트는 `Shared/Ui`에 위치한다.
+
+---
+
+## 18. Quick Reference
 
 ### "이 코드는 어디에?" 결정 트리
 
@@ -1549,9 +1648,28 @@ Q: 단일 컴포넌트 내부 상태?
   → NO → useState/useReducer 사용
 ```
 
+### 에러 처리 치트시트
+
+```
+Q: HTTP 에러 변환?
+  → Shared/Api (httpClient에서 throw)
+
+Q: Mutation 실패 시 후속 처리?
+  → Features/Model/Hook (onError 콜백)
+
+Q: 데이터 로딩 실패 UI?
+  → Widgets/Ui (isError 분기)
+
+Q: 폼 검증 에러?
+  → Widgets/Ui (React Hook Form + Zod)
+
+Q: 예상치 못한 크래시?
+  → App/Router (ErrorBoundary)
+```
+
 ---
 
-## 18. Migration Strategy
+## 19. Migration Strategy
 
 기존 레포에 적용할 때의 전략.
 
@@ -1580,7 +1698,7 @@ FSD 미준수 영역을 **"추후 리팩토링 작업"**으로 목록화:
 
 ---
 
-## 19. Relationship to Other Rules
+## 20. Relationship to Other Rules
 
 ### constitution.md와의 관계
 
