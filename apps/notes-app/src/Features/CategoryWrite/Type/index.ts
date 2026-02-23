@@ -1,4 +1,1 @@
-export type {
-	CreateCategoryRequest,
-	CreateCategoryResponse,
-} from './CategoryWrite';
+export type { CreateCategoryRequest, CreateCategoryResponse } from './Dto';

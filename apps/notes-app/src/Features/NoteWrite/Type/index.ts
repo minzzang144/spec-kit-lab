@@ -3,4 +3,4 @@ export type {
 	CreateNoteResponse,
 	UpdateNoteRequest,
 	UpdateNoteResponse,
-} from './NoteWrite';
+} from './Dto';

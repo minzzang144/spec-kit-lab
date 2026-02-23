@@ -233,7 +233,7 @@ Type 세그먼트는 1-level 그룹 폴더를 사용하여 목적별로 분류�
 | 그룹 | 내용 | 레이어 | 생성 조건 |
 |------|------|--------|----------|
 | `Domain/` | FE 도메인 모델 (앱이 사용하는 정규 타입) | Entity | 항상 필수 |
-| `Dto/` | 모든 전송 객체 — HTTP(RequestDto, ResponseDto) + Socket(EmitDto, OnDto) | Entity, Feature | BE 응답 형태가 FE 모델과 다를 때 |
+| `Dto/` | 모든 전송 객체 — HTTP(RequestDto, ResponseDto) + Socket(EmitDto, OnDto) | Entity, Feature | 서버와 주고받는 타입이 있으면 **항상** 생성 |
 | `Param/` | URL path parameter 타입 (`/notes/:id`의 id) | Entity, Feature | 단순 `id: string` 이상일 때 |
 | `Query/` | Query string parameter 타입 (`?keyword=&sort=`) | Entity | GET 요청에 복잡한 필터/정렬이 있을 때 |
 | `Message/` | Socket MessageMap + discriminated union (Dto/에서 import) | Feature | Socket 통신이 있을 때 |
@@ -267,6 +267,20 @@ Entities/Note/Type/
 ├── Query/
 │   └── NoteQuery.ts      ← GetNoteListQuery
 └── index.ts
+
+Features/NoteWrite/Type/
+├── Dto/
+│   ├── NoteWriteRequestDto.ts  ← CreateNoteRequest, UpdateNoteRequest
+│   └── NoteWriteResponseDto.ts ← CreateNoteResponse, UpdateNoteResponse
+└── index.ts
+```
+
+**FE 전용 상태** (서버와 주고받지 않는 타입)는 Dto/에 넣지 않고 flat으로 유지:
+
+```
+Features/CategoryFilter/Type/
+├── CategoryFilter.ts     ← FilterState (FE 전용, Dto 아님)
+└── index.ts
 ```
 
 ### Entity Type vs Feature Type 판단 기준
@@ -278,7 +292,7 @@ Entities/Note/Type/
 | GET 요청 query string? | Query/ | |
 | URL path parameter? | Param/ | |
 | POST/PUT/DELETE 요청 바디? | | Dto/RequestDto |
-| FE 전용 상태? | | (FilterState 등) |
+| FE 전용 상태? | | flat 파일 (Dto/ 밖, FilterState 등) |
 | Socket 메시지 (On + Emit)? | | Message/ |
 
 ### Dto/ 내 프로토콜 구분 (접미사 기반)
@@ -822,7 +836,7 @@ function ChatWidget() {
 
 ## 10. Mapper Pattern
 
-BE 응답(Dto) → FE 도메인 모델 변환 함수. **`Type/Dto/`가 존재하는 도메인에만** Mapper를 생성한다.
+BE 응답(Dto) → FE 도메인 모델 변환 함수. **BE 응답 형태가 FE 모델과 다를 때만** Mapper를 생성한다.
 
 ### 위치
 
@@ -874,8 +888,7 @@ export async function getChatMessageList(roomId: string): Promise<ChatMessage[]>
 | 상황 | Mapper 필요? | 이유 |
 |------|-------------|------|
 | BE 응답이 FE 모델과 형태가 다름 (snake_case, nested 등) | O | 변환 필수 |
-| BE 응답 = FE 모델 (형태 동일) | X | 불필요한 indirection |
-| Dto가 없으면 | X | Mapper도 없음 |
+| BE 응답 = FE 모델 (형태 동일) | X | Dto/는 존재하지만 Mapper는 불필요 |
 
 ### 파일 분리 기준
 
@@ -1904,7 +1917,7 @@ Q: BE 응답과 FE 모델 형태가 다름?
   → 함수명: to{DomainModel}(dto) (출력 기준)
 
 Q: BE 응답 = FE 모델? (형태 동일)
-  → Mapper 불필요, Dto도 불필요
+  → Dto/는 항상 존재, Mapper만 불필요
 
 Q: Mapper 파일이 200줄 초과?
   → 서브도메인별로 분리 (ChatMessageMapper.ts 등)
