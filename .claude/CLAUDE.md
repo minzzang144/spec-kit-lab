@@ -74,33 +74,45 @@ All commands follow pattern `speckit.[phase]` and are available in both `.claude
   - No hyphens, spaces, or special characters
   - Examples: `13272f64`, `PROJ123`, `abc456`
 
-### Implementation Phase
-- **Single Mode**: `feature/#ticket-feature-name`
-  - One branch for all implementation work
-  - Best for small features (1-2 User Stories)
-- **Parallel Mode**: `feature/#ticket-us{N}-feature-name`
-  - Separate branches per User Story
-  - e.g., `feature/#13272f64-us1-user-auth` (User Story 1)
-  - e.g., `feature/#13272f64-us2-user-auth` (User Story 2)
-  - Best for large features (3+ User Stories) or team collaboration
+### Implementation Phase (Stacked PR)
+- **Always cycle-based branches**: `base` + `us1` + `us2`...
+  - `feature/#ticket-base-feature-name` (Phase 1+2: Setup + Foundation)
+  - `feature/#ticket-us1-feature-name` (Phase 3: User Story 1)
+  - `feature/#ticket-us2-feature-name` (Phase 4: User Story 2)
+- Each branch forks from the previous one (Stacked PR pattern)
+- Each cycle ends with code review + push + PR creation
+- Resume is based on tasks.md Phase checkbox completion
 
-### Branch Flow
+### Branch Flow (Stacked PR)
 ```
 develop (stable - production ready)
-  ↑ PR #2 (release)
+  ↑ PR (release)
   │
 spec/#ticket-feature (verification - specify → plan → tasks → integration)
-  ↑ PR #1 (implementation merge)
+  ↑ PR (base → spec)
   │
-feature/#ticket-[us{N}-]feature (development - implement)
+feature/#ticket-base-feature (Phase 1+2: Setup + Foundation)
+  ↑ PR (us1 → base)
+  │
+feature/#ticket-us1-feature (Phase 3: User Story 1)
+  ↑ PR (us2 → us1)
+  │
+feature/#ticket-us2-feature (Phase 4: User Story 2)
 ```
 
 **Key Points**:
 - `spec` branches are created from `develop`
-- `feature` branches are created from `spec`
+- `feature/base` is created from `spec`, each `feature/usN` from previous branch
 - All branches read specs from the same `specs/#ticket-feature-name/` directory
-- `feature` → `spec` merge (implementation integration)
-- `spec` → `develop` merge (release)
+- PRs are merged in order: `base` → `us1` → `us2` → ... → `spec` → `develop`
+- Each PR contains only one cycle's changes for reviewable size
+
+### Git Worktree (Optional)
+When working on multiple features simultaneously:
+```bash
+# After speckit.specify creates a spec branch
+git worktree add ../feature-name-worktree feature/#ticket-base-feature
+```
 
 ### Legacy Support
 - Format `###-feature-name` (e.g., `001-user-auth`) is still recognized for backward compatibility

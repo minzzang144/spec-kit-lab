@@ -239,7 +239,7 @@ specify → clarify → plan → tasks → implement → analyze
    - If skipping commits: **STOP and commit current task**
    - If unsure about commit boundary: **ASK user for clarification**
 
-**Output**: Complete implemented feature with all necessary files and configurations, with each task properly committed
+**Output**: Cycle-based implementation (base, us1, us2...) with code review + PR per cycle. Each cycle is managed as an independent Stacked PR (spec ← base ← us1 ← us2)
 
 ---
 
