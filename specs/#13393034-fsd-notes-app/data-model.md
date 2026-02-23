@@ -86,7 +86,9 @@ export type CreateNoteRequest = {
 export type CreateNoteResponse = Note;
 ```
 
-### NoteEdit (Features/NoteEdit/Type/NoteEdit.ts)
+### NoteWrite - Update Types (Features/NoteWrite/Type/NoteWrite.ts)
+
+NoteEdit가 NoteWrite에 통합되었으므로, 같은 파일에 create + update 타입이 공존한다.
 
 ```typescript
 export type UpdateNoteRequest = {

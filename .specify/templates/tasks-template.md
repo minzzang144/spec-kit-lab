@@ -28,12 +28,14 @@ description: "Task list template for feature implementation"
 
 ## Path Conventions
 
-- **Single project**: `src/`, `tests/` at repository root
-- **Web app**: `backend/src/`, `frontend/src/` (recommended for full-stack)
-- **Mobile**: `api/src/`, `ios/src/` or `android/src/`
+**CRITICAL — MONOREPO**: This repository uses pnpm + Turborepo. All app code lives under `apps/`.
+- **Project root**: `apps/[APP_NAME]/` (NEVER at repo root)
+- **Single project**: `apps/[APP_NAME]/src/`, `apps/[APP_NAME]/tests/`
+- **Web app**: `apps/[APP_NAME]/backend/src/`, `apps/[APP_NAME]/frontend/src/`
+- **Mobile**: `apps/[APP_NAME]/api/src/`, `apps/[APP_NAME]/ios/` or `android/`
 - **Frontend paths**: Follow FSD structure (`src/app/`, `src/features/`, `src/entities/`, `src/shared/`)
 - **Backend paths**: Follow NestJS structure (`src/modules/[feature]/`, `src/common/`, `src/database/`)
-- Paths shown below assume web app structure - adjust based on plan.md structure
+- Paths shown below assume `apps/[APP_NAME]/` as project root - adjust based on plan.md structure
 
 <!-- 
   ============================================================================

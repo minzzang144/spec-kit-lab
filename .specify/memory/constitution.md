@@ -53,24 +53,36 @@ Follow-up TODOs: Update tasks-template.md with mandatory E2E phase
 
 ## II. Architecture Principles
 
+### Repository Structure (NON-NEGOTIABLE)
+
+This repository is a **pnpm + Turborepo monorepo**. All implementation code MUST respect the workspace layout defined in `pnpm-workspace.yaml`.
+
+- **Applications**: `apps/[APP_NAME]/` — all new apps go under `apps/`
+- **Shared packages**: `packages/[PACKAGE_NAME]/` — reusable libraries
+- **NEVER** create application directories at the repository root
+
+When `/speckit.plan` generates implementation paths, the **Project root** for any new app MUST be `apps/[APP_NAME]/`, NOT `[APP_NAME]/`.
+
 ### Frontend Structure (FSD - Feature-Sliced Design)
 **Note**: `[APP_NAME]` is defined during spec creation with `/speckit.plan`
 
+> **Authority**: All new frontend apps MUST follow `.claude/rules/gem-fsd-architecture.md`. Implementation details (naming, imports, MSW, segments, Zustand placement, etc.) are defined there, not here.
+
 ```
-[APP_NAME]/frontend/src/
-├── app/           # Application initialization, providers, routing
-├── pages/         # Page components (route-level)
-├── widgets/       # Complex UI blocks (header, sidebar, etc.)
-├── features/      # User scenarios (auth, cart, filters)
-├── entities/      # Business entities (user, product, order)
-├── shared/        # Reusable utilities, UI kit, API client
+apps/[APP_NAME]/src/
+├── App/           # Application initialization, providers, routing
+├── Pages/         # Page components (route-level)
+├── Widgets/       # Complex UI blocks (header, sidebar, etc.)
+├── Features/      # Business-value user scenarios (CRUD, filter, search, navigation)
+├── Entities/      # Business entities (read-only, pure display)
+├── Shared/        # Reusable utilities, UI kit, API client
 ```
 
 ### Backend Architecture (NestJS Modular)
 **Note**: `[APP_NAME]` is defined during spec creation with `/speckit.plan`
 
 ```
-[APP_NAME]/backend/src/
+apps/[APP_NAME]/backend/src/
 ├── app.module.ts         # Root application module
 ├── main.ts              # Application entry point
 ├── common/              # Shared utilities, guards, interceptors
@@ -113,8 +125,8 @@ modules/[feature]/
 ### Layer Rules (NON-NEGOTIABLE)
 **Frontend (FSD)**:
 - Higher layers can import from lower layers ONLY
-- ✅ `features` → `entities` → `shared`
-- ❌ `entities` → `features` (FORBIDDEN)
+- ✅ `Pages → Widgets → Features → Entities → Shared`
+- ❌ `Entities → Features` (FORBIDDEN)
 
 **Backend (NestJS)**:
 - Controllers only handle HTTP requests/responses
@@ -139,8 +151,10 @@ modules/[feature]/
 - **Server State**: Always use TanStack Query on frontend
   - NO manual fetching in components
   - NO storing server data in Zustand
-- **Client State**: Zustand for UI state only
-  - Examples: theme, sidebar open/closed, modal state
+  - `queryOptions` factory → `Entities/{Domain}/Api/Query.ts`
+  - `mutationOptions` factory → `Features/{Domain}/Api/Mutation.ts`
+- **Client State**: Zustand for shared UI state (2+ Widgets sharing the same state)
+  - Single-component state → `useState` (no Zustand)
 - **Form State**: React Hook Form for ALL forms
   - NO uncontrolled components without RHF
   - Use Zod for validation schemas

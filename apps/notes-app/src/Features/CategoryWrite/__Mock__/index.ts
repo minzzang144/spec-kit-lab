@@ -1,0 +1,1 @@
+export { categoryWriteFeatureHandler } from './Handler';

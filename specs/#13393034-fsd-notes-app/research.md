@@ -32,7 +32,7 @@
 ### Rationale
 - **Library Mode**: Framework 모드(파일 기반 라우팅)가 아닌 Library 모드 사용. Custom FSD의 Pages 레이어와 충돌 없음
 - **createBrowserRouter**: Data API 지원 (loader, action, errorElement), Type-safe routing
-- **FSD Pages 레이어와 호환**: `Pages/HomePage/`, `Pages/NoteWritePage/` 등 FSD 슬라이스가 라우트 컴포넌트를 제공
+- **FSD Pages 레이어와 호환**: `Pages/NoteList/`, `Pages/NoteWrite/` 등 FSD 슬라이스가 라우트 컴포넌트를 제공
 - **App/Router 세그먼트**: 라우터 설정은 `App/Router/AppRouter.tsx`에 위치 (Non-domain 레이어)
 
 ### Alternatives Considered
@@ -41,9 +41,9 @@
 
 ### Route Structure
 ```
-/                    → HomePage (노트 목록, 검색, 필터)
+/                    → NoteListPage (노트 목록, 검색, 필터)
 /notes/new           → NoteWritePage (새 노트 작성)
-/notes/:id           → NoteViewPage (노트 상세 보기 + 편집)
+/notes/:id           → NoteDetailPage (노트 상세 보기 + 편집)
 /categories          → CategoryManagePage (카테고리 관리)
 ```
 
@@ -54,29 +54,52 @@
 ### Decision: TanStack Query for server state, Zustand for UI state
 
 ### Rationale
-- **Custom FSD 규칙 준수**:
+- **Custom FSD 규칙 준수** (`custom-fsd-architecture.md` Section 9):
   - Entities/Api: `queryOptions` factory (읽기)
-  - Features/Api: `mutationOptions` factory (쓰기)
-  - Features/Model/Store: Zustand slices (UI 상태)
+  - Features/Api: `mutationOptions` factory (비즈니스 가치 있는 사용자 시나리오: CRUD, 필터, 검색, 네비게이션)
+  - **Entities/Model/Store**: Zustand 상태 선언 (state-only, setter 없음)
+  - **Features/Model/Logic**: Zustand 업데이트 로직 (setState 호출)
 - **서버 상태와 UI 상태의 명확한 분리**:
   - 서버 상태: 노트 목록, 카테고리 목록 → TanStack Query
-  - UI 상태: 사이드바 열림/닫힘, 선택된 카테고리 필터 → Zustand
+  - UI 상태: 선택된 카테고리 필터, 검색 키워드 → Zustand (Entities Store)
 
 ### Zustand 사용 범위
 | 상태 | 관리 방식 | 이유 |
 |---|---|---|
 | 노트 목록 데이터 | TanStack Query | 서버 상태 |
 | 카테고리 목록 데이터 | TanStack Query | 서버 상태 |
-| 선택된 카테고리 필터 | Zustand (FilterSlice) | 여러 Widget에서 공유하는 UI 상태 |
+| 선택된 카테고리 필터 | Zustand — `Entities/Category/Model/Store/useCategoryStore` | 여러 Widget에서 공유하는 UI 상태 |
+| 검색 키워드 | Zustand — `Entities/Note/Model/Store/useNoteStore` | SearchBar Widget + NoteList Widget이 공유 |
 | 사이드바 열림/닫힘 | useState (Widget 내부) | 단일 컴포넌트 상태 |
-| 검색 키워드 | useState (Widget 내부) | 단일 컴포넌트 상태 → URL query param으로 관리 가능 |
 | 노트 폼 데이터 | React Hook Form | 폼 상태 |
 
-### Zustand Store 설계 (Custom FSD slices pattern)
+### Zustand Store 설계 (Custom FSD Section 9 준수)
+
+**상태 선언 (Entities)**:
 ```
-Features/CategoryFilter/Model/Store/
-├── FilterSlice.ts        ← 슬라이스 정의
-└── useFilterStore.ts     ← 슬라이스 조합, store 생성
+Entities/Category/Model/Store/
+├── FilterSlice.ts        ← 상태 타입 + createFilterSlice (setter 없음)
+└── useCategoryStore.ts   ← create() 조합 (use{Domain}Store 규칙)
+
+Entities/Note/Model/Store/
+├── SearchSlice.ts        ← 상태 타입 + createSearchSlice (setter 없음)
+└── useNoteStore.ts       ← create() 조합
+```
+
+**업데이트 로직 (Features)**:
+```
+Features/CategoryFilter/Model/Logic/
+└── useCategoryFilterLogic.ts  ← setSelectedCategoryId (useCategoryStore.setState 호출)
+
+Features/NoteSearch/Model/Logic/
+└── useNoteSearchLogic.ts      ← setKeyword, clearKeyword (useNoteStore.setState 호출)
+```
+
+**소비 패턴**:
+```typescript
+// Widget에서
+const selected = useCategoryStore((s) => s.selectedCategoryId); // Entities (읽기)
+const { setSelectedCategoryId } = useCategoryFilterLogic();      // Features (쓰기)
 ```
 
 ---
@@ -163,32 +186,31 @@ export const httpClient = {
 
 ## R7: Custom FSD 서브도메인 설계
 
-### Decision: Note와 Category를 각각 상위 도메인으로, 쓰기/필터 기능을 하위 도메인으로 분리
+### Decision: Note와 Category를 각각 상위 도메인으로, 비즈니스 시나리오를 하위 도메인으로 분리
 
 ### Rationale
 - **Note 도메인**:
-  - `Entities/Note` (상위): 공통 타입, 읽기 API, UI 컴포넌트
-  - `Features/NoteWrite` (하위): 노트 생성 mutation
-  - `Features/NoteEdit` (하위): 노트 수정 mutation
+  - `Entities/Note` (상위): 공통 타입, 읽기 API, 순수 표시 Ui (NoteContentPreview, NoteDate — onClick/다른 도메인 금지)
+  - `Features/NoteWrite` (하위): 노트 생성 + 수정 mutation (create + edit = Write 관심사)
   - `Features/NoteDelete` (하위): 노트 삭제 mutation
 - **Category 도메인**:
-  - `Entities/Category` (상위): 공통 타입, 읽기 API, UI 컴포넌트
+  - `Entities/Category` (상위): 공통 타입, 읽기 API, 순수 표시 Ui (CategoryBadge)
   - `Features/CategoryWrite` (하위): 카테고리 생성/삭제 mutation
   - `Features/CategoryFilter` (하위): 필터 상태 관리 (Zustand)
 
 ### Import 방향 검증
 ```
 ✅ Features/NoteWrite → Entities/Note (하위→상위, 허용)
-✅ Features/NoteEdit → Entities/Note (하위→상위, 허용)
+✅ Features/NoteDelete → Entities/Note (하위→상위, 허용)
 ✅ Features/CategoryFilter → Entities/Category (하위→상위, 허용)
-❌ Features/NoteWrite → Features/NoteEdit (형제 간, 금지)
+❌ Features/NoteWrite → Features/NoteDelete (형제 간, 금지)
 ❌ Entities/Note → Features/NoteWrite (상위→하위, 금지)
 ```
 
 ### 서브도메인 분리 기준 (Custom FSD 규칙)
-- 페이지 2개 이상 + 공통 로직 존재: 서브도메인 분리
-- Note: 작성 페이지(NoteWritePage) + 조회 페이지(NoteViewPage) → NoteWrite/NoteEdit/NoteDelete 분리
-- Category: 관리 페이지(CategoryManagePage) + 홈 페이지 필터 → CategoryWrite/CategoryFilter 분리
+- 관심사 분기 + 공통 로직 존재: 서브도메인 분리
+- Note: Write(작성+편집), Detail(상세), Delete(삭제) 관심사 → NoteWrite/NoteDelete 분리
+- Category: Write(관리), Filter(필터) 관심사 → CategoryWrite/CategoryFilter 분리
 
 ---
 
