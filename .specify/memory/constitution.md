@@ -66,7 +66,7 @@ When `/speckit.plan` generates implementation paths, the **Project root** for an
 ### Frontend Structure (FSD - Feature-Sliced Design)
 **Note**: `[APP_NAME]` is defined during spec creation with `/speckit.plan`
 
-> **Authority**: All new frontend apps MUST follow `.claude/rules/custom-fsd-architecture.md`. Implementation details (naming, imports, MSW, segments, Zustand placement, etc.) are defined there, not here.
+> **Authority**: All new frontend apps MUST follow `.claude/rules/gem-fsd-architecture.md`. Implementation details (naming, imports, MSW, segments, Zustand placement, etc.) are defined there, not here.
 
 ```
 apps/[APP_NAME]/src/

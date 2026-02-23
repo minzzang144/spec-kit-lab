@@ -1994,10 +1994,10 @@ FSD 미준수 영역을 **"추후 리팩토링 작업"**으로 목록화:
 
 ```
 IF 새로운 앱 코드 작성:
-  APPLY custom-fsd-architecture.md  (구조)
+  APPLY gem-fsd-architecture.md  (구조)
   APPLY naming-no-plurals.md        (네이밍)
 
 IF speckit.implement 단계:
   APPLY speckit-workflow-rules.md   (워크플로우)
-  APPLY custom-fsd-architecture.md  (구조)
+  APPLY gem-fsd-architecture.md  (구조)
 ```
