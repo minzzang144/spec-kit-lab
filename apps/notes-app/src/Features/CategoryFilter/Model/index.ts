@@ -1,0 +1,1 @@
+export { useCategoryFilterLogic } from './Logic';

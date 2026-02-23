@@ -1,0 +1,229 @@
+openapi: 3.0.3
+info:
+  title: FSD Notes App - Notes API
+  description: |
+    Notes CRUD API for the FSD Notes App.
+    Implemented as MSW mock handlers in development.
+  version: 1.0.0
+
+servers:
+  - url: /api
+    description: Mock API (MSW)
+
+paths:
+  /notes:
+    get:
+      summary: Get all notes
+      operationId: getNotes
+      parameters:
+        - name: categoryId
+          in: query
+          schema:
+            type: string
+          description: Filter by category ID (omit for all)
+        - name: keyword
+          in: query
+          schema:
+            type: string
+          description: Search keyword (matches title and content)
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [createdAt_desc, createdAt_asc]
+            default: createdAt_desc
+          description: Sort order
+      responses:
+        '200':
+          description: List of notes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Note'
+
+    post:
+      summary: Create a new note
+      operationId: createNote
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateNoteRequest'
+      responses:
+        '201':
+          description: Note created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Note'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /notes/{id}:
+    get:
+      summary: Get a note by ID
+      operationId: getNote
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Note detail
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Note'
+        '404':
+          description: Note not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Update a note
+      operationId: updateNote
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateNoteRequest'
+      responses:
+        '200':
+          description: Note updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Note'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Note not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Delete a note
+      operationId: deleteNote
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Note deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '404':
+          description: Note not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    Note:
+      type: object
+      required: [id, title, content, categoryId, createdAt, updatedAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          minLength: 1
+          maxLength: 100
+        content:
+          type: string
+          maxLength: 50000
+        categoryId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CreateNoteRequest:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 100
+        content:
+          type: string
+          maxLength: 50000
+          default: ''
+        categoryId:
+          type: string
+          default: uncategorized
+
+    UpdateNoteRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 100
+        content:
+          type: string
+          maxLength: 50000
+        categoryId:
+          type: string
+
+    ErrorResponse:
+      type: object
+      required: [error, message, statusCode]
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        statusCode:
+          type: integer
