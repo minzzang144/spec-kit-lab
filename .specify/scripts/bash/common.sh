@@ -80,9 +80,9 @@ check_feature_branch() {
 
     # Support all valid workflow branch patterns:
     # - spec/#ticket-* (specification phase)
-    # - feature/#ticket-* (implementation phase - single mode)
-    # - feature/#ticket-us{N}-* (implementation phase - parallel mode)
-    # - feature/#ticket-foundation-* (implementation phase - foundation)
+    # - feature/#ticket-* (implementation phase)
+    # - feature/#ticket-base-* (implementation phase - base cycle)
+    # - feature/#ticket-us{N}-* (implementation phase - US cycle)
     # - ###-* (legacy pattern)
     if [[ "$branch" =~ ^spec/#[a-zA-Z0-9]+- ]] || \
        [[ "$branch" =~ ^feature/#[a-zA-Z0-9]+- ]] || \
@@ -93,8 +93,8 @@ check_feature_branch() {
     echo "ERROR: Not on a valid workflow branch. Current branch: $branch" >&2
     echo "Valid branch patterns:" >&2
     echo "  - spec/#ticket-feature-name (specification phase)" >&2
-    echo "  - feature/#ticket-feature-name (implementation phase)" >&2
-    echo "  - feature/#ticket-us1-feature-name (parallel mode)" >&2
+    echo "  - feature/#ticket-base-feature-name (base cycle)" >&2
+    echo "  - feature/#ticket-us1-feature-name (US cycle)" >&2
     echo "  - 001-feature-name (legacy)" >&2
     return 1
 }
@@ -104,10 +104,9 @@ get_feature_dir() { echo "$1/specs/$2"; }
 # Find feature directory by ticket ID or numeric prefix
 # Supports all branch patterns:
 #   - spec/#ticket-* (spec branch)
-#   - feature/#ticket-* (single mode feature branch)
-#   - feature/#ticket-us{N}-* (parallel mode user story branch)
-#   - feature/#ticket-foundation-* (foundation branch)
-#   - feature/#ticket-us{N}-be-* or -fe-* (BE/FE sub-branches)
+#   - feature/#ticket-base-* (base cycle branch)
+#   - feature/#ticket-us{N}-* (US cycle branch)
+#   - feature/#ticket-* (generic feature branch)
 #   - ###-* (legacy pattern)
 # Note: Uses parameter expansion for Bash 3.2 compatibility
 find_feature_dir_by_prefix() {
@@ -287,7 +286,7 @@ is_ticket_based_branch() {
 # ============================================================================
 
 # Check if branch is a feature branch
-# Supports: feature/#ticket-*, feature/#ticket-us{N}-*, feature/#ticket-foundation-*
+# Supports: feature/#ticket-*, feature/#ticket-base-*, feature/#ticket-us{N}-*
 is_feature_branch() {
     [[ "$1" == feature/#* ]]
 }
@@ -295,8 +294,8 @@ is_feature_branch() {
 # Extract ticket ID from feature branch name
 # Examples:
 #   feature/#abc123-user-auth -> abc123
+#   feature/#abc123-base-user-auth -> abc123
 #   feature/#abc123-us1-user-auth -> abc123
-#   feature/#abc123-foundation-user-auth -> abc123
 # Note: Uses parameter expansion for Bash 3.2 compatibility (macOS default)
 extract_ticket_from_feature() {
     local branch_name="$1"
@@ -314,13 +313,14 @@ extract_ticket_from_feature() {
     fi
 }
 
-# Extract User Story from feature branch name (if present)
+# Extract cycle name from feature branch name (if present)
 # Examples:
+#   feature/#abc123-base-user-auth -> base
 #   feature/#abc123-us1-user-auth -> us1
-#   feature/#abc123-us2-be-user-auth -> us2
+#   feature/#abc123-us2-user-auth -> us2
 #   feature/#abc123-user-auth -> (empty)
 # Note: Uses parameter expansion for Bash 3.2 compatibility
-extract_user_story() {
+extract_cycle() {
     local branch_name="$1"
     # Check if it's a feature branch
     if [[ "$branch_name" != feature/#* ]]; then
@@ -330,12 +330,19 @@ extract_user_story() {
     local rest="${branch_name#feature/#}"
     rest="${rest#*-}"  # Remove ticket ID (before first -)
 
-    # Check if next part starts with 'us' followed by number
-    if [[ "$rest" == us[0-9]* ]]; then
+    # Check for cycle prefixes
+    if [[ "$rest" == base-* ]]; then
+        echo "base"
+    elif [[ "$rest" == us[0-9]* ]]; then
         # Extract 'usN' part
         local us_part="${rest%%-*}"
         echo "$us_part"
     fi
+}
+
+# Legacy alias for backward compatibility
+extract_user_story() {
+    extract_cycle "$@"
 }
 
 # Get corresponding spec branch from feature branch

@@ -1,0 +1,1 @@
+export { useNoteSearchLogic } from './useNoteSearchLogic';
