@@ -1,14 +1,8 @@
 import { httpClient } from '#/Shared/Api';
 
-import type { Note } from '../Type';
+import type { GetNoteListQuery, Note } from '../Type';
 
-type GetNoteListParam = {
-	readonly categoryId?: string;
-	readonly keyword?: string;
-	readonly sort?: 'createdAt_desc' | 'createdAt_asc';
-};
-
-export async function getNoteList(param?: GetNoteListParam): Promise<Note[]> {
+export async function getNoteList(param?: GetNoteListQuery): Promise<Note[]> {
 	const searchParam = new URLSearchParams();
 
 	if (param?.categoryId) {

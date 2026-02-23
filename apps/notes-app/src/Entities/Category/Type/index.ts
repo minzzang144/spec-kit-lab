@@ -1,1 +1,1 @@
-export type { Category } from './Category';
+export type { Category } from './Domain';

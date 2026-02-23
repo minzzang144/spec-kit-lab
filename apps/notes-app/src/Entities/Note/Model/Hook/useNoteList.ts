@@ -1,13 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 
+import type { GetNoteListQuery } from '../../Type';
+
 import { noteQueryOption } from '../../Api';
 
-type UseNoteListParam = {
-	readonly categoryId?: string;
-	readonly keyword?: string;
-	readonly sort?: 'createdAt_desc' | 'createdAt_asc';
-};
-
-export function useNoteList(param?: UseNoteListParam) {
+export function useNoteList(param?: GetNoteListQuery) {
 	return useQuery(noteQueryOption.list(param));
 }

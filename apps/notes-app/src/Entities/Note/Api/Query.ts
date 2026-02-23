@@ -1,14 +1,12 @@
 import { queryOptions } from '@tanstack/react-query';
 
+import type { GetNoteListQuery } from '../Type';
+
 import { getNote, getNoteList } from './Get';
 import { noteQueryKey } from './Key';
 
 export const noteQueryOption = {
-	list: (param?: {
-		categoryId?: string;
-		keyword?: string;
-		sort?: 'createdAt_desc' | 'createdAt_asc';
-	}) =>
+	list: (param?: GetNoteListQuery) =>
 		queryOptions({
 			queryKey: noteQueryKey.list(param),
 			queryFn: () => getNoteList(param),

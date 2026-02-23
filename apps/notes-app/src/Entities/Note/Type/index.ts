@@ -1,1 +1,2 @@
-export type { Note } from './Note';
+export type { Note } from './Domain';
+export type { GetNoteListQuery } from './Query';

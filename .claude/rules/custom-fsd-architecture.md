@@ -18,17 +18,19 @@
 7. [Import Rules](#7-import-rules)
 8. [TanStack Query Integration](#8-tanstack-query-integration)
 9. [Zustand State Management](#9-zustand-state-management)
-10. [MSW Integration](#10-msw-integration)
-11. [File Naming](#11-file-naming)
-12. [UI Component Structure](#12-ui-component-structure)
-13. [Path Alias](#13-path-alias)
-14. [Full Directory Tree](#14-full-directory-tree)
-15. [Enforcement Mechanisms](#15-enforcement-mechanisms)
-16. [Test Code Management](#16-test-code-management)
-17. [Error Handling Patterns](#17-error-handling-patterns)
-18. [Quick Reference](#18-quick-reference)
-19. [Migration Strategy](#19-migration-strategy)
-20. [Relationship to Other Rules](#20-relationship-to-other-rules)
+10. [Mapper Pattern](#10-mapper-pattern)
+11. [Socket Event Type Organization](#11-socket-event-type-organization)
+12. [MSW Integration](#12-msw-integration)
+13. [File Naming](#13-file-naming)
+14. [UI Component Structure](#14-ui-component-structure)
+15. [Path Alias](#15-path-alias)
+16. [Full Directory Tree](#16-full-directory-tree)
+17. [Enforcement Mechanisms](#17-enforcement-mechanisms)
+18. [Test Code Management](#18-test-code-management)
+19. [Error Handling Patterns](#19-error-handling-patterns)
+20. [Quick Reference](#20-quick-reference)
+21. [Migration Strategy](#21-migration-strategy)
+22. [Relationship to Other Rules](#22-relationship-to-other-rules)
 
 ---
 
@@ -215,14 +217,78 @@ Domain 레이어 슬라이스 내 세그먼트 종류:
 
 | 세그먼트      | 역할                                                          |
 |--------------|--------------------------------------------------------------|
-| `__Mock__`   | MSW 핸들러, 시드 데이터, in-memory DB (Section 10 참조)        |
+| `__Mock__`   | MSW 핸들러, 시드 데이터, in-memory DB (Section 12 참조)        |
 | `Api`        | HTTP 호출 함수, Key factory, TanStack Query/Mutation 옵션 팩토리 |
 | `Config`     | 상수 모음                                                     |
 | `Model`      | hook, util, lib, 비즈니스 로직(상태관리, 소켓 등), Zustand store/logic |
-| `Type`       | TypeScript 타입/인터페이스                                     |
+| `Type`       | TypeScript 타입/인터페이스 (목적별 그룹 구조, 아래 참조)        |
 | `Ui`         | React 컴포넌트 (레이어별 Ui 규칙 참조)                         |
 
 **확장**: 팀 논의를 통해 세그먼트를 추가할 수 있다. 모든 슬라이스에 모든 세그먼트가 필수는 아니며, 필요한 세그먼트만 생성한다.
+
+### Type 세그먼트 그룹 구조
+
+Type 세그먼트는 1-level 그룹 폴더를 사용하여 목적별로 분류한다. **필요한 그룹만 생성** — 빈 폴더는 만들지 않는다.
+
+| 그룹 | 내용 | 레이어 | 생성 조건 |
+|------|------|--------|----------|
+| `Domain/` | FE 도메인 모델 (앱이 사용하는 정규 타입) | Entity | 항상 필수 |
+| `Dto/` | 모든 전송 객체 — HTTP(RequestDto, ResponseDto) + Socket(EmitDto, OnDto) | Entity, Feature | BE 응답 형태가 FE 모델과 다를 때 |
+| `Param/` | URL path parameter 타입 (`/notes/:id`의 id) | Entity, Feature | 단순 `id: string` 이상일 때 |
+| `Query/` | Query string parameter 타입 (`?keyword=&sort=`) | Entity | GET 요청에 복잡한 필터/정렬이 있을 때 |
+| `Message/` | Socket MessageMap + discriminated union (Dto/에서 import) | Feature | Socket 통신이 있을 때 |
+
+**예시 — 대규모 프로젝트 (Chat 도메인):**
+
+```
+Entities/Chat/Type/
+├── Domain/
+│   └── Chat.ts           ← ChatMessage, ChatRoom
+├── Dto/
+│   └── ChatResponseDto.ts ← ChatMessageDto (snake_case 등)
+├── Query/
+│   └── ChatQuery.ts       ← GetChatMessageListQuery
+└── index.ts
+
+Features/ChatWrite/Type/
+├── Dto/
+│   └── ChatWriteRequestDto.ts  ← SendMessageRequestDto
+├── Message/
+│   └── ChatWriteMessage.ts     ← On + Emit 통합 (discriminated union)
+└── index.ts
+```
+
+**예시 — 소규모 프로젝트 (Note 도메인):**
+
+```
+Entities/Note/Type/
+├── Domain/
+│   └── Note.ts           ← 도메인 모델
+├── Query/
+│   └── NoteQuery.ts      ← GetNoteListQuery
+└── index.ts
+```
+
+### Entity Type vs Feature Type 판단 기준
+
+| 질문 | Entity Type | Feature Type |
+|------|-------------|-------------|
+| 앱 전체가 사용하는 도메인 모델? | Domain/ | |
+| GET 응답의 BE 원본 형태? | Dto/ResponseDto | |
+| GET 요청 query string? | Query/ | |
+| URL path parameter? | Param/ | |
+| POST/PUT/DELETE 요청 바디? | | Dto/RequestDto |
+| FE 전용 상태? | | (FilterState 등) |
+| Socket 메시지 (On + Emit)? | | Message/ |
+
+### Dto/ 내 프로토콜 구분 (접미사 기반)
+
+| 프로토콜 | 접미사 패턴 | 예시 |
+|----------|-----------|------|
+| HTTP Request | `{Domain}RequestDto` | `ChatWriteRequestDto` |
+| HTTP Response | `{Domain}ResponseDto` | `ChatResponseDto` |
+| Socket Emit | `Emit{Block}{Action}Dto` | `EmitChatSendDto` |
+| Socket On | `On{Block}{Action}Dto` | `OnChatReceiveDto` |
 
 ### Ui 세그먼트 레이어별 규칙
 
@@ -303,7 +369,8 @@ Q: 컴포넌트가 children을 외부에서 받아 래핑?
 
 | 세그먼트    | 그룹 예시                                          |
 |-----------|---------------------------------------------------|
-| Model     | `Hook/`, `Store/`, `Logic/`, `Util/`, `Lib/`, `Socket/` |
+| Model     | `Hook/`, `Store/`, `Logic/`, `Util/`, `Lib/` (Mapper 등), `Socket/` |
+| Type      | `Domain/`, `Dto/`, `Query/`, `Param/`, `Message/` (Section 4 참조) |
 | Api       | 파일 레벨 (그룹핑 불필요: `Get.ts`, `Key.ts`, `Query.ts` 등) |
 | Ui        | 컴포넌트 폴더들 (각 컴포넌트가 그룹)                    |
 | __Mock__  | 파일 레벨 (그룹핑 불필요: `Seed.ts`, `Db.ts`, `Handler.ts`) |
@@ -753,7 +820,150 @@ function ChatWidget() {
 
 ---
 
-## 10. MSW Integration
+## 10. Mapper Pattern
+
+BE 응답(Dto) → FE 도메인 모델 변환 함수. **`Type/Dto/`가 존재하는 도메인에만** Mapper를 생성한다.
+
+### 위치
+
+`Entities/{Domain}/Model/Lib/{Domain}Mapper.ts`
+
+- Model 세그먼트의 Lib 그룹 (transform 로직은 비즈니스 로직의 일부)
+- Api 세그먼트에 넣지 않는 이유: Api는 HTTP 호출만 담당, transform은 Model 책임
+- Type 세그먼트에 넣지 않는 이유: Type은 순수 타입만, 런타임 함수 금지
+
+### 함수 네이밍
+
+`to{DomainModel}(dto)` — **출력** 기준으로 이름:
+
+```typescript
+// Entities/Chat/Model/Lib/ChatMapper.ts
+import type { ChatMessage } from '../../Type';
+import type { ChatMessageDto } from '../../Type';
+
+export function toChatMessage(dto: ChatMessageDto): ChatMessage {
+  return {
+    id: dto._id,
+    content: dto.body_text,
+    createdAt: new Date(dto.created_at).toISOString(),
+  };
+}
+
+export function toChatMessageList(dtoList: readonly ChatMessageDto[]): ChatMessage[] {
+  return dtoList.map(toChatMessage);
+}
+```
+
+### 사용 패턴
+
+Api/Get.ts에서 mapper를 호출하여 변환 후 반환:
+
+```typescript
+// Entities/Chat/Api/Get.ts
+import type { ChatMessageDto } from '../Type';
+import { toChatMessageList } from '../Model';  // barrel 경유
+
+export async function getChatMessageList(roomId: string): Promise<ChatMessage[]> {
+  const dtoList = await httpClient.get<ChatMessageDto[]>(`/chat/rooms/${roomId}/messages`);
+  return toChatMessageList(dtoList);
+}
+```
+
+### 생성 기준
+
+| 상황 | Mapper 필요? | 이유 |
+|------|-------------|------|
+| BE 응답이 FE 모델과 형태가 다름 (snake_case, nested 등) | O | 변환 필수 |
+| BE 응답 = FE 모델 (형태 동일) | X | 불필요한 indirection |
+| Dto가 없으면 | X | Mapper도 없음 |
+
+### 파일 분리 기준
+
+기본은 `{Domain}Mapper.ts` 하나에 `toChatMessage()`, `toChatRoom()` 등 공존. 파일이 커지면(200줄+) 그때 `ChatMessageMapper.ts`로 분리. 시작부터 나누지 않음 (YAGNI).
+
+---
+
+## 11. Socket Event Type Organization
+
+Socket 이벤트 타입은 **Feature 레이어에서 통합 관리**한다.
+
+### 원칙
+
+emit, on 모두 사용자 액션에 의해 시작되므로 Feature 레이어에 배치한다.
+HTTP의 GET이 "서버가 데이터를 줌"(Entity)인 반면, Socket의 `on`은 "사용자가 구독을 시작함"(Feature).
+On과 Emit을 Entity/Feature로 분리하면 discriminated union 기반 메시지 패턴이 깨진다.
+
+### 구조
+
+```
+Features/ChatWrite/
+├── Type/
+│   ├── Dto/
+│   │   └── ChatWriteRequestDto.ts   ← HTTP 전용
+│   └── Message/
+│       └── ChatWriteMessage.ts      ← Socket On + Emit 통합 (페이로드 포함)
+├── Model/
+│   └── Hook/
+│       ├── useSendMessage.ts        ← HTTP mutation hook
+│       ├── useChatSocket.ts         ← Socket on/emit hook
+│       └── index.ts
+└── index.ts
+```
+
+### Socket 핸들러 위치
+
+Socket 핸들러는 근본적으로 hook이므로 `Model/Hook/` 그룹에 배치한다. 별도 `Model/Socket/` 그룹을 만들지 않는다.
+
+### Dto vs Message 역할 분리
+
+| 그룹 | 역할 | 내용 |
+|------|------|------|
+| `Type/Dto/` | 모든 전송 객체의 단일 소스 | HTTP: RequestDto/ResponseDto, Socket: EmitDto/OnDto |
+| `Type/Message/` | MessageMap + discriminated union 조합 | Dto/에서 import하여 패턴 구조 정의 |
+
+**Message/ 패턴 예시** (discriminated union):
+
+```typescript
+// Features/ChatWrite/Type/Message/ChatWriteMessage.ts
+import type { EmitChatSendDto, OnChatReceiveDto } from '../Dto';
+
+type MessageMap = {
+  chat: {
+    send: EmitChatSendDto;
+    receive: OnChatReceiveDto;
+  };
+};
+
+export type ChatWriteMessage = {
+  [Block in keyof MessageMap]: {
+    [Action in keyof MessageMap[Block]]: {
+      success: boolean;
+      block: Block;
+      action: Action;
+      data: MessageMap[Block][Action];
+    };
+  }[keyof MessageMap[Block]];
+}[keyof MessageMap];
+```
+
+단일 emit 이벤트 + 페이로드 discriminated union으로 다양한 메시지 타입을 하나의 채널에서 처리한다.
+
+### Socket 관련 판단 기준
+
+```
+Q: Socket 페이로드 타입 정의?
+  → Feature/Type/Dto/ (EmitDto, OnDto 접미사)
+
+Q: MessageMap + discriminated union 패턴?
+  → Feature/Type/Message/
+
+Q: Socket on/emit hook?
+  → Feature/Model/Hook/ (별도 Socket 그룹 불필요)
+```
+
+---
+
+## 12. MSW Integration
 
 MSW(Mock Service Worker) 핸들러를 FSD 레이어 규칙에 맞게 도메인별로 분산 관리한다.
 
@@ -874,7 +1084,7 @@ export const worker = setupWorker(
 
 ---
 
-## 11. File Naming
+## 13. File Naming
 
 | 대상                     | 규칙             | 예시                                    |
 |-------------------------|------------------|-----------------------------------------|
@@ -890,7 +1100,7 @@ export const worker = setupWorker(
 
 ---
 
-## 12. UI Component Structure
+## 14. UI Component Structure
 
 ```
 ComponentName/
@@ -1043,7 +1253,7 @@ Shared/
 
 ---
 
-## 13. Path Alias
+## 15. Path Alias
 
 ### 설정
 
@@ -1086,7 +1296,7 @@ export default defineConfig({
 
 ---
 
-## 14. Full Directory Tree
+## 16. Full Directory Tree
 
 채팅 앱 기반 완전한 디렉토리 예시:
 
@@ -1179,7 +1389,9 @@ src/
 │   │   │   │   └── index.ts     ← 그룹 barrel
 │   │   │   └── index.ts         ← 세그먼트 barrel
 │   │   ├── Type/
-│   │   │   ├── ChatWrite.ts
+│   │   │   ├── Dto/
+│   │   │   │   ├── ChatWriteRequestDto.ts
+│   │   │   │   └── index.ts     ← 그룹 barrel
 │   │   │   └── index.ts         ← 세그먼트 barrel
 │   │   ├── Ui/
 │   │   │   ├── SendButton/
@@ -1200,7 +1412,9 @@ src/
 │       │   │   └── index.ts
 │       │   └── index.ts
 │       ├── Type/
-│       │   ├── UserAuth.ts
+│       │   ├── Dto/
+│       │   │   ├── UserAuthRequestDto.ts
+│       │   │   └── index.ts
 │       │   └── index.ts
 │       └── index.ts
 │
@@ -1223,6 +1437,9 @@ src/
 │   │   │   ├── Hook/
 │   │   │   │   ├── useChatMessage.ts
 │   │   │   │   └── index.ts     ← 그룹 barrel
+│   │   │   ├── Lib/
+│   │   │   │   ├── ChatMapper.ts ← Dto → Domain 변환 (Section 10)
+│   │   │   │   └── index.ts     ← 그룹 barrel
 │   │   │   ├── Store/
 │   │   │   │   ├── MessageSlice.ts
 │   │   │   │   ├── ConnectionSlice.ts
@@ -1230,7 +1447,15 @@ src/
 │   │   │   │   └── index.ts     ← 그룹 barrel
 │   │   │   └── index.ts         ← 세그먼트 barrel
 │   │   ├── Type/
-│   │   │   ├── Chat.ts
+│   │   │   ├── Domain/
+│   │   │   │   ├── Chat.ts      ← ChatMessage, ChatRoom
+│   │   │   │   └── index.ts     ← 그룹 barrel
+│   │   │   ├── Dto/
+│   │   │   │   ├── ChatResponseDto.ts ← BE 응답 원본 형태
+│   │   │   │   └── index.ts     ← 그룹 barrel
+│   │   │   ├── Query/
+│   │   │   │   ├── ChatQuery.ts ← GetChatMessageListQuery
+│   │   │   │   └── index.ts     ← 그룹 barrel
 │   │   │   └── index.ts         ← 세그먼트 barrel
 │   │   ├── Ui/
 │   │   │   ├── ChatMessageItem/
@@ -1255,7 +1480,9 @@ src/
 │       │   │   └── index.ts
 │       │   └── index.ts
 │       ├── Type/
-│       │   ├── User.ts
+│       │   ├── Domain/
+│       │   │   ├── User.ts
+│       │   │   └── index.ts     ← 그룹 barrel
 │       │   └── index.ts
 │       ├── Ui/
 │       │   ├── UserAvatar/
@@ -1295,7 +1522,7 @@ src/
 
 ---
 
-## 15. Enforcement Mechanisms
+## 17. Enforcement Mechanisms
 
 **모든 코드 작성 시** 아래 검증을 수행한다.
 
@@ -1402,7 +1629,7 @@ IF index.ts uses 'export *':
 
 ---
 
-## 16. Test Code Management
+## 18. Test Code Management
 
 ### 파일 옆 배치 (Sibling) 방식
 
@@ -1424,7 +1651,7 @@ Ui/ChatMessageItem/
 | 규칙                                    | 설명                                         |
 |----------------------------------------|----------------------------------------------|
 | depth 추가 없음                         | max depth 규칙(5-level)과 충돌하지 않음        |
-| `__Mock__` 세그먼트와 역할 분리          | `__Mock__` = 시드 데이터/in-memory DB/MSW 핸들러 전용 (Section 10 참조) |
+| `__Mock__` 세그먼트와 역할 분리          | `__Mock__` = 시드 데이터/in-memory DB/MSW 핸들러 전용 (Section 12 참조) |
 | 테스트 파일은 index.ts에서 export 안 함  | public API에 테스트 노출 금지                  |
 | `__Mock__` 직접 import 허용             | 테스트 파일에서만 예외적으로 허용               |
 
@@ -1461,7 +1688,7 @@ afterAll(() => server.close());
 
 ---
 
-## 17. Error Handling Patterns
+## 19. Error Handling Patterns
 
 에러 처리는 **catch는 가장 가까운 곳, 표시는 사용자에게 의미 있는 곳** 원칙을 따른다.
 
@@ -1559,7 +1786,7 @@ ErrorBoundary 컴포넌트는 `Shared/Ui`에 위치한다.
 
 ---
 
-## 18. Quick Reference
+## 20. Quick Reference
 
 ### "이 코드는 어디에?" 결정 트리
 
@@ -1648,6 +1875,41 @@ Q: 단일 컴포넌트 내부 상태?
   → NO → useState/useReducer 사용
 ```
 
+### Type 그룹 선택 치트시트
+
+```
+Q: 앱이 사용하는 도메인 모델 타입? (FE 정규 타입)
+  → Type/Domain/
+
+Q: BE 응답/요청의 원본 전송 형태? (HTTP 또는 Socket)
+  → Type/Dto/ (접미사로 프로토콜 구분)
+  → HTTP: {Domain}RequestDto, {Domain}ResponseDto
+  → Socket: Emit{Block}{Action}Dto, On{Block}{Action}Dto
+
+Q: GET 요청의 query string 파라미터?
+  → Type/Query/
+
+Q: URL path parameter? (/notes/:id)
+  → Type/Param/ (단순 id: string이면 불필요)
+
+Q: Socket MessageMap + discriminated union?
+  → Type/Message/ (Feature 레이어에서만)
+```
+
+### Mapper 치트시트
+
+```
+Q: BE 응답과 FE 모델 형태가 다름?
+  → Entities/{Domain}/Model/Lib/{Domain}Mapper.ts
+  → 함수명: to{DomainModel}(dto) (출력 기준)
+
+Q: BE 응답 = FE 모델? (형태 동일)
+  → Mapper 불필요, Dto도 불필요
+
+Q: Mapper 파일이 200줄 초과?
+  → 서브도메인별로 분리 (ChatMessageMapper.ts 등)
+```
+
 ### 에러 처리 치트시트
 
 ```
@@ -1669,7 +1931,7 @@ Q: 예상치 못한 크래시?
 
 ---
 
-## 19. Migration Strategy
+## 21. Migration Strategy
 
 기존 레포에 적용할 때의 전략.
 
@@ -1698,7 +1960,7 @@ FSD 미준수 영역을 **"추후 리팩토링 작업"**으로 목록화:
 
 ---
 
-## 20. Relationship to Other Rules
+## 22. Relationship to Other Rules
 
 ### constitution.md와의 관계
 
