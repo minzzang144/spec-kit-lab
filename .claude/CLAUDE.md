@@ -104,7 +104,7 @@ feature/#ticket-us2-feature (Phase 4: User Story 2)
 - `spec` branches are created from `develop`
 - `feature/base` is created from `spec`, each `feature/usN` from previous branch
 - All branches read specs from the same `specs/#ticket-feature-name/` directory
-- PRs are merged in order: `base` → `us1` → `us2` → ... → `spec` → `develop`
+- PRs are merged in order (top-down): `usN` → ... → `us2` → `us1` → `base` → `spec` → `develop`
 - Each PR contains only one cycle's changes for reviewable size
 
 ### Git Worktree (Optional)

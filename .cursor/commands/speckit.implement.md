@@ -337,11 +337,11 @@ b. **If all cycles complete**:
    All implementation cycles complete!
 
    PR Status:
-   - base (Phase 1+2): PR #N → spec/#ticket-feature
-   - us1 (Phase 3): PR #N → feature/#ticket-base-feature
-   - us2 (Phase 4): PR #N → feature/#ticket-us1-feature
+   - usN: PR #N → feature/#ticket-us(N-1)-feature
+   - us1: PR #N → feature/#ticket-base-feature
+   - base: PR #N → spec/#ticket-feature
 
-   Next: Merge PRs in order (base → us1 → us2).
+   Next: Merge PRs top-down (usN → ... → us1 → base → spec → develop)
    ```
 
 ---
