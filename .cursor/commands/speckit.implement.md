@@ -152,28 +152,28 @@ Parse and execute tasks from the relevant phases:
 
 ### Step 6b: Implementation Summary (MANDATORY)
 
-After all tasks for the current cycle are complete, display a summary **before** code review:
+After all tasks for the current cycle are complete, display a summary **before** code review.
+Format the summary using the project's architecture structure (e.g., FSD layers, NestJS modules, domain folders, etc.):
 
 ```text
 ## [cycle] 구현 완료 요약
 
-### FSD 레이어별 변경
-Entities/
-  └── [변경된 Entity 슬라이스와 설명]
+### 변경 범위
+[프로젝트 아키텍처 구조에 맞게 변경 사항을 트리 형태로 정리]
+예시 (FSD):
+  Entities/ → ...
+  Features/ → ...
+예시 (NestJS):
+  modules/user/ → ...
+  modules/auth/ → ...
+예시 (일반):
+  src/components/ → ...
+  src/services/ → ...
 
-Features/
-  ├── [변경된 Feature 슬라이스와 설명]
+### 적용된 패턴
+- [이번 사이클에서 적용된 주요 아키텍처/디자인 패턴]
 
-Widgets/
-  ├── [변경된 Widget 슬라이스와 설명]
-
-Pages/
-  ├── [변경된 Page 슬라이스와 설명]
-
-### 아키텍처 패턴 적용
-- [이번 사이클에서 적용된 주요 패턴 나열]
-
-검증: type-check [PASS/FAIL], lint [N errors], [N/N] tests [PASS/FAIL]
+검증: [프로젝트 검증 명령어 결과 — type-check, lint, test, build 등]
 ```
 
 ### Step 6c: Previous Cycle Fix Protocol
@@ -194,6 +194,7 @@ After completing all tasks for the current cycle:
 a. **Announce**: "[cycle] 사이클 구현이 완료되었습니다. 코드 리뷰를 진행합니다."
 
 b. **Run code review**: Execute `/everything-claude-code:code-review` skill
+   - **NEVER skip code review** — 테스트 코드, E2E, 설정 파일도 리뷰 대상이다. "변경이 적다"는 이유로 생략하지 않는다.
    - If unavailable, inform user with installation instructions:
      ```
      code-review 스킬을 사용할 수 없습니다.
