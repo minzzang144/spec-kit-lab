@@ -109,10 +109,10 @@
 
 - [x] T037 [P] [US1] Create `src/Entities/Recipe/Ui/RecipeDifficulty/RecipeDifficulty.tsx` (difficulty badge — single domain info), `src/Entities/Recipe/Ui/RecipeCookingTime/RecipeCookingTime.tsx` (formatted time — single domain info), `src/Entities/Recipe/Ui/EmptyRecipeState/EmptyRecipeState.tsx` (empty message) — each with component barrel, plus segment barrel. Update slice barrel.
 
-- [ ] T038 [US1] Create `src/Widgets/RecipeList/Ui/RecipeListCard/RecipeListCard.tsx` (multi-domain: Recipe info + CategoryBadge from Entities/Category) with component barrel
-- [ ] T039 [US1] Create `src/Widgets/RecipeList/Ui/RecipeListEmpty/RecipeListEmpty.tsx` (empty state with Link to create page — separate folder: has routing) with component barrel
-- [ ] T040 [US1] Create `src/Widgets/RecipeList/Ui/RecipeList/RecipeList.tsx` (data fetch via useRecipeList + filter via useCategoryFilter, loading/error/empty states) and `RecipeList.loading.tsx` (skeleton sibling) with component barrel and segment barrel
-- [ ] T041 [US1] Create `src/Widgets/RecipeList/index.ts` slice barrel
+- [x] T038 [US1] Create `src/Widgets/RecipeList/Ui/RecipeListCard/RecipeListCard.tsx` (multi-domain: Recipe info + CategoryBadge from Entities/Category) with component barrel
+- [x] T039 [US1] Create `src/Widgets/RecipeList/Ui/RecipeListEmpty/RecipeListEmpty.tsx` (empty state with Link to create page — separate folder: has routing) with component barrel
+- [x] T040 [US1] Create `src/Widgets/RecipeList/Ui/RecipeList/RecipeList.tsx` (data fetch via useRecipeList + filter via useCategoryFilter, loading/error/empty states) and `RecipeList.loading.tsx` (skeleton sibling) with component barrel and segment barrel
+- [x] T041 [US1] Create `src/Widgets/RecipeList/index.ts` slice barrel
 
 - [ ] T042 [US1] Create `src/Pages/RecipeList/Ui/RecipeListPage/RecipeListPage.tsx` (compose CategoryFilterBar + RecipeList widget) with component barrel, segment barrel, and slice barrel
 - [ ] T043 [US1] Update `src/App/Router/AppRouter.tsx` to wire RecipeListPage to `/` and `/recipes` routes
