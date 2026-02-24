@@ -62,10 +62,10 @@
 
 - [x] T013 Create `src/Entities/Category/Type/Domain/Category.ts` (Category type) with group barrel and segment barrel
 - [x] T014 Create `src/Entities/Category/__Mock__/Seed.ts` (6 predefined categories), `Db.ts` (getCategoryList), `Handler.ts` (GET /api/categories) with __Mock__ barrel
-- [ ] T015 Create `src/Entities/Category/Api/Get.ts`, `Key.ts`, `Query.ts` (categoryQueryOption with queryOptions) with segment barrel
-- [ ] T016 Create `src/Entities/Category/Model/Hook/useCategoryList.ts` with group barrel and segment barrel
-- [ ] T017 Create `src/Entities/Category/Ui/CategoryBadge/CategoryBadge.tsx` (colored badge component) with component barrel and segment barrel
-- [ ] T018 Create `src/Entities/Category/index.ts` slice barrel (re-export Type, Api, Model, Ui — NOT __Mock__)
+- [x] T015 Create `src/Entities/Category/Api/Get.ts`, `Key.ts`, `Query.ts` (categoryQueryOption with queryOptions) with segment barrel
+- [x] T016 Create `src/Entities/Category/Model/Hook/useCategoryList.ts` with group barrel and segment barrel
+- [x] T017 Create `src/Entities/Category/Ui/CategoryBadge/CategoryBadge.tsx` (colored badge component) with component barrel and segment barrel
+- [x] T018 Create `src/Entities/Category/index.ts` slice barrel (re-export Type, Api, Model, Ui — NOT __Mock__)
 
 ### Recipe Entity (Cross-Entity Type Reference to Category)
 
