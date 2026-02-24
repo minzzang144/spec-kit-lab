@@ -189,12 +189,12 @@
 
 ### Implementation for User Story 4
 
-- [ ] T066 [US4] Create `src/Features/RecipeDelete/Api/Delete.ts` (deleteRecipe), `Key.ts` (recipeDeleteMutationKey), `Mutation.ts` (recipeDeleteMutationOption) with segment barrel
-- [ ] T067 [US4] Create `src/Features/RecipeDelete/__Mock__/Handler.ts` (DELETE handler using Recipe Db) with __Mock__ barrel. Update `src/App/Mock/browser.ts` to include RecipeDelete handler.
-- [ ] T068 [US4] Create `src/Features/RecipeDelete/Model/Hook/useDeleteRecipe.ts` (useMutation with onSuccess invalidation + navigation to list) with group barrel and segment barrel
-- [ ] T069 [US4] Create `src/Features/RecipeDelete/Ui/DeleteRecipeAction/DeleteRecipeAction.tsx` (button + Shadcn Dialog confirmation — single concern Feature Ui with Action suffix) with component barrel and segment barrel
-- [ ] T070 [US4] Create `src/Features/RecipeDelete/index.ts` slice barrel
-- [ ] T071 [US4] Integrate DeleteRecipeAction into `src/Widgets/RecipeDetail/Ui/RecipeDetail/RecipeDetail.tsx` (add delete action slot)
+- [x] T066 [US4] Create `src/Features/RecipeDelete/Api/Delete.ts` (deleteRecipe), `Key.ts` (recipeDeleteMutationKey), `Mutation.ts` (recipeDeleteMutationOption) with segment barrel
+- [x] T067 [US4] Create `src/Features/RecipeDelete/__Mock__/Handler.ts` (DELETE handler using Recipe Db) with __Mock__ barrel. Update `src/App/Mock/browser.ts` to include RecipeDelete handler.
+- [x] T068 [US4] Create `src/Features/RecipeDelete/Model/Hook/useDeleteRecipe.ts` (useMutation with onSuccess invalidation + navigation to list) with group barrel and segment barrel
+- [x] T069 [US4] Create `src/Features/RecipeDelete/Ui/DeleteRecipeAction/DeleteRecipeAction.tsx` (button + Shadcn Dialog confirmation — single concern Feature Ui with Action suffix) with component barrel and segment barrel
+- [x] T070 [US4] Create `src/Features/RecipeDelete/index.ts` slice barrel
+- [x] T071 [US4] Integrate DeleteRecipeAction into `src/Widgets/RecipeDetail/Ui/RecipeDetail/RecipeDetail.tsx` (add delete action slot)
 
 ### Tests for User Story 4
 

@@ -2,10 +2,12 @@ import { Link, useParams } from 'react-router';
 
 import { RecipeDetail } from '#/Widgets/RecipeDetail';
 
+import { DeleteRecipeAction } from '#/Features/RecipeDelete';
+
 import { useCategoryList } from '#/Entities/Category';
 import { useRecipe } from '#/Entities/Recipe';
 
-import { ROUTES } from '#/Shared/Config';
+import { ROUTES, recipeEditPath } from '#/Shared/Config';
 
 import { RecipeDetailLoading } from './RecipeDetailPage.loading';
 
@@ -45,7 +47,21 @@ export function RecipeDetailPage() {
 			>
 				← 목록으로
 			</Link>
-			<RecipeDetail recipe={recipe} category={category} />
+			<RecipeDetail
+				recipe={recipe}
+				category={category}
+				actionSlot={
+					<>
+						<Link
+							to={recipeEditPath(recipe.id)}
+							className="rounded-md border px-4 py-2 text-sm font-medium hover:bg-accent"
+						>
+							수정
+						</Link>
+						<DeleteRecipeAction recipeId={recipe.id} />
+					</>
+				}
+			/>
 		</div>
 	);
 }
