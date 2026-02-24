@@ -31,6 +31,7 @@
 20. [Quick Reference](#20-quick-reference)
 21. [Migration Strategy](#21-migration-strategy)
 22. [Relationship to Other Rules](#22-relationship-to-other-rules)
+23. [Tooling Configuration](#23-tooling-configuration)
 
 ---
 
@@ -2000,4 +2001,159 @@ IF 새로운 앱 코드 작성:
 IF speckit.implement 단계:
   APPLY speckit-workflow-rules.md   (워크플로우)
   APPLY gem-fsd-architecture.md  (구조)
+```
+
+---
+
+## 23. Tooling Configuration
+
+FSD 레이어 규칙을 자동으로 강제하기 위한 도구 설정. 새 앱 프로젝트 생성 시 **반드시** 이 설정을 포함한다.
+
+### Prettier: FSD Import Order
+
+**필수 플러그인**: `@trivago/prettier-plugin-sort-imports`
+
+FSD 레이어 계층 순서로 import를 자동 정렬한다. 외부 라이브러리 → App(상위) → Shared(하위) 순서.
+
+```javascript
+// .prettierrc.mjs
+/** @type {import("prettier").Config} */
+export default {
+  trailingComma: 'all',
+  tabWidth: 4,
+  useTabs: true,
+  semi: true,
+  singleQuote: true,
+  plugins: ['@trivago/prettier-plugin-sort-imports'],
+  importOrder: [
+    '^react(.*)',           // React 관련 최우선
+    '<THIRD_PARTY_MODULES>',// 외부 라이브러리
+
+    '^#/App/(.*)',          // FSD 레이어 순서 (상위 → 하위)
+    '^#/Pages/(.*)',
+    '^#/Widgets/(.*)',
+    '^#/Features/(.*)',
+    '^#/Entities/(.*)',
+    '^#/Shared/(.*)',
+
+    '^../(?=.*)(?!$)',      // 상대 경로 (상위 디렉토리)
+    '^./(?=.*)(?!$)|^./?$', // 상대 경로 (같은 디렉토리)
+  ],
+  importOrderSeparation: true,     // 그룹 간 빈 줄 삽입
+  importOrderSortSpecifiers: true, // import 스펙 알파벳 정렬
+};
+```
+
+**importOrder 규칙 설명**:
+- React → 서드파티 → FSD 레이어(상위→하위) → 상대경로 순서
+- `importOrderSeparation: true`로 그룹 간 빈 줄을 넣어 가독성 확보
+- `#/` path alias 기반이므로 alias 설정이 선행되어야 함
+
+### ESLint: Export 정렬
+
+**필수 플러그인**: `eslint-plugin-simple-import-sort`
+
+barrel 파일(index.ts)의 export 문을 알파벳 순서로 정렬하여 일관성을 유지한다.
+
+```javascript
+// eslint.config.js — 주요 부분
+import simpleImportSort from 'eslint-plugin-simple-import-sort';
+
+// 공통 설정에 추가
+{
+  plugins: {
+    'simple-import-sort': simpleImportSort,
+  },
+  rules: {
+    'simple-import-sort/exports': 'error',
+  },
+}
+```
+
+**주의**: `simple-import-sort/imports`는 Prettier의 trivago 플러그인과 충돌하므로 **설정하지 않는다**. import 정렬은 Prettier가, export 정렬은 ESLint가 담당한다.
+
+### ESLint: 기본 구성
+
+```javascript
+// eslint.config.js — 전체 구조
+import js from '@eslint/js';
+import globals from 'globals';
+import reactHooks from 'eslint-plugin-react-hooks';
+import reactRefresh from 'eslint-plugin-react-refresh';
+import simpleImportSort from 'eslint-plugin-simple-import-sort';
+import tseslint from 'typescript-eslint';
+
+export default tseslint.config(
+  { ignores: ['dist', 'public/mockServiceWorker.js'] },
+
+  // 공통 설정
+  {
+    files: ['**/*.{js,jsx,ts,tsx}'],
+    languageOptions: {
+      ecmaVersion: 2020,
+      globals: globals.browser,
+    },
+    plugins: {
+      'react-hooks': reactHooks,
+      'react-refresh': reactRefresh,
+      'simple-import-sort': simpleImportSort,
+    },
+    rules: {
+      ...reactHooks.configs.recommended.rules,
+      'react-refresh/only-export-components': [
+        'warn',
+        { allowConstantExport: true },
+      ],
+      'simple-import-sort/exports': 'error',
+    },
+  },
+
+  // JS 전용
+  {
+    files: ['**/*.{js,jsx}'],
+    extends: [js.configs.recommended],
+  },
+
+  // TS 전용
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [js.configs.recommended, ...tseslint.configs.recommended],
+    rules: {
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
+    },
+  },
+);
+```
+
+### 필수 devDependencies
+
+```json
+{
+  "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^6.0.2",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-refresh": "^0.4.18"
+  }
+}
+```
+
+### 실행 명령 규칙
+
+모노레포 환경에서 **반드시 `pnpm exec` 또는 `pnpm --filter` 로 실행**한다. `npx`는 다른 버전을 참조할 수 있어 금지.
+
+```bash
+# ✅ 올바른 실행
+pnpm --filter [app-name] run lint
+pnpm exec eslint . --fix
+
+# ❌ 금지 — npx는 다른 버전을 참조할 수 있음
+npx eslint . --fix
 ```
