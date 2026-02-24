@@ -34,7 +34,7 @@
 
 **Purpose**: Create project skeleton with all tooling configured
 
-- [ ] T001 Create project directory `apps/recipe-app/` with package.json including all dependencies (React 19, Vite 7, TailwindCSS 4, TanStack Query 5, Zustand 5, RHF, Zod, React Router 7, MSW 2, Vitest, Testing Library, Playwright)
+- [x] T001 Create project directory `apps/recipe-app/` with package.json including all dependencies (React 19, Vite 7, TailwindCSS 4, TanStack Query 5, Zustand 5, RHF, Zod, React Router 7, MSW 2, Vitest, Testing Library, Playwright)
 - [ ] T002 Configure TypeScript with strict mode (tsconfig.json, tsconfig.app.json, tsconfig.node.json) with `#/*` path alias
 - [ ] T003 Configure Vite (vite.config.ts) with React plugin, @tailwindcss/vite plugin, `#` path alias, and Vitest settings (jsdom, globals, setup file)
 - [ ] T004 [P] Configure ESLint (eslint.config.js) with TypeScript ESLint and React hooks plugins
