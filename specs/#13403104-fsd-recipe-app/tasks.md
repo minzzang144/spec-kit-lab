@@ -236,8 +236,8 @@
 
 - [x] T080 Accessibility audit for all pages (keyboard navigation, ARIA labels, color contrast WCAG 2.1 AA)
 - [x] T081 [P] Review and refine loading/skeleton states across all widgets
-- [ ] T082 Run full verification suite (type-check, lint, test, build) and fix any issues
-- [ ] T083 Final code review: FSD architecture compliance, barrel exports, import rules, naming conventions
+- [x] T082 Run full verification suite (type-check, lint, test, build) and fix any issues
+- [x] T083 Final code review: FSD architecture compliance, barrel exports, import rules, naming conventions
 
 ---
 
