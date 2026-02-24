@@ -119,9 +119,9 @@
 
 ### Tests for User Story 1
 
-- [ ] T044 [P] [US1] Write test `src/Features/CategoryFilter/Model/Store/useCategoryFilterStore.test.ts` for store state management
-- [ ] T045 [P] [US1] Write test `src/Widgets/RecipeList/Ui/RecipeList/RecipeList.test.tsx` for list rendering, loading state, and empty state
-- [ ] T046 [P] [US1] Write test `src/Entities/Category/Ui/CategoryBadge/CategoryBadge.test.tsx` for badge rendering with name and color
+- [x] T044 [P] [US1] Write test `src/Features/CategoryFilter/Model/Store/useCategoryFilterStore.test.ts` for store state management
+- [x] T045 [P] [US1] Write test `src/Widgets/RecipeList/Ui/RecipeList/RecipeList.test.tsx` for list rendering, loading state, and empty state
+- [x] T046 [P] [US1] Write test `src/Entities/Category/Ui/CategoryBadge/CategoryBadge.test.tsx` for badge rendering with name and color
 
 **Checkpoint**: User Story 1 fully functional — recipe list with category filtering works independently.
 
