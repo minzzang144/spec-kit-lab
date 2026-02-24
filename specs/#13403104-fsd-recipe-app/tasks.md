@@ -223,8 +223,8 @@
 
 ### Cross-Story E2E Tests
 
-- [ ] T078 E2E test `e2e/recipe-lifecycle.spec.ts` — full CRUD: create → list → detail → edit → verify → delete → verify removal
-- [ ] T079 E2E test `e2e/filter-persistence.spec.ts` — filter by category → open detail → back → filter preserved → create recipe → back → appears in filter
+- [x] T078 E2E test `e2e/recipe-lifecycle.spec.ts` — full CRUD: create → list → detail → edit → verify → delete → verify removal
+- [x] T079 E2E test `e2e/filter-persistence.spec.ts` — filter by category → open detail → back → filter preserved → create recipe → back → appears in filter
 
 **Checkpoint**: All E2E tests pass — feature is production-ready.
 
