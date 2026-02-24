@@ -30,6 +30,10 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 3. **Execute task generation workflow**:
    - Load plan.md and extract tech stack, libraries, project structure
+   - **IF plan.md에 FSD 충돌 결정 사항이 있으면**:
+     - Option A (quick refactor) → 해당 Phase의 태스크에 리팩토링 반영
+     - Option B (issue) → 태스크에서 제외 (별도 issue로 관리)
+     - Option C (override) → 태스크에 override 사유 주석 포함
    - Load spec.md and extract user stories with their priorities (P1, P2, P3, etc.)
    - If data-model.md exists: Extract entities and map to user stories
    - If contracts/ exists: Map endpoints to user stories

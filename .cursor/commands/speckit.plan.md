@@ -39,6 +39,13 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 ### Phase 0: Outline & Research
 
+0. **Architecture rule conflict scan** (기존 코드베이스가 있는 경우):
+   IF `.claude/rules/gem-fsd-architecture.md` 존재:
+   → 문서 최상단의 "기존 코드베이스 충돌 해결 프로토콜" 읽기
+   → apps/* 기존 코드와 규칙 충돌 여부 스캔
+   → 발견 시 프로토콜 따르기 (STOP + AskUserQuestion)
+   → plan.md에 발견된 충돌과 결정 사항 기록
+
 1. **Extract unknowns from Technical Context** above:
    - For each NEEDS CLARIFICATION → research task
    - For each dependency → best practices task
