@@ -1,12 +1,10 @@
-import { useCategoryFilterStore } from '../Store';
+import { useCategoryStore } from '#/Entities/Category';
 
 const ALL_CATEGORY_ID = null;
 
 export function useCategoryFilter() {
-	const selectedCategoryId = useCategoryFilterStore(
-		(s) => s.selectedCategoryId,
-	);
-	const setSelectedCategoryId = useCategoryFilterStore(
+	const selectedCategoryId = useCategoryStore((s) => s.selectedCategoryId);
+	const setSelectedCategoryId = useCategoryStore(
 		(s) => s.setSelectedCategoryId,
 	);
 	const isAllSelected = selectedCategoryId === ALL_CATEGORY_ID;

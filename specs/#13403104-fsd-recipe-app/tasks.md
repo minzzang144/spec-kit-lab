@@ -102,7 +102,7 @@
 ### Implementation for User Story 1
 
 - [x] T032 [US1] Create `src/Features/CategoryFilter/Type/CategoryFilter.ts` (CategoryFilterState — FE-only, flat, not in Dto/) with segment barrel
-- [x] T033 [US1] Create `src/Features/CategoryFilter/Model/Store/useCategoryFilterStore.ts` (Zustand store: selectedCategoryId, setSelectedCategoryId) with group barrel and segment barrel
+- [x] T033 [US1] ~~Create `src/Features/CategoryFilter/Model/Store/useCategoryFilterStore.ts`~~ → **수정됨**: `src/Entities/Category/Model/Store/FilterSlice.ts` + `useCategoryStore.ts`에 배치 (gem-fsd-architecture §9: Store는 Entities에만)
 - [x] T034 [US1] Create `src/Features/CategoryFilter/Model/Hook/useCategoryFilter.ts` (derived state: isAllSelected) with group barrel (update segment barrel)
 - [x] T035 [US1] Create `src/Features/CategoryFilter/Ui/CategoryFilterBar/CategoryFilterBar.tsx` (filter bar with category chips, uses useCategoryList + useCategoryFilter) with component barrel and segment barrel
 - [x] T036 [US1] Create `src/Features/CategoryFilter/index.ts` slice barrel
@@ -119,7 +119,7 @@
 
 ### Tests for User Story 1
 
-- [x] T044 [P] [US1] Write test `src/Features/CategoryFilter/Model/Store/useCategoryFilterStore.test.ts` for store state management
+- [x] T044 [P] [US1] ~~Write test `src/Features/CategoryFilter/Model/Store/useCategoryFilterStore.test.ts`~~ → **수정됨**: `src/Entities/Category/Model/Store/useCategoryStore.test.ts`로 이동
 - [x] T045 [P] [US1] Write test `src/Widgets/RecipeList/Ui/RecipeList/RecipeList.test.tsx` for list rendering, loading state, and empty state
 - [x] T046 [P] [US1] Write test `src/Entities/Category/Ui/CategoryBadge/CategoryBadge.test.tsx` for badge rendering with name and color
 

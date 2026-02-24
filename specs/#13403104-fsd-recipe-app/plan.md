@@ -264,9 +264,6 @@ apps/recipe-app/
 │   │   │   └── index.ts
 │   │   └── CategoryFilter/
 │   │       ├── Model/
-│   │       │   ├── Store/
-│   │       │   │   ├── useCategoryFilterStore.ts  ← Zustand store (selectedCategoryId)
-│   │       │   │   └── index.ts
 │   │       │   ├── Hook/
 │   │       │   │   ├── useCategoryFilter.ts       ← derived state (isAllSelected, etc.)
 │   │       │   │   └── index.ts
@@ -344,6 +341,10 @@ apps/recipe-app/
 │   │       │   ├── Hook/
 │   │       │   │   ├── useCategoryList.ts
 │   │       │   │   └── index.ts
+│   │       │   ├── Store/
+│   │       │   │   ├── FilterSlice.ts             ← CategoryFilter state (Store는 Entities에만)
+│   │       │   │   ├── useCategoryStore.ts
+│   │       │   │   └── index.ts
 │   │       │   └── index.ts
 │   │       ├── Type/
 │   │       │   ├── Domain/
@@ -407,8 +408,8 @@ Entities/Recipe (parent)          ← shared types, GET API, Mapper
   ├── Pages/RecipeDetail          ← detail page
   └── Pages/RecipeWrite           ← create/edit page
 
-Entities/Category (independent)   ← shared types, GET API, CategoryBadge Ui
-  └── Features/CategoryFilter     ← Zustand filter state
+Entities/Category (independent)   ← shared types, GET API, CategoryBadge Ui, Zustand Store (FilterSlice)
+  └── Features/CategoryFilter     ← 파생 상태 hook, FilterBar Ui (Store는 Entity에)
 ```
 
 ### Architecture Rules Tested
@@ -427,7 +428,7 @@ Entities/Category (independent)   ← shared types, GET API, CategoryBadge Ui
 | Entity Ui (single info only) | RecipeDifficulty, RecipeCookingTime, CategoryBadge |
 | Widget Ui (multi-domain) | RecipeListCard (Recipe + Category) |
 | Feature Ui (single concern + dialog) | DeleteRecipeAction (delete + confirm dialog) |
-| Zustand in Feature | CategoryFilter/Model/Store/ |
+| Zustand Store in Entity | Entities/Category/Model/Store/FilterSlice (Store는 Entities만) |
 | MSW __Mock__ 3-file | Seed.ts + Db.ts + Handler.ts per domain |
 | MSW handler distribution | Entity=GET, Feature=POST/PUT/DELETE |
 | __Mock__ cross-entity import | Feature handler → Entity Db |

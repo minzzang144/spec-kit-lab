@@ -1,22 +1,22 @@
 import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { useCategoryFilterStore } from './useCategoryFilterStore';
+import { useCategoryStore } from './useCategoryStore';
 
-describe('useCategoryFilterStore', () => {
+describe('useCategoryStore', () => {
 	beforeEach(() => {
 		act(() => {
-			useCategoryFilterStore.setState({ selectedCategoryId: null });
+			useCategoryStore.setState({ selectedCategoryId: null });
 		});
 	});
 
 	it('should initialize with null selectedCategoryId', () => {
-		const { result } = renderHook(() => useCategoryFilterStore());
+		const { result } = renderHook(() => useCategoryStore());
 		expect(result.current.selectedCategoryId).toBeNull();
 	});
 
 	it('should set selectedCategoryId', () => {
-		const { result } = renderHook(() => useCategoryFilterStore());
+		const { result } = renderHook(() => useCategoryStore());
 
 		act(() => {
 			result.current.setSelectedCategoryId('cat-breakfast');
@@ -26,7 +26,7 @@ describe('useCategoryFilterStore', () => {
 	});
 
 	it('should reset to null when setting null', () => {
-		const { result } = renderHook(() => useCategoryFilterStore());
+		const { result } = renderHook(() => useCategoryStore());
 
 		act(() => {
 			result.current.setSelectedCategoryId('cat-lunch');
@@ -40,7 +40,7 @@ describe('useCategoryFilterStore', () => {
 	});
 
 	it('should update when switching categories', () => {
-		const { result } = renderHook(() => useCategoryFilterStore());
+		const { result } = renderHook(() => useCategoryStore());
 
 		act(() => {
 			result.current.setSelectedCategoryId('cat-breakfast');
