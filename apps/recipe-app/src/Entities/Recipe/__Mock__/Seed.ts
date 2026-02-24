@@ -1,0 +1,118 @@
+import type { RecipeDto } from '../Type';
+
+export const RECIPE_SEED_DATA: RecipeDto[] = [
+	{
+		_id: 'recipe-1',
+		title: 'Fluffy Pancakes',
+		description:
+			'Light and fluffy pancakes perfect for weekend breakfast. Serve with maple syrup and fresh berries.',
+		category_id: 'cat-breakfast',
+		category: { id: 'cat-breakfast', name: 'Breakfast', color: '#F59E0B' },
+		cooking_time: 20,
+		difficulty: 'Easy',
+		ingredients: [
+			{ name: 'Flour', amount: 200, unit: 'g' },
+			{ name: 'Milk', amount: 300, unit: 'ml' },
+			{ name: 'Eggs', amount: 2, unit: 'pieces' },
+			{ name: 'Sugar', amount: 30, unit: 'g' },
+			{ name: 'Baking Powder', amount: 2, unit: 'tsp' },
+		],
+		created_at: '2026-02-01T09:00:00.000Z',
+		updated_at: '2026-02-01T09:00:00.000Z',
+	},
+	{
+		_id: 'recipe-2',
+		title: 'Grilled Chicken Salad',
+		description:
+			'A healthy and filling lunch with grilled chicken breast, mixed greens, and a light vinaigrette.',
+		category_id: 'cat-lunch',
+		category: { id: 'cat-lunch', name: 'Lunch', color: '#10B981' },
+		cooking_time: 30,
+		difficulty: 'Medium',
+		ingredients: [
+			{ name: 'Chicken Breast', amount: 300, unit: 'g' },
+			{ name: 'Mixed Greens', amount: 150, unit: 'g' },
+			{ name: 'Cherry Tomatoes', amount: 100, unit: 'g' },
+			{ name: 'Olive Oil', amount: 2, unit: 'tbsp' },
+			{ name: 'Lemon Juice', amount: 1, unit: 'tbsp' },
+		],
+		created_at: '2026-02-02T12:00:00.000Z',
+		updated_at: '2026-02-02T12:00:00.000Z',
+	},
+	{
+		_id: 'recipe-3',
+		title: 'Beef Stew',
+		description:
+			'A hearty slow-cooked beef stew with root vegetables and rich gravy. Perfect for cold winter evenings.',
+		category_id: 'cat-dinner',
+		category: { id: 'cat-dinner', name: 'Dinner', color: '#6366F1' },
+		cooking_time: 120,
+		difficulty: 'Hard',
+		ingredients: [
+			{ name: 'Beef Chuck', amount: 500, unit: 'g' },
+			{ name: 'Potatoes', amount: 300, unit: 'g' },
+			{ name: 'Carrots', amount: 200, unit: 'g' },
+			{ name: 'Onion', amount: 2, unit: 'pieces' },
+			{ name: 'Garlic', amount: 3, unit: 'cloves' },
+			{ name: 'Beef Broth', amount: 500, unit: 'ml' },
+		],
+		created_at: '2026-02-03T18:00:00.000Z',
+		updated_at: '2026-02-03T18:00:00.000Z',
+	},
+	{
+		_id: 'recipe-4',
+		title: 'Chocolate Lava Cake',
+		description:
+			'Rich and indulgent chocolate cake with a molten center. A show-stopping dessert for special occasions.',
+		category_id: 'cat-dessert',
+		category: { id: 'cat-dessert', name: 'Dessert', color: '#EC4899' },
+		cooking_time: 25,
+		difficulty: 'Hard',
+		ingredients: [
+			{ name: 'Dark Chocolate', amount: 200, unit: 'g' },
+			{ name: 'Butter', amount: 100, unit: 'g' },
+			{ name: 'Eggs', amount: 3, unit: 'pieces' },
+			{ name: 'Sugar', amount: 80, unit: 'g' },
+			{ name: 'Flour', amount: 40, unit: 'g' },
+		],
+		created_at: '2026-02-04T15:00:00.000Z',
+		updated_at: '2026-02-04T15:00:00.000Z',
+	},
+	{
+		_id: 'recipe-5',
+		title: 'Guacamole',
+		description:
+			'Fresh and zesty guacamole made with ripe avocados, lime, and cilantro. Great with tortilla chips.',
+		category_id: 'cat-snack',
+		category: { id: 'cat-snack', name: 'Snack', color: '#F97316' },
+		cooking_time: 10,
+		difficulty: 'Easy',
+		ingredients: [
+			{ name: 'Avocado', amount: 3, unit: 'pieces' },
+			{ name: 'Lime Juice', amount: 2, unit: 'tbsp' },
+			{ name: 'Red Onion', amount: 1, unit: 'pieces' },
+			{ name: 'Cilantro', amount: 1, unit: 'cup' },
+			{ name: 'Salt', amount: 1, unit: 'pinch' },
+		],
+		created_at: '2026-02-05T10:00:00.000Z',
+		updated_at: '2026-02-05T10:00:00.000Z',
+	},
+	{
+		_id: 'recipe-6',
+		title: 'Mango Smoothie',
+		description:
+			'A refreshing tropical smoothie with ripe mangoes, yogurt, and a hint of honey.',
+		category_id: 'cat-drink',
+		category: { id: 'cat-drink', name: 'Drink', color: '#06B6D4' },
+		cooking_time: 5,
+		difficulty: 'Easy',
+		ingredients: [
+			{ name: 'Mango', amount: 2, unit: 'pieces' },
+			{ name: 'Yogurt', amount: 200, unit: 'ml' },
+			{ name: 'Honey', amount: 1, unit: 'tbsp' },
+			{ name: 'Ice', amount: 1, unit: 'cup' },
+		],
+		created_at: '2026-02-06T08:00:00.000Z',
+		updated_at: '2026-02-06T08:00:00.000Z',
+	},
+];
