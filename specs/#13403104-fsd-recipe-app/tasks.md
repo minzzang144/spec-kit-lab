@@ -216,10 +216,10 @@
 
 ### E2E Tests per User Story
 
-- [ ] T074 [P] [US1] E2E test `e2e/recipe-list.spec.ts` — recipe list display, category filtering, empty state
-- [ ] T075 [P] [US2] E2E test `e2e/recipe-detail.spec.ts` — detail view, ingredient list, back navigation, 404 handling
-- [ ] T076 [P] [US3] E2E test `e2e/recipe-write.spec.ts` — create form, validation errors, ingredient add/remove, edit pre-fill
-- [ ] T077 [P] [US4] E2E test `e2e/recipe-delete.spec.ts` — delete confirmation dialog, cancel, confirm deletion
+- [x] T074 [P] [US1] E2E test `e2e/recipe-list.spec.ts` — recipe list display, category filtering, empty state
+- [x] T075 [P] [US2] E2E test `e2e/recipe-detail.spec.ts` — detail view, ingredient list, back navigation, 404 handling
+- [x] T076 [P] [US3] E2E test `e2e/recipe-write.spec.ts` — create form, validation errors, ingredient add/remove, edit pre-fill
+- [x] T077 [P] [US4] E2E test `e2e/recipe-delete.spec.ts` — delete confirmation dialog, cancel, confirm deletion
 
 ### Cross-Story E2E Tests
 
