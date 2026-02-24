@@ -78,11 +78,11 @@
 
 ### App Layer
 
-- [ ] T025 Create `src/App/Style/global.css` with TailwindCSS v4 imports (@import "tailwindcss")
-- [ ] T026 [P] Create `src/App/Provider/QueryProvider.tsx` (QueryClientProvider wrapper) with barrel
-- [ ] T027 Create `src/App/Mock/browser.ts` — import and aggregate Entity handlers (Category + Recipe) into setupWorker
-- [ ] T028 Create `src/App/Router/AppRouter.tsx` with React Router routes (/, /recipes, /recipes/:id, /recipes/new, /recipes/:id/edit) using lazy loading and ErrorBoundary wrapping, with barrel
-- [ ] T029 Create `src/main.tsx` entry point (MSW init in development, render App with Provider + Router) and `src/vite-env.d.ts`
+- [x] T025 Create `src/App/Style/global.css` with TailwindCSS v4 imports (@import "tailwindcss")
+- [x] T026 [P] Create `src/App/Provider/QueryProvider.tsx` (QueryClientProvider wrapper) with barrel
+- [x] T027 Create `src/App/Mock/browser.ts` — import and aggregate Entity handlers (Category + Recipe) into setupWorker
+- [x] T028 Create `src/App/Router/AppRouter.tsx` with React Router routes (/, /recipes, /recipes/:id, /recipes/new, /recipes/:id/edit) using lazy loading and ErrorBoundary wrapping, with barrel
+- [x] T029 Create `src/main.tsx` entry point (MSW init in development, render App with Provider + Router) and `src/vite-env.d.ts`
 
 ### Foundational Tests
 
