@@ -53,9 +53,9 @@
 ### Shared Layer
 
 - [x] T008 Create `src/Shared/Model/Shadcn/Utils.ts` with cn() utility, group barrel, and segment barrel
-- [ ] T009 [P] Create `src/Shared/Api/httpClient.ts` with fetch wrapper (GET/POST/PUT/DELETE, error handling via throw) and barrel
-- [ ] T010 [P] Create `src/Shared/Config/Route.ts` (ROUTES constant for all app routes) and `src/Shared/Config/IngredientUnit.ts` (INGREDIENT_UNIT_LIST constant) with barrel
-- [ ] T011 [P] Create `src/Shared/Type/index.ts` barrel for shared types
+- [x] T009 [P] Create `src/Shared/Api/httpClient.ts` with fetch wrapper (GET/POST/PUT/DELETE, error handling via throw) and barrel
+- [x] T010 [P] Create `src/Shared/Config/Route.ts` (ROUTES constant for all app routes) and `src/Shared/Config/IngredientUnit.ts` (INGREDIENT_UNIT_LIST constant) with barrel
+- [x] T011 [P] Create `src/Shared/Type/index.ts` barrel for shared types
 - [ ] T012 Create `src/Shared/Ui/ErrorBoundary/ErrorBoundary.tsx` with fallback UI, and `src/Shared/Ui/index.ts` barrel (re-export ErrorBoundary + Shadcn components)
 
 ### Category Entity (No Cross-Entity Dependencies)
