@@ -159,11 +159,11 @@
 
 ### Implementation for User Story 3
 
-- [ ] T054 [US3] Create `src/Features/RecipeWrite/Type/Dto/RecipeWriteRequestDto.ts` (CreateRecipeRequestDto, UpdateRecipeRequestDto) with group barrel and segment barrel
-- [ ] T055 [US3] Create `src/Features/RecipeWrite/Api/Post.ts` (postRecipe), `Put.ts` (putRecipe), `Key.ts` (recipeWriteMutationKey), `Mutation.ts` (recipeWriteMutationOption) with segment barrel
-- [ ] T056 [US3] Create `src/Features/RecipeWrite/__Mock__/Handler.ts` (POST, PUT handlers using Recipe Db) with __Mock__ barrel. Update `src/App/Mock/browser.ts` to include RecipeWrite handlers.
-- [ ] T057 [US3] Create `src/Features/RecipeWrite/Model/Hook/useCreateRecipe.ts` and `useUpdateRecipe.ts` (useMutation with onSuccess invalidation of recipeQueryKey) with group barrel and segment barrel
-- [ ] T058 [US3] Create `src/Features/RecipeWrite/index.ts` slice barrel
+- [x] T054 [US3] Create `src/Features/RecipeWrite/Type/Dto/RecipeWriteRequestDto.ts` (CreateRecipeRequestDto, UpdateRecipeRequestDto) with group barrel and segment barrel
+- [x] T055 [US3] Create `src/Features/RecipeWrite/Api/Post.ts` (postRecipe), `Put.ts` (putRecipe), `Key.ts` (recipeWriteMutationKey), `Mutation.ts` (recipeWriteMutationOption) with segment barrel
+- [x] T056 [US3] Create `src/Features/RecipeWrite/__Mock__/Handler.ts` (POST, PUT handlers using Recipe Db) with __Mock__ barrel. Update `src/App/Mock/browser.ts` to include RecipeWrite handlers.
+- [x] T057 [US3] Create `src/Features/RecipeWrite/Model/Hook/useCreateRecipe.ts` and `useUpdateRecipe.ts` (useMutation with onSuccess invalidation of recipeQueryKey) with group barrel and segment barrel
+- [x] T058 [US3] Create `src/Features/RecipeWrite/index.ts` slice barrel
 
 - [ ] T059 [US3] Create `src/Widgets/RecipeWrite/Ui/IngredientFieldList/IngredientFieldList.tsx` (React Hook Form useFieldArray for dynamic ingredient rows: add/remove) with component barrel
 - [ ] T060 [US3] Create `src/Widgets/RecipeWrite/Ui/RecipeWriteForm/RecipeWriteForm.tsx` (RHF + Zod schema validation, all fields, IngredientFieldList, submit handler) and `RecipeWriteForm.hook.ts` (form logic separation) with component barrel and segment barrel
