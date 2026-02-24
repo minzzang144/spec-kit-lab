@@ -150,6 +150,43 @@ Parse and execute tasks from the relevant phases:
   3. `git add` implementation files + tasks.md
   4. Single commit
 
+### Step 6b: Implementation Summary (MANDATORY)
+
+After all tasks for the current cycle are complete, display a summary **before** code review:
+
+```text
+## [cycle] 구현 완료 요약
+
+### FSD 레이어별 변경
+Entities/
+  └── [변경된 Entity 슬라이스와 설명]
+
+Features/
+  ├── [변경된 Feature 슬라이스와 설명]
+
+Widgets/
+  ├── [변경된 Widget 슬라이스와 설명]
+
+Pages/
+  ├── [변경된 Page 슬라이스와 설명]
+
+### 아키텍처 패턴 적용
+- [이번 사이클에서 적용된 주요 패턴 나열]
+
+검증: type-check [PASS/FAIL], lint [N errors], [N/N] tests [PASS/FAIL]
+```
+
+### Step 6c: Previous Cycle Fix Protocol
+
+If during implementation you discover issues in previous cycles:
+
+1. **현재 사이클에 영향 있는가?**
+   - **YES (작은 수정)**: Fix Forward — 현재 브랜치에서 수정하고, 커밋 메시지에 `fix: [이전 사이클 수정]` 명시. PR "이전 사이클 수정 사항" 섹션에 기록.
+   - **YES (아키텍처 수정)**: Fix Forward — 현재 브랜치에서 수정하고, PR "개발자 검토 요청"에 이유와 수정 내용을 상세히 명시.
+   - **NO (현재 사이클에 영향 없음)**: 현재 사이클 계속 진행. PR "TODO" 섹션에 메모만 남기기.
+
+2. **커밋 시**: 이전 사이클 수정은 별도 커밋으로 분리 (`fix(<scope>): correct [issue] from [previous cycle]`)
+
 ### Step 7: Code Review (Per Cycle)
 
 After completing all tasks for the current cycle:
@@ -234,6 +271,30 @@ d. **Create PR with Stacked PR pattern** (한국어 본문):
 
    ## 주요 변경 사항
    [완료된 태스크와 핵심 변경 사항 목록 — 한국어]
+
+   ## 개발자 검토 요청
+   AI 코드 리뷰는 컨벤션, 타입 안전성, 테스트 커버리지를 검증했습니다.
+   아래는 **맥락과 판단이 필요한 영역**으로, 개발자의 승인이 필요합니다.
+
+   ### 책임과 경계
+   - [ ] [모듈/컴포넌트의 책임 범위가 적절한지 검토 항목]
+
+   ### 장기 변경 비용
+   - [ ] [현재 구조가 향후 요구사항 변경에 유연한지 검토 항목]
+
+   ### 추상화 수준
+   - [ ] [과도하거나 부족한 추상화가 없는지 검토 항목]
+
+   ### 비즈니스 맥락
+   - [ ] [도메인 관점에서 UX 흐름이 자연스러운지 검토 항목]
+
+   ## 이전 사이클 수정 사항
+   [이전 사이클에서 발견된 이슈를 현재 사이클에서 Fix Forward한 경우 기록]
+   - 해당 없으면 "없음" 으로 표기
+
+   ## TODO (다음 사이클에서 검토)
+   [현재 사이클에 영향 없지만 추후 검토가 필요한 사항 메모]
+   - 해당 없으면 "없음" 으로 표기
 
    ## 테스트 계획
    - [ ] 단위 테스트 통과
