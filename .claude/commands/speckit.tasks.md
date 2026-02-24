@@ -52,7 +52,33 @@ You **MUST** consider the user input before proceeding (if not empty).
    - Parallel execution examples per story
    - Implementation strategy section (MVP first, incremental delivery)
 
-5. **Report**: Output path to generated tasks.md and summary:
+5. **Ask user about pushing and PR update (Ready for Review)**:
+
+   After committing tasks.md, ask the user using `AskUserQuestion`:
+   - Question: "변경사항을 push하고 spec PR을 Ready for Review로 전환할까요? (tasks까지 완료되었으므로 정식 리뷰 요청 시점입니다)"
+   - Options:
+     - "Push + Ready for Review 전환" (Recommended) — push 후 기존 Draft PR을 Ready로 전환하고 tasks 완료 코멘트 추가
+     - "Push + PR 코멘트만" — push 후 코멘트만 추가 (Draft 유지)
+     - "Push만" — push만 하고 PR 변경 없음
+     - "건너뛰기" — 로컬에서만 작업 유지
+
+   a. If **Push + Ready for Review 전환**:
+      ```bash
+      git push
+      PR_NUM=$(gh pr list --head "$(git branch --show-current)" --json number -q '.[0].number')
+      gh pr ready $PR_NUM
+      gh pr comment $PR_NUM --body "[tasks phase summary]"
+      ```
+
+   b. If **Push + PR 코멘트만**: Push and add comment only.
+
+   c. If **Push만**: Push only.
+
+   d. If **건너뛰기**: Skip all.
+
+   e. If no existing PR found, skip PR operations silently.
+
+6. **Report**: Output path to generated tasks.md and summary:
    - Total task count
    - Task count per user story
    - Parallel opportunities identified
