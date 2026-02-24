@@ -235,7 +235,7 @@
 **Purpose**: Quality improvements across all user stories
 
 - [x] T080 Accessibility audit for all pages (keyboard navigation, ARIA labels, color contrast WCAG 2.1 AA)
-- [ ] T081 [P] Review and refine loading/skeleton states across all widgets
+- [x] T081 [P] Review and refine loading/skeleton states across all widgets
 - [ ] T082 Run full verification suite (type-check, lint, test, build) and fix any issues
 - [ ] T083 Final code review: FSD architecture compliance, barrel exports, import rules, naming conventions
 
