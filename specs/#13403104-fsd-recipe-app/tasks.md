@@ -165,9 +165,9 @@
 - [x] T057 [US3] Create `src/Features/RecipeWrite/Model/Hook/useCreateRecipe.ts` and `useUpdateRecipe.ts` (useMutation with onSuccess invalidation of recipeQueryKey) with group barrel and segment barrel
 - [x] T058 [US3] Create `src/Features/RecipeWrite/index.ts` slice barrel
 
-- [ ] T059 [US3] Create `src/Widgets/RecipeWrite/Ui/IngredientFieldList/IngredientFieldList.tsx` (React Hook Form useFieldArray for dynamic ingredient rows: add/remove) with component barrel
-- [ ] T060 [US3] Create `src/Widgets/RecipeWrite/Ui/RecipeWriteForm/RecipeWriteForm.tsx` (RHF + Zod schema validation, all fields, IngredientFieldList, submit handler) and `RecipeWriteForm.hook.ts` (form logic separation) with component barrel and segment barrel
-- [ ] T061 [US3] Create `src/Widgets/RecipeWrite/index.ts` slice barrel
+- [x] T059 [US3] Create `src/Widgets/RecipeWrite/Ui/IngredientFieldList/IngredientFieldList.tsx` (React Hook Form useFieldArray for dynamic ingredient rows: add/remove) with component barrel
+- [x] T060 [US3] Create `src/Widgets/RecipeWrite/Ui/RecipeWriteForm/RecipeWriteForm.tsx` (RHF + Zod schema validation, all fields, IngredientFieldList, submit handler) and `RecipeWriteForm.hook.ts` (form logic separation) with component barrel and segment barrel
+- [x] T061 [US3] Create `src/Widgets/RecipeWrite/index.ts` slice barrel
 
 - [ ] T062 [US3] Create `src/Pages/RecipeWrite/Ui/RecipeWritePage/RecipeWritePage.tsx` (create vs edit mode from route, pre-fill on edit via useRecipe, redirect to detail on success) with component barrel, segment barrel, and slice barrel
 - [ ] T063 [US3] Update `src/App/Router/AppRouter.tsx` to wire RecipeWritePage to `/recipes/new` and `/recipes/:id/edit` routes
