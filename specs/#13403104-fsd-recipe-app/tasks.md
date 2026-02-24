@@ -39,7 +39,7 @@
 - [x] T003 Configure Vite (vite.config.ts) with React plugin, @tailwindcss/vite plugin, `#` path alias, and Vitest settings (jsdom, globals, setup file)
 - [x] T004 [P] Configure ESLint (eslint.config.js) with TypeScript ESLint and React hooks plugins
 - [x] T005 [P] Configure Prettier (.prettierrc) with import sort plugin
-- [ ] T006 Setup shadcn/ui components.json (new-york style, aliases: `#/Shared/Ui/Shadcn`, `#/Shared/Model`) and install base components (button, input, select, textarea, dialog, badge, card, label, separator) into `src/Shared/Ui/Shadcn/`
+- [x] T006 Setup shadcn/ui components.json (new-york style, aliases: `#/Shared/Ui/Shadcn`, `#/Shared/Model`) and install base components (button, input, select, textarea, dialog, badge, card, label, separator) into `src/Shared/Ui/Shadcn/`
 - [ ] T007 Create test setup file `src/test-setup.ts` with Testing Library jest-dom matchers and MSW server setup
 
 ---
