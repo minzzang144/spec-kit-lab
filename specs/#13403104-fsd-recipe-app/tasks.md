@@ -60,7 +60,7 @@
 
 ### Category Entity (No Cross-Entity Dependencies)
 
-- [ ] T013 Create `src/Entities/Category/Type/Domain/Category.ts` (Category type) with group barrel and segment barrel
+- [x] T013 Create `src/Entities/Category/Type/Domain/Category.ts` (Category type) with group barrel and segment barrel
 - [ ] T014 Create `src/Entities/Category/__Mock__/Seed.ts` (6 predefined categories), `Db.ts` (getCategoryList), `Handler.ts` (GET /api/categories) with __Mock__ barrel
 - [ ] T015 Create `src/Entities/Category/Api/Get.ts`, `Key.ts`, `Query.ts` (categoryQueryOption with queryOptions) with segment barrel
 - [ ] T016 Create `src/Entities/Category/Model/Hook/useCategoryList.ts` with group barrel and segment barrel
