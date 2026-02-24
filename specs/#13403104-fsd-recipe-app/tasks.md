@@ -107,7 +107,7 @@
 - [x] T035 [US1] Create `src/Features/CategoryFilter/Ui/CategoryFilterBar/CategoryFilterBar.tsx` (filter bar with category chips, uses useCategoryList + useCategoryFilter) with component barrel and segment barrel
 - [x] T036 [US1] Create `src/Features/CategoryFilter/index.ts` slice barrel
 
-- [ ] T037 [P] [US1] Create `src/Entities/Recipe/Ui/RecipeDifficulty/RecipeDifficulty.tsx` (difficulty badge — single domain info), `src/Entities/Recipe/Ui/RecipeCookingTime/RecipeCookingTime.tsx` (formatted time — single domain info), `src/Entities/Recipe/Ui/EmptyRecipeState/EmptyRecipeState.tsx` (empty message) — each with component barrel, plus segment barrel. Update slice barrel.
+- [x] T037 [P] [US1] Create `src/Entities/Recipe/Ui/RecipeDifficulty/RecipeDifficulty.tsx` (difficulty badge — single domain info), `src/Entities/Recipe/Ui/RecipeCookingTime/RecipeCookingTime.tsx` (formatted time — single domain info), `src/Entities/Recipe/Ui/EmptyRecipeState/EmptyRecipeState.tsx` (empty message) — each with component barrel, plus segment barrel. Update slice barrel.
 
 - [ ] T038 [US1] Create `src/Widgets/RecipeList/Ui/RecipeListCard/RecipeListCard.tsx` (multi-domain: Recipe info + CategoryBadge from Entities/Category) with component barrel
 - [ ] T039 [US1] Create `src/Widgets/RecipeList/Ui/RecipeListEmpty/RecipeListEmpty.tsx` (empty state with Link to create page — separate folder: has routing) with component barrel
