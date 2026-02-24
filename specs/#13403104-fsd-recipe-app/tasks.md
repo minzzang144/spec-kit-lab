@@ -72,9 +72,9 @@
 - [x] T019 Create `src/Entities/Recipe/Type/` with Domain/Recipe.ts (Recipe, Ingredient, Difficulty types), Dto/RecipeResponseDto.ts (snake_case RecipeDto with `import type { Category }` from `#/Entities/Category`), Query/RecipeQuery.ts (GetRecipeListQuery), Param/RecipeParam.ts — all with group barrels and segment barrel
 - [x] T020 Create `src/Entities/Recipe/__Mock__/Seed.ts` (5-6 sample recipes across categories), `Db.ts` (in-memory CRUD: getRecipeList, getRecipeById, createRecipe, updateRecipe, deleteRecipe), `Handler.ts` (GET handlers only) with __Mock__ barrel
 - [x] T021 Create `src/Entities/Recipe/Model/Lib/RecipeMapper.ts` (toRecipe, toRecipeList — snake_case DTO to camelCase domain) with group barrel and segment barrel
-- [ ] T022 Create `src/Entities/Recipe/Api/Get.ts` (getRecipe, getRecipeList — uses RecipeMapper), `Key.ts` (recipeQueryKey), `Query.ts` (recipeQueryOption) with segment barrel
-- [ ] T023 Create `src/Entities/Recipe/Model/Hook/useRecipe.ts` and `useRecipeList.ts` with group barrel (update segment barrel)
-- [ ] T024 Create `src/Entities/Recipe/index.ts` slice barrel (re-export Type, Api, Model — NOT __Mock__, Ui added later in US1)
+- [x] T022 Create `src/Entities/Recipe/Api/Get.ts` (getRecipe, getRecipeList — uses RecipeMapper), `Key.ts` (recipeQueryKey), `Query.ts` (recipeQueryOption) with segment barrel
+- [x] T023 Create `src/Entities/Recipe/Model/Hook/useRecipe.ts` and `useRecipeList.ts` with group barrel (update segment barrel)
+- [x] T024 Create `src/Entities/Recipe/index.ts` slice barrel (re-export Type, Api, Model — NOT __Mock__, Ui added later in US1)
 
 ### App Layer
 
