@@ -174,8 +174,8 @@
 
 ### Tests for User Story 3
 
-- [ ] T064 [P] [US3] Write test `src/Features/RecipeWrite/Api/Post.test.ts` for postRecipe HTTP call with MSW
-- [ ] T065 [P] [US3] Write test `src/Widgets/RecipeWrite/Ui/RecipeWriteForm/RecipeWriteForm.test.tsx` for form validation (required fields, character limits, ingredient min/max)
+- [x] T064 [P] [US3] Write test `src/Features/RecipeWrite/Api/Post.test.ts` for postRecipe HTTP call with MSW
+- [x] T065 [P] [US3] Write test `src/Widgets/RecipeWrite/Ui/RecipeWriteForm/RecipeWriteForm.test.tsx` for form validation (required fields, character limits, ingredient min/max)
 
 **Checkpoint**: User Stories 1, 2, AND 3 work — browse, view detail, create, and edit recipes.
 
