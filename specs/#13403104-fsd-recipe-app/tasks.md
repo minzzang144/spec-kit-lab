@@ -212,7 +212,7 @@
 
 ### E2E Setup
 
-- [ ] T073 Configure Playwright (playwright.config.ts) with webServer settings and add test:e2e scripts to package.json
+- [x] T073 Configure Playwright (playwright.config.ts) with webServer settings and add test:e2e scripts to package.json
 
 ### E2E Tests per User Story
 
