@@ -86,8 +86,8 @@
 
 ### Foundational Tests
 
-- [ ] T030 [P] Write unit test `src/Entities/Recipe/Model/Lib/RecipeMapper.test.ts` for toRecipe and toRecipeList mapping (snake_case to camelCase)
-- [ ] T031 [P] Write unit test `src/Shared/Api/httpClient.test.ts` for GET/POST/PUT/DELETE and error handling
+- [x] T030 [P] Write unit test `src/Entities/Recipe/Model/Lib/RecipeMapper.test.ts` for toRecipe and toRecipeList mapping (snake_case to camelCase)
+- [x] T031 [P] Write unit test `src/Shared/Api/httpClient.test.ts` for GET/POST/PUT/DELETE and error handling
 
 **Checkpoint**: Foundation ready — all shared infrastructure, entities, and routing in place. User story implementation can begin.
 
