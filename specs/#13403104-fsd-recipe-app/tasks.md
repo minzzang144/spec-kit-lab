@@ -139,8 +139,8 @@
 - [x] T048 [US2] Create `src/Widgets/RecipeDetail/Ui/RecipeDetail/RecipeDetail.tsx` (detail composition: title, description, CategoryBadge, RecipeCookingTime, RecipeDifficulty, RecipeIngredientList, edit/delete action slots) and `RecipeDetail.loading.tsx` (skeleton sibling) with component barrel and segment barrel
 - [x] T049 [US2] Create `src/Widgets/RecipeDetail/index.ts` slice barrel
 
-- [ ] T050 [US2] Create `src/Pages/RecipeDetail/Ui/RecipeDetailPage/RecipeDetailPage.tsx` (useParams for :id, useRecipe hook, loading/error/notFound states) with component barrel, segment barrel, and slice barrel
-- [ ] T051 [US2] Update `src/App/Router/AppRouter.tsx` to wire RecipeDetailPage to `/recipes/:id` route
+- [x] T050 [US2] Create `src/Pages/RecipeDetail/Ui/RecipeDetailPage/RecipeDetailPage.tsx` (useParams for :id, useRecipe hook, loading/error/notFound states) with component barrel, segment barrel, and slice barrel
+- [x] T051 [US2] Update `src/App/Router/AppRouter.tsx` to wire RecipeDetailPage to `/recipes/:id` route
 
 ### Tests for User Story 2
 
