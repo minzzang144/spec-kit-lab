@@ -169,8 +169,8 @@
 - [x] T060 [US3] Create `src/Widgets/RecipeWrite/Ui/RecipeWriteForm/RecipeWriteForm.tsx` (RHF + Zod schema validation, all fields, IngredientFieldList, submit handler) and `RecipeWriteForm.hook.ts` (form logic separation) with component barrel and segment barrel
 - [x] T061 [US3] Create `src/Widgets/RecipeWrite/index.ts` slice barrel
 
-- [ ] T062 [US3] Create `src/Pages/RecipeWrite/Ui/RecipeWritePage/RecipeWritePage.tsx` (create vs edit mode from route, pre-fill on edit via useRecipe, redirect to detail on success) with component barrel, segment barrel, and slice barrel
-- [ ] T063 [US3] Update `src/App/Router/AppRouter.tsx` to wire RecipeWritePage to `/recipes/new` and `/recipes/:id/edit` routes
+- [x] T062 [US3] Create `src/Pages/RecipeWrite/Ui/RecipeWritePage/RecipeWritePage.tsx` (create vs edit mode from route, pre-fill on edit via useRecipe, redirect to detail on success) with component barrel, segment barrel, and slice barrel
+- [x] T063 [US3] Update `src/App/Router/AppRouter.tsx` to wire RecipeWritePage to `/recipes/new` and `/recipes/:id/edit` routes
 
 ### Tests for User Story 3
 
