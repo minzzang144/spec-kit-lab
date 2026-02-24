@@ -818,8 +818,7 @@ Features/ChatWrite/Model/Logic/
 import { useChatStore } from '#/Entities/Chat';
 
 export function useMessageLogic() {
-  const setMessages = useChatStore((s) => s.setMessages);
-
+  // Store의 상태를 직접 업데이트 — setter는 Logic에서만
   function addMessage(message: ChatMessage) {
     useChatStore.setState((state) => ({
       messages: [...state.messages, message],
@@ -829,6 +828,10 @@ export function useMessageLogic() {
   return { addMessage };
 }
 ```
+
+**핵심 원칙**:
+- **Entity Slice**: 순수 상태(데이터)만 정의. `StateCreator`의 `set` 인자를 사용하여 setter 액션을 만들지 **않는다**.
+- **Feature Logic**: `useDomainStore.setState()`를 사용하여 상태 업데이트. 모든 쓰기 로직은 여기에 집중.
 
 ### 사용 패턴
 
