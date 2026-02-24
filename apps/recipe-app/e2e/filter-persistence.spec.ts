@@ -6,20 +6,14 @@ test.describe('Filter Persistence', () => {
 	}) => {
 		await page.goto('/');
 
-		// Select Breakfast filter
 		await page.getByRole('button', { name: 'Breakfast' }).click();
-		await expect(page.getByText('Fluffy Pancakes')).toBeVisible();
-		await expect(page.getByText('Beef Stew')).not.toBeVisible();
+		await expect(page.getByRole('link', { name: /Fluffy Pancakes/ })).toBeVisible();
+		await expect(page.getByRole('link', { name: /Beef Stew/ })).not.toBeVisible();
 
-		// Navigate to detail
-		await page.getByText('Fluffy Pancakes').click();
+		await page.getByRole('link', { name: /Fluffy Pancakes/ }).click();
 		await expect(page).toHaveURL(/\/recipes\/recipe-1/);
 
-		// Go back
 		await page.getByText('← 목록으로').click();
-
-		// Filter state is managed by Zustand (in-memory), so it persists
-		// within the same session as long as the store isn't reset
-		await expect(page.getByText('Fluffy Pancakes')).toBeVisible();
+		await expect(page.getByRole('link', { name: /Fluffy Pancakes/ })).toBeVisible();
 	});
 });

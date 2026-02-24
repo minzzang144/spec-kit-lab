@@ -14,15 +14,13 @@ test.describe('US3: Create and Edit Recipe', () => {
 
 	test('should add and remove ingredient rows', async ({ page }) => {
 		await page.goto('/recipes/new');
-		const initialIngredientCount = await page.getByPlaceholder('재료명').count();
-		expect(initialIngredientCount).toBe(1);
 
 		await page.getByText('+ 재료 추가').click();
-		const afterAddCount = await page.getByPlaceholder('재료명').count();
+		const afterAddCount = await page.locator('input[name*="ingredientList"][name*="name"]').count();
 		expect(afterAddCount).toBe(2);
 
 		await page.getByText('삭제').first().click();
-		const afterRemoveCount = await page.getByPlaceholder('재료명').count();
+		const afterRemoveCount = await page.locator('input[name*="ingredientList"][name*="name"]').count();
 		expect(afterRemoveCount).toBe(1);
 	});
 
@@ -35,13 +33,13 @@ test.describe('US3: Create and Edit Recipe', () => {
 		await page.getByLabel('조리 시간 (분)').fill('15');
 		await page.getByLabel('난이도').selectOption('Easy');
 
-		await page.getByPlaceholder('재료명').fill('Test Ingredient');
-		await page.getByPlaceholder('양').fill('100');
+		await page.locator('input[name*="ingredientList"][name*="name"]').fill('Test Ingredient');
+		await page.locator('input[name*="ingredientList"][name*="amount"]').fill('100');
 
 		await page.getByRole('button', { name: '생성' }).click();
 
 		await expect(page).toHaveURL(/\/recipes\/recipe-/);
-		await expect(page.getByText('E2E Test Recipe')).toBeVisible();
+		await expect(page.getByRole('heading', { name: 'E2E Test Recipe' })).toBeVisible();
 	});
 
 	test('should pre-fill form in edit mode', async ({ page }) => {

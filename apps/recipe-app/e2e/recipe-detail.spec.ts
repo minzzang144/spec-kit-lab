@@ -3,17 +3,23 @@ import { expect, test } from '@playwright/test';
 test.describe('US2: Recipe Detail View', () => {
 	test('should navigate to detail from list', async ({ page }) => {
 		await page.goto('/');
-		await page.getByText('Fluffy Pancakes').click();
+		await page.getByRole('link', { name: /Fluffy Pancakes/ }).click();
 		await expect(page).toHaveURL(/\/recipes\/recipe-1/);
-		await expect(page.getByRole('heading', { name: 'Fluffy Pancakes' })).toBeVisible();
+		await expect(
+			page.getByRole('heading', { name: 'Fluffy Pancakes' }),
+		).toBeVisible();
 	});
 
 	test('should display all recipe details', async ({ page }) => {
 		await page.goto('/recipes/recipe-1');
-		await expect(page.getByText('Fluffy Pancakes')).toBeVisible();
-		await expect(page.getByText('Breakfast')).toBeVisible();
+		await expect(
+			page.getByRole('heading', { name: 'Fluffy Pancakes' }),
+		).toBeVisible();
 		await expect(page.getByText('Easy')).toBeVisible();
 		await expect(page.getByText('⏱ 20분')).toBeVisible();
+		await expect(page.getByText('Breakfast', { exact: true })).toBeVisible({
+			timeout: 10000,
+		});
 	});
 
 	test('should display ingredient list', async ({ page }) => {

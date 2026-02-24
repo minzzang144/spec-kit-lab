@@ -18,6 +18,6 @@ test.describe('US4: Delete Recipe', () => {
 		await page.getByRole('button', { name: '삭제' }).click();
 		await page.getByRole('button', { name: '취소' }).click();
 		await expect(page.getByText('레시피를 삭제할까요?')).not.toBeVisible();
-		await expect(page.getByText('Fluffy Pancakes')).toBeVisible();
+		await expect(page.getByRole('heading', { name: 'Fluffy Pancakes' })).toBeVisible();
 	});
 });

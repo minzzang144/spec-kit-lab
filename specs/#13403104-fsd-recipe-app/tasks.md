@@ -338,20 +338,20 @@ feature/#13403104-us3-fsd-recipe-app (Phase 7+8: E2E + Polish)
 
 Each task should be validated against these gem-fsd-architecture rules:
 
-- [ ] Layer hierarchy: App > Pages > Widgets > Features > Entities > Shared
-- [ ] Import direction: higher layers import lower layers only
-- [ ] Same slice: relative path + barrel
-- [ ] Different slice: `#/Layer/Slice` absolute path (2-depth)
-- [ ] Named exports only (no `export *`)
-- [ ] __Mock__ barrel NOT re-exported from slice barrel
-- [ ] Entity Ui: single domain, single info only
-- [ ] Feature Ui: single business concern, self-contained
-- [ ] Widget Ui: multi-domain composition
-- [ ] PascalCase directories (except __Mock__)
-- [ ] camelCase for hook/store files (use prefix)
-- [ ] No plurals in naming (List suffix, not plural -s)
-- [ ] Type/Domain/ for FE domain models, Type/Dto/ for transfer objects
-- [ ] Cross-entity `import type` only via index.ts
+- [x] Layer hierarchy: App > Pages > Widgets > Features > Entities > Shared
+- [x] Import direction: higher layers import lower layers only
+- [x] Same slice: relative path + barrel
+- [x] Different slice: `#/Layer/Slice` absolute path (2-depth)
+- [x] Named exports only (no `export *`)
+- [x] __Mock__ barrel NOT re-exported from slice barrel
+- [x] Entity Ui: single domain, single info only
+- [x] Feature Ui: single business concern, self-contained
+- [x] Widget Ui: multi-domain composition
+- [x] PascalCase directories (except __Mock__)
+- [x] camelCase for hook/store files (use prefix)
+- [x] No plurals in naming (List suffix, not plural -s)
+- [x] Type/Domain/ for FE domain models, Type/Dto/ for transfer objects
+- [x] Cross-entity `import type` only via index.ts
 
 ---
 
