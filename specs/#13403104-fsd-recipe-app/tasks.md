@@ -144,8 +144,8 @@
 
 ### Tests for User Story 2
 
-- [ ] T052 [P] [US2] Write test `src/Widgets/RecipeDetail/Ui/RecipeDetail/RecipeDetail.test.tsx` for detail rendering with all fields and ingredients
-- [ ] T053 [P] [US2] Write test `src/Pages/RecipeDetail/Ui/RecipeDetailPage/RecipeDetailPage.test.tsx` for not-found handling and loading state
+- [x] T052 [P] [US2] Write test `src/Widgets/RecipeDetail/Ui/RecipeDetail/RecipeDetail.test.tsx` for detail rendering with all fields and ingredients
+- [x] T053 [P] [US2] Write test `src/Pages/RecipeDetail/Ui/RecipeDetailPage/RecipeDetailPage.test.tsx` for not-found handling and loading state
 
 **Checkpoint**: User Stories 1 AND 2 work independently — browse list and view details.
 
