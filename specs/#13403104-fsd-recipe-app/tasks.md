@@ -104,8 +104,8 @@
 - [x] T032 [US1] Create `src/Features/CategoryFilter/Type/CategoryFilter.ts` (CategoryFilterState — FE-only, flat, not in Dto/) with segment barrel
 - [x] T033 [US1] Create `src/Features/CategoryFilter/Model/Store/useCategoryFilterStore.ts` (Zustand store: selectedCategoryId, setSelectedCategoryId) with group barrel and segment barrel
 - [x] T034 [US1] Create `src/Features/CategoryFilter/Model/Hook/useCategoryFilter.ts` (derived state: isAllSelected) with group barrel (update segment barrel)
-- [ ] T035 [US1] Create `src/Features/CategoryFilter/Ui/CategoryFilterBar/CategoryFilterBar.tsx` (filter bar with category chips, uses useCategoryList + useCategoryFilter) with component barrel and segment barrel
-- [ ] T036 [US1] Create `src/Features/CategoryFilter/index.ts` slice barrel
+- [x] T035 [US1] Create `src/Features/CategoryFilter/Ui/CategoryFilterBar/CategoryFilterBar.tsx` (filter bar with category chips, uses useCategoryList + useCategoryFilter) with component barrel and segment barrel
+- [x] T036 [US1] Create `src/Features/CategoryFilter/index.ts` slice barrel
 
 - [ ] T037 [P] [US1] Create `src/Entities/Recipe/Ui/RecipeDifficulty/RecipeDifficulty.tsx` (difficulty badge — single domain info), `src/Entities/Recipe/Ui/RecipeCookingTime/RecipeCookingTime.tsx` (formatted time — single domain info), `src/Entities/Recipe/Ui/EmptyRecipeState/EmptyRecipeState.tsx` (empty message) — each with component barrel, plus segment barrel. Update slice barrel.
 
