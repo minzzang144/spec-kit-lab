@@ -17,6 +17,7 @@ export function RecipeListCard({ recipe, category }: RecipeListCardProps) {
 		<Link
 			to={recipeDetailPath(recipe.id)}
 			className="block rounded-lg border bg-card p-4 transition-colors hover:bg-accent"
+			aria-label={`${recipe.title} 레시피 상세 보기`}
 		>
 			<div className="flex items-start justify-between gap-2">
 				<h3 className="font-semibold">{recipe.title}</h3>

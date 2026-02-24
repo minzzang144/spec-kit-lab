@@ -8,9 +8,11 @@ export function RecipeIngredientList({
 	ingredientList,
 }: RecipeIngredientListProps) {
 	return (
-		<div>
-			<h3 className="mb-3 text-lg font-semibold">재료</h3>
-			<ul className="space-y-2">
+		<section aria-labelledby="ingredient-heading">
+			<h3 id="ingredient-heading" className="mb-3 text-lg font-semibold">
+				재료
+			</h3>
+			<ul className="space-y-2" role="list" aria-label="재료 목록">
 				{ingredientList.map((ingredient, index) => (
 					<li
 						key={index}
@@ -23,6 +25,6 @@ export function RecipeIngredientList({
 					</li>
 				))}
 			</ul>
-		</div>
+		</section>
 	);
 }
