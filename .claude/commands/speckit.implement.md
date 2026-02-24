@@ -163,26 +163,59 @@ b. **Run code review**: Execute `/everything-claude-code:code-review` skill
      설치: claude mcp add everything-claude-code -- npx -y @anthropic-ai/claude-code-mcp@latest
      ```
 
-c. **Address findings**:
+c. **Display review summary to user** (MANDATORY):
+   Show a concise table of findings so user can see what was reviewed:
+
+   ```text
+   ## 코드 리뷰 결과
+
+   | 심각도 | 건수 | 내용 요약 |
+   |--------|------|----------|
+   | CRITICAL | 0 | - |
+   | HIGH | N | [구체적 이슈 설명] |
+   | MEDIUM | N | [구체적 이슈 설명] |
+   | LOW | N | [구체적 이슈 설명] |
+
+   수정 대상: [수정할 이슈 목록]
+   ```
+
+d. **Address findings**:
    - Critical/High: Fix before proceeding
    - Medium/Low: Document or fix if time permits
 
-d. **Commit review fixes** separately:
+e. **Commit review fixes** separately:
    - `fix(<scope>): address code review feedback for [cycle]`
 
-### Step 8: Push and Create PR (Per Cycle)
+### Step 8: Push, Confirm, Create PR, and PR Review (Per Cycle)
 
-a. **Push current branch**:
+a. **Run verification suite**:
+   ```bash
+   pnpm --filter [app-name] run type-check
+   pnpm --filter [app-name] run lint
+   pnpm --filter [app-name] run test
+   ```
+   Report results. Fix any failures before proceeding.
+
+b. **Push current branch**:
    ```bash
    git push -u origin [current-branch]
    ```
 
-b. **Run PR review**: Execute `/pr-review-toolkit:review-pr` skill
-   - If unavailable, use `/everything-claude-code:code-review` as fallback
+c. **Ask user for PR creation** (MANDATORY):
+   Use `AskUserQuestion` to confirm before creating PR:
 
-c. **Fix Critical/High issues** from PR review before creating PR
+   ```text
+   [cycle] 사이클 작업이 완료되었습니다.
+   - 커밋: N개
+   - 파일 변경: N개
+   - 테스트: N/N 통과
 
-d. **Create PR with Stacked PR pattern**:
+   PR을 생성할까요?
+   ```
+
+   Options: "PR 생성", "추가 수정 후 PR 생성", "PR 없이 다음 사이클로"
+
+d. **Create PR with Stacked PR pattern** (한국어 본문):
 
    The PR base is determined by the cycle (from Step 2 table):
    - `base` → base: `spec/#ticket-feature`
@@ -190,38 +223,42 @@ d. **Create PR with Stacked PR pattern**:
    - `us2` → base: `feature/#ticket-us1-feature`
 
    ```bash
-   gh pr create --base [pr-base-branch] --title "[PR title]" --body "$(cat <<'EOF'
-   ## Summary
-   [Brief description from tasks.md for this cycle's phases]
+   gh pr create --base [pr-base-branch] --title "<type>(<scope>): <한국어 제목>" --body "$(cat <<'EOF'
+   ## 요약
+   [이 사이클에서 구현한 내용 요약 — 한국어]
 
-   ## Cycle
-   - **Cycle**: [base|us1|us2|...]
-   - **Phases**: [Phase numbers and titles covered]
-   - **Stacked on**: [PR base branch]
+   ## 사이클 정보
+   - **사이클**: [base|us1|us2|...]
+   - **Phase**: [Phase 번호와 제목]
+   - **기반 브랜치**: [PR base branch]
 
-   ## Changes
-   [List of completed tasks and key changes]
+   ## 주요 변경 사항
+   [완료된 태스크와 핵심 변경 사항 목록 — 한국어]
 
-   ## Test Plan
-   - [ ] Unit tests pass
-   - [ ] Integration tests pass
-   - [ ] Manual testing completed
+   ## 테스트 계획
+   - [ ] 단위 테스트 통과
+   - [ ] 통합 테스트 통과
+   - [ ] 수동 테스트 완료
 
-   ## Code Review
-   - [x] Per-cycle code review completed
-   - [x] Pre-PR review completed
+   ## 코드 리뷰
+   - [x] 사이클 코드 리뷰 완료
+   - [ ] PR 리뷰 완료
 
    Generated with [Claude Code](https://claude.ai/code) using SpecKit workflow
    EOF
    )"
    ```
 
-e. **Post review summary** (optional):
-   ```bash
-   gh pr comment [PR_NUMBER] --body "[Review summary]"
-   ```
+e. **Run PR review AFTER PR creation**:
+   Execute `/pr-review-toolkit:review-pr` skill with the created PR number
+   - If unavailable, use `/everything-claude-code:code-review` as fallback
+   - Display PR review results to user (same format as Step 7c)
 
-f. **Report cycle completion**:
+f. **Fix Critical/High issues** from PR review:
+   - Commit fixes → push → update PR checkbox "PR 리뷰 완료"
+   - If no issues found, update checkbox automatically
+
+g. **Report cycle completion**:
    - Display PR URL
    - Show remaining cycles status
 
