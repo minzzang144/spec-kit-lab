@@ -1,3 +1,5 @@
+// EXCEPTION (gem-fsd-architecture §7): cross-entity import type
+// BE response embeds Category in Recipe (NoSQL pattern). No runtime dependency.
 import type { Category } from '#/Entities/Category';
 
 export type IngredientDto = {
