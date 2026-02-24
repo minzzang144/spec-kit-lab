@@ -198,7 +198,7 @@
 
 ### Tests for User Story 4
 
-- [ ] T072 [P] [US4] Write test `src/Features/RecipeDelete/Ui/DeleteRecipeAction/DeleteRecipeAction.test.tsx` for dialog open/close and delete confirmation flow
+- [x] T072 [P] [US4] Write test `src/Features/RecipeDelete/Ui/DeleteRecipeAction/DeleteRecipeAction.test.tsx` for dialog open/close and delete confirmation flow
 
 **Checkpoint**: All 4 user stories functional — full CRUD cycle complete.
 
