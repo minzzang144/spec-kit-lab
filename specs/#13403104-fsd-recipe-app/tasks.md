@@ -114,8 +114,8 @@
 - [x] T040 [US1] Create `src/Widgets/RecipeList/Ui/RecipeList/RecipeList.tsx` (data fetch via useRecipeList + filter via useCategoryFilter, loading/error/empty states) and `RecipeList.loading.tsx` (skeleton sibling) with component barrel and segment barrel
 - [x] T041 [US1] Create `src/Widgets/RecipeList/index.ts` slice barrel
 
-- [ ] T042 [US1] Create `src/Pages/RecipeList/Ui/RecipeListPage/RecipeListPage.tsx` (compose CategoryFilterBar + RecipeList widget) with component barrel, segment barrel, and slice barrel
-- [ ] T043 [US1] Update `src/App/Router/AppRouter.tsx` to wire RecipeListPage to `/` and `/recipes` routes
+- [x] T042 [US1] Create `src/Pages/RecipeList/Ui/RecipeListPage/RecipeListPage.tsx` (compose CategoryFilterBar + RecipeList widget) with component barrel, segment barrel, and slice barrel
+- [x] T043 [US1] Update `src/App/Router/AppRouter.tsx` to wire RecipeListPage to `/` and `/recipes` routes
 
 ### Tests for User Story 1
 
