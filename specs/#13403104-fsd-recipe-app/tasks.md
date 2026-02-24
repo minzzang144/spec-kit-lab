@@ -101,7 +101,7 @@
 
 ### Implementation for User Story 1
 
-- [ ] T032 [US1] Create `src/Features/CategoryFilter/Type/CategoryFilter.ts` (CategoryFilterState — FE-only, flat, not in Dto/) with segment barrel
+- [x] T032 [US1] Create `src/Features/CategoryFilter/Type/CategoryFilter.ts` (CategoryFilterState — FE-only, flat, not in Dto/) with segment barrel
 - [ ] T033 [US1] Create `src/Features/CategoryFilter/Model/Store/useCategoryFilterStore.ts` (Zustand store: selectedCategoryId, setSelectedCategoryId) with group barrel and segment barrel
 - [ ] T034 [US1] Create `src/Features/CategoryFilter/Model/Hook/useCategoryFilter.ts` (derived state: isAllSelected) with group barrel (update segment barrel)
 - [ ] T035 [US1] Create `src/Features/CategoryFilter/Ui/CategoryFilterBar/CategoryFilterBar.tsx` (filter bar with category chips, uses useCategoryList + useCategoryFilter) with component barrel and segment barrel
