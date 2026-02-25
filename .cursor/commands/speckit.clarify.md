@@ -160,7 +160,28 @@ Execution steps:
 
 7. Write the updated spec back to `FEATURE_SPEC`.
 
-8. Report completion (after questioning loop ends or early termination):
+8. **Ask user about pushing and PR update**:
+
+   After committing clarification changes, ask the user using `AskUserQuestion`:
+   - Question: "변경사항을 push하고 spec PR에 진행 상황을 코멘트할까요?"
+   - Options:
+     - "Push + PR 코멘트" (Recommended) — push 후 기존 spec PR에 clarify 완료 코멘트 추가
+     - "Push만" — push만 하고 코멘트는 건너뛰기
+     - "건너뛰기" — 로컬에서만 작업 유지
+
+   a. If **Push + PR 코멘트**: Push and add a comment to the existing spec PR:
+      ```bash
+      git push
+      gh pr comment $(gh pr list --head "$(git branch --show-current)" --json number -q '.[0].number') --body "[clarify phase summary]"
+      ```
+
+   b. If **Push만**: Push only.
+
+   c. If **건너뛰기**: Skip both.
+
+   d. If no existing PR found, skip the comment silently.
+
+9. Report completion (after questioning loop ends or early termination):
    - Number of questions asked & answered.
    - Path to updated spec.
    - Sections touched (list names).

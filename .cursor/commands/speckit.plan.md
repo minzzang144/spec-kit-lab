@@ -75,13 +75,30 @@ You **MUST** consider the user input before proceeding (if not empty).
    - Output OpenAPI/GraphQL schema to `/contracts/`
 
 3. **Agent context update**:
-   - Run `.specify/scripts/bash/update-agent-context.sh cursor-agent`
+   - Run `.specify/scripts/bash/update-agent-context.sh claude`
    - These scripts detect which AI agent is in use
    - Update the appropriate agent-specific context file
    - Add only new technology from current plan
    - Preserve manual additions between markers
 
 **Output**: data-model.md, /contracts/*, quickstart.md, agent-specific file
+
+### Phase 2: Push and Update PR
+
+After all Phase 1 artifacts are committed, ask the user using `AskUserQuestion`:
+- Question: "변경사항을 push하고 spec PR에 plan 완료를 코멘트할까요?"
+- Options:
+  - "Push + PR 코멘트" (Recommended) — push 후 기존 spec PR에 plan 완료 코멘트 추가
+  - "Push만" — push만 하고 코멘트는 건너뛰기
+  - "건너뛰기" — 로컬에서만 작업 유지
+
+If **Push + PR 코멘트**: Push and add a progress comment to the existing spec PR:
+```bash
+git push
+gh pr comment $(gh pr list --head "$(git branch --show-current)" --json number -q '.[0].number') --body "[plan phase summary with artifact list]"
+```
+
+If no existing PR found, skip the comment silently.
 
 ## Key rules
 

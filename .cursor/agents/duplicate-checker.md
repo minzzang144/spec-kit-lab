@@ -41,7 +41,7 @@ Expects combined output from other agents in the following structure:
 
 ```yaml
 suggestions:
-  - source_agent: "pattern-automator | learn | session-updater | spec-kit-updater"
+  - source_agent: "pattern-automator | learn | spec-kit-updater"
     item: { ... original suggestion ... }
 ```
 
