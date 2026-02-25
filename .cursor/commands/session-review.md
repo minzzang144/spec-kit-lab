@@ -93,7 +93,7 @@ AskUserQuestion으로 사용자에게 액션 선택 요청:
 |------|----------|------------|
 | 학습 내용 | `.cursor/memory/session-learnings.local/` | `YYYY-MM-DD-category.md` |
 | 리뷰 리포트 | `.cursor/memory/session-reviews.local/` 또는 `.cursor/memory/session-reviews/` | `YYYY-MM-DD-review.md` |
-| 새 자동화 | `.claude/commands/` 또는 `.claude/rules/` 등 | 타입별 적절한 위치 |
+| 새 자동화 | `.cursor/commands/` 또는 `.cursor/rules/` 등 | 타입별 적절한 위치 |
 
 ## Commit Message Format
 

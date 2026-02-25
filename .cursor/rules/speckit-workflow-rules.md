@@ -465,7 +465,7 @@ Review recent SpecKit usage for:
 ### Version Control
 - All rule changes must be versioned
 - Changes require user approval
-- Rules apply to both `.claude/rules/` and `.cursor/rules/`
+- Rules apply to both `.cursor/rules/` and `.cursor/rules/`
 
 ### Synchronization
 - Rules must be identical in both directories
