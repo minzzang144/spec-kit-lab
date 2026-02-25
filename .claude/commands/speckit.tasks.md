@@ -52,9 +52,37 @@ You **MUST** consider the user input before proceeding (if not empty).
    - Parallel execution examples per story
    - Implementation strategy section (MVP first, incremental delivery)
 
-5. **Ask user about pushing and PR update (Ready for Review)**:
+5. **Cycle split confirmation** (MANDATORY):
 
-   After committing tasks.md, ask the user using `AskUserQuestion`:
+   After generating tasks.md, present the proposed cycle/branch split to the user for approval:
+
+   ```text
+   ## 사이클 분리 제안 (Stacked PR)
+
+   | 사이클 | Phase | 내용 | 태스크 수 |
+   |--------|-------|------|----------|
+   | base | Phase 1+2 | Setup + Foundation | N tasks |
+   | us1 | Phase 3 | US1: [story title] | N tasks |
+   | us2 | Phase 4 | US2: [story title] | N tasks |
+   | us3 | Phase 5 | US3: [story title] | N tasks |
+   | ... | ... | ... | ... |
+
+   각 사이클은 독립적인 PR로 생성됩니다.
+   이 분리가 적절한가요?
+   ```
+
+   Use `AskUserQuestion` with options:
+   - "이대로 진행" (Recommended)
+   - "사이클 분리 변경" — 사용자가 원하는 분리 방식을 설명
+
+   If user chooses "사이클 분리 변경":
+   - Listen to user's preferred split
+   - Update the Branch Strategy section in tasks.md accordingly
+   - Re-present for confirmation
+
+6. **Ask user about pushing and PR update (Ready for Review)**:
+
+   After cycle split is confirmed and tasks.md committed, ask the user using `AskUserQuestion`:
    - Question: "변경사항을 push하고 spec PR을 Ready for Review로 전환할까요? (tasks까지 완료되었으므로 정식 리뷰 요청 시점입니다)"
    - Options:
      - "Push + Ready for Review 전환" (Recommended) — push 후 기존 Draft PR을 Ready로 전환하고 tasks 완료 코멘트 추가
@@ -78,7 +106,7 @@ You **MUST** consider the user input before proceeding (if not empty).
 
    e. If no existing PR found, skip PR operations silently.
 
-6. **Report**: Output path to generated tasks.md and summary:
+7. **Report**: Output path to generated tasks.md and summary:
    - Total task count
    - Task count per user story
    - Parallel opportunities identified
