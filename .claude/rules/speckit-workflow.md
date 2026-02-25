@@ -465,11 +465,11 @@ Review recent SpecKit usage for:
 ### Version Control
 - All rule changes must be versioned
 - Changes require user approval
-- Rules apply to both `.claude/rules/` and `.claude/rules/`
+- Rules must be identical across all AI tool directories (`.claude/`, `.cursor/`, etc.)
 
 ### Synchronization
-- Rules must be identical in both directories
-- Any updates must be applied to both locations
+- Any updates must be applied to all AI tool directories
+- Regular sync verification required across all directories
 - Regular sync verification required
 
 ---
