@@ -260,8 +260,13 @@ d. **Create PR with Stacked PR pattern** (한국어 본문):
    - `us1` → base: `feature/#ticket-base-feature`
    - `us2` → base: `feature/#ticket-us1-feature`
 
+   **PR 제목 규칙**:
+   - scope = feature 이름 (사람이 읽을 수 있는 이름, 앱 이름이 아님)
+   - 사이클 식별자 `[base]`, `[usN]` 필수 포함
+   - 예: `feat(recipe-book): [us1] 레시피 목록 및 카테고리 필터`
+
    ```bash
-   gh pr create --base [pr-base-branch] --title "<type>(<scope>): <한국어 제목>" --body "$(cat <<'EOF'
+   gh pr create --base [pr-base-branch] --title "feat(<feature-name>): [<cycle>] <한국어 설명>" --body "$(cat <<'EOF'
    ## 요약
    [이 사이클에서 구현한 내용 요약 — 한국어]
 
