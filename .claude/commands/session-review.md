@@ -42,6 +42,16 @@ Phase 1 결과를 수집하여 **duplicate-checker** 에이전트 실행:
 - 기존 자산과의 중복 검증
 - 각 제안을 duplicate/conflict/extension/novel로 분류
 
+### Phase 2b: Storage Level Decision
+
+AskUserQuestion으로 저장 레벨을 선택 요청:
+
+**질문**: "결과물을 어디에 저장할까요?"
+
+**옵션**:
+1. **"프로젝트 레벨"** — `.claude/memory/session-learnings/`, `.claude/memory/session-reviews/` (git 추적, 팀 공유)
+2. **"로컬 레벨"** — `.claude/memory/session-learnings.local/`, `.claude/memory/session-reviews.local/` (gitignore, 개인 보관)
+
 ### Phase 3: User Decision
 
 AskUserQuestion으로 사용자에게 액션 선택 요청:
@@ -51,7 +61,7 @@ AskUserQuestion으로 사용자에게 액션 선택 요청:
 **옵션**:
 1. **"모든 제안 적용 후 커밋"** - novel/extension 모두 적용
 2. **"항목별 선택하기"** - 각 제안별로 적용 여부 결정
-3. **"리포트만 저장"** - `.specify/memory/session-reviews.local/`에 저장
+3. **"리포트만 저장"** - `.claude/memory/session-reviews[.local]/`에 저장
 4. **"학습만 커밋"** - learn 에이전트 결과만 저장 및 커밋
 
 ### Phase 4: Apply Actions
@@ -61,7 +71,7 @@ AskUserQuestion으로 사용자에게 액션 선택 요청:
 #### "모든 제안 적용" 선택 시
 1. novel/extension으로 분류된 모든 제안 적용
 2. 새 파일 생성 또는 기존 파일 수정
-3. 학습 내용을 `.specify/memory/session-learnings.local/` 에 저장
+3. 학습 내용을 `.claude/memory/session-learnings.local/` 에 저장
 4. 변경사항 커밋
 
 #### "항목별 선택" 선택 시
@@ -70,19 +80,19 @@ AskUserQuestion으로 사용자에게 액션 선택 요청:
 3. 변경사항 커밋
 
 #### "리포트만 저장" 선택 시
-1. 전체 분석 결과를 `.specify/memory/session-reviews.local/YYYY-MM-DD-review.md` 로 저장
+1. 전체 분석 결과를 `.claude/memory/session-reviews.local/YYYY-MM-DD-review.md` 로 저장
 2. 커밋 없이 종료
 
 #### "학습만 커밋" 선택 시
-1. learn 에이전트 결과를 `.specify/memory/session-learnings.local/YYYY-MM-DD-[category].md` 로 저장
+1. learn 에이전트 결과를 `.claude/memory/session-learnings.local/YYYY-MM-DD-[category].md` 로 저장
 2. 학습 파일만 커밋
 
 ## Output Locations
 
 | 유형 | 저장 위치 | 파일명 패턴 |
 |------|----------|------------|
-| 학습 내용 | `.specify/memory/session-learnings.local/` | `YYYY-MM-DD-category.md` |
-| 리뷰 리포트 | `.specify/memory/session-reviews.local/` | `YYYY-MM-DD-review.md` |
+| 학습 내용 | `.claude/memory/session-learnings.local/` | `YYYY-MM-DD-category.md` |
+| 리뷰 리포트 | `.claude/memory/session-reviews.local/` 또는 `.claude/memory/session-reviews/` | `YYYY-MM-DD-review.md` |
 | 새 자동화 | `.claude/commands/` 또는 `.claude/rules/` 등 | 타입별 적절한 위치 |
 
 ## Commit Message Format
