@@ -10,12 +10,7 @@ $ARGUMENTS
 
 ## Overview
 
-Session Review는 현재 세션을 분석하여 학습 내용을 추출하고, 자동화 기회를 식별하며, 프로젝트 개선점을 제안합니다.
-
-## Arguments
-
-- **Empty/Default**: 기본 4개 에이전트 실행 (session-updater, pattern-automator, learn, followup)
-- **`--speckit`**: SpecKit 커맨드 개선 에이전트 추가 실행 (speckit.implement handoff에서 자동 전달)
+Session Review는 현재 세션을 분석하여 학습 내용을 추출하고, 자동화 기회를 식별하며, speckit/rule 개선점을 제안합니다.
 
 ## Execution Flow
 
@@ -23,28 +18,19 @@ Session Review는 현재 세션을 분석하여 학습 내용을 추출하고, �
 
 다음 에이전트들을 **병렬**로 실행합니다:
 
-#### 기본 에이전트 (항상 실행)
-
-1. **session-updater** (`.claude/agents/session-updater.md`)
-   - CLAUDE.md, settings.json, rules 개선점 제안
-   - 프로젝트 문서화 갭 식별
-
-2. **pattern-automator** (`.claude/agents/pattern-automator.md`)
+1. **pattern-automator** (`.claude/agents/pattern-automator.md`)
    - Skill/Rule/Agent/Command 자동화 기회 탐지
    - 반복 패턴 식별
 
-3. **learn** (`.claude/agents/learn.md`)
+2. **learn** (`.claude/agents/learn.md`)
    - 학습/실수/발견/베스트 프랙티스 추출
    - 재사용 가능한 인사이트 정리
 
-4. **followup** (`.claude/agents/followup.md`)
+3. **followup** (`.claude/agents/followup.md`)
    - 미완성 작업, 기술 부채, 다음 우선순위 식별
    - TODO/FIXME 스캔
 
-#### 조건부 에이전트
-
-5. **spec-kit-updater** (`.claude/agents/spec-kit-updater.md`)
-   - **조건**: `--speckit` 인자가 있거나 speckit.implement handoff로 호출된 경우
+4. **spec-kit-updater** (`.claude/agents/spec-kit-updater.md`)
    - speckit.* 커맨드 개선점 제안
    - 템플릿 및 스크립트 개선
 
@@ -116,11 +102,10 @@ Co-Authored-By: Claude Opus 4 <noreply@anthropic.com>
 ```yaml
 # Phase 1 - Parallel execution
 Task (subagent_type: general-purpose):
-  - prompt: "Read .claude/agents/session-updater.md and analyze this session..."
   - prompt: "Read .claude/agents/pattern-automator.md and analyze this session..."
   - prompt: "Read .claude/agents/learn.md and analyze this session..."
   - prompt: "Read .claude/agents/followup.md and analyze this session..."
-  - prompt: "Read .claude/agents/spec-kit-updater.md and analyze this session..." # if --speckit
+  - prompt: "Read .claude/agents/spec-kit-updater.md and analyze this session..."
 
 # Phase 2 - Sequential (needs Phase 1 results)
 Task (subagent_type: general-purpose):
@@ -129,7 +114,7 @@ Task (subagent_type: general-purpose):
 
 ## Notes
 
-- 이 커맨드는 수동으로 실행하거나 speckit.implement의 handoff로 호출됩니다
-- speckit.implement에서 호출 시 자동으로 `--speckit` 플래그가 전달됩니다
+- 이 커맨드는 세션 마무리 시 수동으로 실행합니다
 - 모든 결과는 `.local/` 디렉토리에 저장되어 git에서 추적되지 않습니다
 - 적용할 변경사항만 git에 커밋됩니다
+- 메모리/히스토리 정리는 별도 커맨드 `/user:save-memory`로 실행합니다 (유저 레벨)
