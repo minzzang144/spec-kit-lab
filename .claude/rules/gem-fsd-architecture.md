@@ -5,66 +5,6 @@
 > 기존 앱(todo-app, chat-fe-with-claude 등)에는 적용하지 않습니다.
 > **모든 코드 작성 시 강제** - speckit.implement 뿐 아니라 일반 개발에서도 준수해야 합니다.
 
-> **CRITICAL: 기존 코드베이스 충돌 해결 프로토콜**
->
-> apps/* 에 기존 코드가 있는 환경에서 이 규칙을 적용할 때,
-> 기존 코드와 충돌이 발견되거나 규칙에 없는 상황이 발생하면
-> **반드시 STOP하고 사용자에게 물어본다**.
-
-### 핵심 원칙
-
-1. **기존 코드를 정답으로 보지 않는다** — 관성적으로 유지된 패턴일 수 있음
-2. **이 문서의 규칙도 완전한 정답이 아닐 수 있다** — 도메인 복잡도에 따라 애매해질 수 있음
-3. **새로 작성한다면 어떤 방향이 최선인지** 양쪽 모두를 냉정하게 평가한다
-
-### 충돌 감지 시 행동
-
-이 문서의 규칙을 적용하려고 할 때 기존 코드와 충돌이 발견되거나, 규칙에 없는 상황이 발생하면:
-
-1. **STOP** — 바로 진행하지 않는다
-2. **AskUserQuestion으로 사용자에게 제시**:
-
-| 항목 | 내용 |
-|------|------|
-| 규칙 | Section {N}: {제목} (또는 "해당 규칙 없음") |
-| 기존 코드 | `{파일}`: {현재 패턴 설명} |
-| 규칙 요구 | {이 문서가 요구하는 패턴} |
-| 냉정한 판단 | {기존 코드도 규칙도 무시하고 새로 작성한다면 최선의 방향} |
-| 범위 | SMALL(1-3파일) / MEDIUM(4-10) / LARGE(11+) |
-
-선택지:
-- **A: Quick refactor** — 수정 범위가 작아 바로 진행 가능 (어디를 수정하면 되는지 설명)
-- **B: GitHub Issue 생성** — 범위가 크거나 규칙 재수립 필요 (나중에 speckit 워크플로로 처리)
-- **C: Override** — 기존 패턴 유지 (사유 필수 기록)
-
-### Option B: GitHub Issue + Project
-
-대규모 리팩토링이 필요하거나 규칙 자체를 재수립해야 하는 경우:
-
-1. **GitHub Project** (feature당 1개, 여러 Issue 포함):
-   - 프로젝트명: `FSD Migration: {feature-name}`
-   - `gh project create --owner @me --title "FSD Migration: {feature-name}"`
-   - 이미 존재하면 skip
-
-2. **중복 검사**: `gh issue list --search "[FSD §{section}]" --json number,title`
-
-3. **Issue 생성**:
-   - 제목: `[FSD §{section}] {충돌 요약} — {영향 범위}`
-   - 라벨: `fsd-migration`, `tech-debt`, `architecture` (없으면 생성)
-   - 프로젝트에 연결: `gh project item-add {PROJECT_NUMBER} --owner @me --url {ISSUE_URL}`
-
-4. **Issue 본문 구조**:
-   - 규칙 참조 (Section 번호, 심각도)
-   - 충돌 설명 (규칙 vs 기존 코드 비교)
-   - 기존 코드 패턴 (파일 목록)
-   - 권장 접근 — 새로 작성한다면 (코드 예시 포함)
-   - 영향 파일 (체크리스트)
-   - 범위 (파일 수, 위험도)
-
-5. **speckit 워크플로 연결**:
-   Issue → 브랜치 이동 → `speckit.specify` → plan → tasks → implement → PR (`Closes #issue`)
-
-
 ---
 
 ## Table of Contents
@@ -2066,7 +2006,7 @@ Q: 예상치 못한 크래시?
 
 ### 기능 개발 완료 후
 
-FSD 미준수 영역을 **문서 최상단의 "기존 코드베이스 충돌 해결 프로토콜"**의 GitHub Issue + Project로 추적:
+FSD 미준수 영역을 **"추후 리팩토링 작업"**으로 목록화:
 
 1. 어떤 파일/모듈이 규칙을 따르지 않는지 정리
 2. 우선순위를 매겨 점진적으로 마이그레이션

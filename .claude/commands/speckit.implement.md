@@ -297,12 +297,6 @@ d. **Create PR with Stacked PR pattern** (한국어 본문):
    [현재 사이클에 영향 없지만 추후 검토가 필요한 사항 메모]
    - 해당 없으면 "없음" 으로 표기
 
-   ## FSD Migration Debt
-   (gem-fsd-architecture 충돌이 있었을 때만 표시)
-   - GitHub Project: [{프로젝트명}]({url})
-   - 생성된 Issue: {count}건
-   - Override: {count}건 (사유 포함)
-
    ## 테스트 계획
    - [ ] 단위 테스트 통과
    - [ ] 통합 테스트 통과
