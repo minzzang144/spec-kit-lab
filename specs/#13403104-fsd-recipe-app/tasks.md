@@ -212,19 +212,19 @@
 
 ### E2E Setup
 
-- [ ] T073 Configure Playwright (playwright.config.ts) with webServer settings and add test:e2e scripts to package.json
+- [x] T073 Configure Playwright (playwright.config.ts) with webServer settings and add test:e2e scripts to package.json
 
 ### E2E Tests per User Story
 
-- [ ] T074 [P] [US1] E2E test `e2e/recipe-list.spec.ts` — recipe list display, category filtering, empty state
-- [ ] T075 [P] [US2] E2E test `e2e/recipe-detail.spec.ts` — detail view, ingredient list, back navigation, 404 handling
-- [ ] T076 [P] [US3] E2E test `e2e/recipe-write.spec.ts` — create form, validation errors, ingredient add/remove, edit pre-fill
-- [ ] T077 [P] [US4] E2E test `e2e/recipe-delete.spec.ts` — delete confirmation dialog, cancel, confirm deletion
+- [x] T074 [P] [US1] E2E test `e2e/recipe-list.spec.ts` — recipe list display, category filtering, empty state
+- [x] T075 [P] [US2] E2E test `e2e/recipe-detail.spec.ts` — detail view, ingredient list, back navigation, 404 handling
+- [x] T076 [P] [US3] E2E test `e2e/recipe-write.spec.ts` — create form, validation errors, ingredient add/remove, edit pre-fill
+- [x] T077 [P] [US4] E2E test `e2e/recipe-delete.spec.ts` — delete confirmation dialog, cancel, confirm deletion
 
 ### Cross-Story E2E Tests
 
-- [ ] T078 E2E test `e2e/recipe-lifecycle.spec.ts` — full CRUD: create → list → detail → edit → verify → delete → verify removal
-- [ ] T079 E2E test `e2e/filter-persistence.spec.ts` — filter by category → open detail → back → filter preserved → create recipe → back → appears in filter
+- [x] T078 E2E test `e2e/recipe-lifecycle.spec.ts` — full CRUD: create → list → detail → edit → verify → delete → verify removal
+- [x] T079 E2E test `e2e/filter-persistence.spec.ts` — filter by category → open detail → back → filter preserved → create recipe → back → appears in filter
 
 **Checkpoint**: All E2E tests pass — feature is production-ready.
 
@@ -234,10 +234,10 @@
 
 **Purpose**: Quality improvements across all user stories
 
-- [ ] T080 Accessibility audit for all pages (keyboard navigation, ARIA labels, color contrast WCAG 2.1 AA)
-- [ ] T081 [P] Review and refine loading/skeleton states across all widgets
-- [ ] T082 Run full verification suite (type-check, lint, test, build) and fix any issues
-- [ ] T083 Final code review: FSD architecture compliance, barrel exports, import rules, naming conventions
+- [x] T080 Accessibility audit for all pages (keyboard navigation, ARIA labels, color contrast WCAG 2.1 AA)
+- [x] T081 [P] Review and refine loading/skeleton states across all widgets
+- [x] T082 Run full verification suite (type-check, lint, test, build) and fix any issues
+- [x] T083 Final code review: FSD architecture compliance, barrel exports, import rules, naming conventions
 
 ---
 
@@ -338,20 +338,20 @@ feature/#13403104-us3-fsd-recipe-app (Phase 7+8: E2E + Polish)
 
 Each task should be validated against these gem-fsd-architecture rules:
 
-- [ ] Layer hierarchy: App > Pages > Widgets > Features > Entities > Shared
-- [ ] Import direction: higher layers import lower layers only
-- [ ] Same slice: relative path + barrel
-- [ ] Different slice: `#/Layer/Slice` absolute path (2-depth)
-- [ ] Named exports only (no `export *`)
-- [ ] __Mock__ barrel NOT re-exported from slice barrel
-- [ ] Entity Ui: single domain, single info only
-- [ ] Feature Ui: single business concern, self-contained
-- [ ] Widget Ui: multi-domain composition
-- [ ] PascalCase directories (except __Mock__)
-- [ ] camelCase for hook/store files (use prefix)
-- [ ] No plurals in naming (List suffix, not plural -s)
-- [ ] Type/Domain/ for FE domain models, Type/Dto/ for transfer objects
-- [ ] Cross-entity `import type` only via index.ts
+- [x] Layer hierarchy: App > Pages > Widgets > Features > Entities > Shared
+- [x] Import direction: higher layers import lower layers only
+- [x] Same slice: relative path + barrel
+- [x] Different slice: `#/Layer/Slice` absolute path (2-depth)
+- [x] Named exports only (no `export *`)
+- [x] __Mock__ barrel NOT re-exported from slice barrel
+- [x] Entity Ui: single domain, single info only
+- [x] Feature Ui: single business concern, self-contained
+- [x] Widget Ui: multi-domain composition
+- [x] PascalCase directories (except __Mock__)
+- [x] camelCase for hook/store files (use prefix)
+- [x] No plurals in naming (List suffix, not plural -s)
+- [x] Type/Domain/ for FE domain models, Type/Dto/ for transfer objects
+- [x] Cross-entity `import type` only via index.ts
 
 ---
 

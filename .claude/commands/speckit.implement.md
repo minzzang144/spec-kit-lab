@@ -152,28 +152,28 @@ Parse and execute tasks from the relevant phases:
 
 ### Step 6b: Implementation Summary (MANDATORY)
 
-After all tasks for the current cycle are complete, display a summary **before** code review:
+After all tasks for the current cycle are complete, display a summary **before** code review.
+Format the summary using the project's architecture structure (e.g., FSD layers, NestJS modules, domain folders, etc.):
 
 ```text
 ## [cycle] 구현 완료 요약
 
-### FSD 레이어별 변경
-Entities/
-  └── [변경된 Entity 슬라이스와 설명]
+### 변경 범위
+[프로젝트 아키텍처 구조에 맞게 변경 사항을 트리 형태로 정리]
+예시 (FSD):
+  Entities/ → ...
+  Features/ → ...
+예시 (NestJS):
+  modules/user/ → ...
+  modules/auth/ → ...
+예시 (일반):
+  src/components/ → ...
+  src/services/ → ...
 
-Features/
-  ├── [변경된 Feature 슬라이스와 설명]
+### 적용된 패턴
+- [이번 사이클에서 적용된 주요 아키텍처/디자인 패턴]
 
-Widgets/
-  ├── [변경된 Widget 슬라이스와 설명]
-
-Pages/
-  ├── [변경된 Page 슬라이스와 설명]
-
-### 아키텍처 패턴 적용
-- [이번 사이클에서 적용된 주요 패턴 나열]
-
-검증: type-check [PASS/FAIL], lint [N errors], [N/N] tests [PASS/FAIL]
+검증: [프로젝트 검증 명령어 결과 — type-check, lint, test, build 등]
 ```
 
 ### Step 6c: Previous Cycle Fix Protocol
@@ -193,12 +193,8 @@ After completing all tasks for the current cycle:
 
 a. **Announce**: "[cycle] 사이클 구현이 완료되었습니다. 코드 리뷰를 진행합니다."
 
-b. **Run code review**: Execute `/everything-claude-code:code-review` skill
-   - If unavailable, inform user with installation instructions:
-     ```
-     code-review 스킬을 사용할 수 없습니다.
-     설치: claude mcp add everything-claude-code -- npx -y @anthropic-ai/claude-code-mcp@latest
-     ```
+b. **Run code review**: 코드 리뷰 에이전트가 있으면 사용하고, 없으면 직접 코드 리뷰를 수행한다.
+   - **NEVER skip code review** — 테스트 코드, E2E, 설정 파일도 리뷰 대상이다. "변경이 적다"는 이유로 생략하지 않는다.
 
 c. **Display review summary to user** (MANDATORY):
    Show a concise table of findings so user can see what was reviewed:
@@ -259,8 +255,13 @@ d. **Create PR with Stacked PR pattern** (한국어 본문):
    - `us1` → base: `feature/#ticket-base-feature`
    - `us2` → base: `feature/#ticket-us1-feature`
 
+   **PR 제목 규칙**:
+   - scope = feature 이름 (사람이 읽을 수 있는 이름, 앱 이름이 아님)
+   - 사이클 식별자 `[base]`, `[usN]` 필수 포함
+   - 예: `feat(recipe-book): [us1] 레시피 목록 및 카테고리 필터`
+
    ```bash
-   gh pr create --base [pr-base-branch] --title "<type>(<scope>): <한국어 제목>" --body "$(cat <<'EOF'
+   gh pr create --base [pr-base-branch] --title "feat(<feature-name>): [<cycle>] <한국어 설명>" --body "$(cat <<'EOF'
    ## 요약
    [이 사이클에서 구현한 내용 요약 — 한국어]
 
@@ -311,8 +312,7 @@ d. **Create PR with Stacked PR pattern** (한국어 본문):
    ```
 
 e. **Run PR review AFTER PR creation**:
-   Execute `/pr-review-toolkit:review-pr` skill with the created PR number
-   - If unavailable, use `/everything-claude-code:code-review` as fallback
+   PR 리뷰 도구가 있으면 사용하고, 없으면 직접 PR diff를 분석하여 리뷰를 수행한다.
    - Display PR review results to user (same format as Step 7c)
 
 f. **Fix Critical/High issues** from PR review:
@@ -336,11 +336,11 @@ b. **If all cycles complete**:
    All implementation cycles complete!
 
    PR Status:
-   - base (Phase 1+2): PR #N → spec/#ticket-feature
-   - us1 (Phase 3): PR #N → feature/#ticket-base-feature
-   - us2 (Phase 4): PR #N → feature/#ticket-us1-feature
+   - usN: PR #N → feature/#ticket-us(N-1)-feature
+   - us1: PR #N → feature/#ticket-base-feature
+   - base: PR #N → spec/#ticket-feature
 
-   Next: Merge PRs in order (base → us1 → us2).
+   Next: Merge PRs top-down (usN → ... → us1 → base → spec → develop)
    ```
 
 ---

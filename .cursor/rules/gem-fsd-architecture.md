@@ -2028,10 +2028,10 @@ FSD 미준수 영역을 **"추후 리팩토링 작업"**으로 목록화:
 
 | Rule 파일                    | 관계                                                |
 |-----------------------------|-----------------------------------------------------|
-| `speckit-workflow-rules.md` | 워크플로우 규칙 → implement 단계에서 이 FSD 규칙 강제 |
+| `speckit-workflow.md` | 워크플로우 규칙 → implement 단계에서 이 FSD 규칙 강제 |
 | `naming-no-plurals.md`     | 네이밍 규칙 → 슬라이스/세그먼트/파일/함수 이름에 적용  |
 
-코드 품질, TypeScript/JavaScript 패턴, 프론트엔드 설계 원칙은 `everything-claude-code` 플러그인의 `coding-standards`, `frontend-patterns` 스킬로 대체되었다.
+코드 품질, TypeScript/JavaScript 패턴, 프론트엔드 설계 원칙은 AI 모델의 기본 역량으로 충분히 커버된다. 별도 rule이 필요하면 프로젝트에 추가한다.
 
 ### 적용 범위
 
@@ -2041,7 +2041,7 @@ IF 새로운 앱 코드 작성:
   APPLY naming-no-plurals.md        (네이밍)
 
 IF speckit.implement 단계:
-  APPLY speckit-workflow-rules.md   (워크플로우)
+  APPLY speckit-workflow.md   (워크플로우)
   APPLY gem-fsd-architecture.md  (구조)
 ```
 
