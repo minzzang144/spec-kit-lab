@@ -150,78 +150,176 @@ Parse and execute tasks from the relevant phases:
   3. `git add` implementation files + tasks.md
   4. Single commit
 
+### Step 6b: Implementation Summary (MANDATORY)
+
+After all tasks for the current cycle are complete, display a summary **before** code review.
+Format the summary using the project's architecture structure (e.g., FSD layers, NestJS modules, domain folders, etc.):
+
+```text
+## [cycle] 구현 완료 요약
+
+### 변경 범위
+[프로젝트 아키텍처 구조에 맞게 변경 사항을 트리 형태로 정리]
+예시 (FSD):
+  Entities/ → ...
+  Features/ → ...
+예시 (NestJS):
+  modules/user/ → ...
+  modules/auth/ → ...
+예시 (일반):
+  src/components/ → ...
+  src/services/ → ...
+
+### 적용된 패턴
+- [이번 사이클에서 적용된 주요 아키텍처/디자인 패턴]
+
+검증: [프로젝트 검증 명령어 결과 — type-check, lint, test, build 등]
+```
+
+### Step 6c: Previous Cycle Fix Protocol
+
+If during implementation you discover issues in previous cycles:
+
+1. **현재 사이클에 영향 있는가?**
+   - **YES (작은 수정)**: Fix Forward — 현재 브랜치에서 수정하고, 커밋 메시지에 `fix: [이전 사이클 수정]` 명시. PR "이전 사이클 수정 사항" 섹션에 기록.
+   - **YES (아키텍처 수정)**: Fix Forward — 현재 브랜치에서 수정하고, PR "개발자 검토 요청"에 이유와 수정 내용을 상세히 명시.
+   - **NO (현재 사이클에 영향 없음)**: 현재 사이클 계속 진행. PR "TODO" 섹션에 메모만 남기기.
+
+2. **커밋 시**: 이전 사이클 수정은 별도 커밋으로 분리 (`fix(<scope>): correct [issue] from [previous cycle]`)
+
 ### Step 7: Code Review (Per Cycle)
 
 After completing all tasks for the current cycle:
 
 a. **Announce**: "[cycle] 사이클 구현이 완료되었습니다. 코드 리뷰를 진행합니다."
 
-b. **Run code review**: Execute `/everything-claude-code:code-review` skill
-   - If unavailable, inform user with installation instructions:
-     ```
-     code-review 스킬을 사용할 수 없습니다.
-     설치: claude mcp add everything-claude-code -- npx -y @anthropic-ai/claude-code-mcp@latest
-     ```
+b. **Run code review**: 코드 리뷰 에이전트가 있으면 사용하고, 없으면 직접 코드 리뷰를 수행한다.
+   - **NEVER skip code review** — 테스트 코드, E2E, 설정 파일도 리뷰 대상이다. "변경이 적다"는 이유로 생략하지 않는다.
 
-c. **Address findings**:
+c. **Display review summary to user** (MANDATORY):
+   Show a concise table of findings so user can see what was reviewed:
+
+   ```text
+   ## 코드 리뷰 결과
+
+   | 심각도 | 건수 | 내용 요약 |
+   |--------|------|----------|
+   | CRITICAL | 0 | - |
+   | HIGH | N | [구체적 이슈 설명] |
+   | MEDIUM | N | [구체적 이슈 설명] |
+   | LOW | N | [구체적 이슈 설명] |
+
+   수정 대상: [수정할 이슈 목록]
+   ```
+
+d. **Address findings**:
    - Critical/High: Fix before proceeding
    - Medium/Low: Document or fix if time permits
 
-d. **Commit review fixes** separately:
+e. **Commit review fixes** separately:
    - `fix(<scope>): address code review feedback for [cycle]`
 
-### Step 8: Push and Create PR (Per Cycle)
+### Step 8: Push, Confirm, Create PR, and PR Review (Per Cycle)
 
-a. **Push current branch**:
+a. **Run verification suite**:
+   ```bash
+   pnpm --filter [app-name] run type-check
+   pnpm --filter [app-name] run lint
+   pnpm --filter [app-name] run test
+   ```
+   Report results. Fix any failures before proceeding.
+
+b. **Push current branch**:
    ```bash
    git push -u origin [current-branch]
    ```
 
-b. **Run PR review**: Execute `/pr-review-toolkit:review-pr` skill
-   - If unavailable, use `/everything-claude-code:code-review` as fallback
+c. **Ask user for PR creation** (MANDATORY):
+   Use `AskUserQuestion` to confirm before creating PR:
 
-c. **Fix Critical/High issues** from PR review before creating PR
+   ```text
+   [cycle] 사이클 작업이 완료되었습니다.
+   - 커밋: N개
+   - 파일 변경: N개
+   - 테스트: N/N 통과
 
-d. **Create PR with Stacked PR pattern**:
+   PR을 생성할까요?
+   ```
+
+   Options: "PR 생성", "추가 수정 후 PR 생성", "PR 없이 다음 사이클로"
+
+d. **Create PR with Stacked PR pattern** (한국어 본문):
 
    The PR base is determined by the cycle (from Step 2 table):
    - `base` → base: `spec/#ticket-feature`
    - `us1` → base: `feature/#ticket-base-feature`
    - `us2` → base: `feature/#ticket-us1-feature`
 
+   **PR 제목 규칙**:
+   - scope = feature 이름 (사람이 읽을 수 있는 이름, 앱 이름이 아님)
+   - 사이클 식별자 `[base]`, `[usN]` 필수 포함
+   - 예: `feat(recipe-book): [us1] 레시피 목록 및 카테고리 필터`
+
    ```bash
-   gh pr create --base [pr-base-branch] --title "[PR title]" --body "$(cat <<'EOF'
-   ## Summary
-   [Brief description from tasks.md for this cycle's phases]
+   gh pr create --base [pr-base-branch] --title "feat(<feature-name>): [<cycle>] <한국어 설명>" --body "$(cat <<'EOF'
+   ## 요약
+   [이 사이클에서 구현한 내용 요약 — 한국어]
 
-   ## Cycle
-   - **Cycle**: [base|us1|us2|...]
-   - **Phases**: [Phase numbers and titles covered]
-   - **Stacked on**: [PR base branch]
+   ## 사이클 정보
+   - **사이클**: [base|us1|us2|...]
+   - **Phase**: [Phase 번호와 제목]
+   - **기반 브랜치**: [PR base branch]
 
-   ## Changes
-   [List of completed tasks and key changes]
+   ## 주요 변경 사항
+   [완료된 태스크와 핵심 변경 사항 목록 — 한국어]
 
-   ## Test Plan
-   - [ ] Unit tests pass
-   - [ ] Integration tests pass
-   - [ ] Manual testing completed
+   ## 개발자 검토 요청
+   AI 코드 리뷰는 컨벤션, 타입 안전성, 테스트 커버리지를 검증했습니다.
+   아래는 **맥락과 판단이 필요한 영역**으로, 개발자의 승인이 필요합니다.
 
-   ## Code Review
-   - [x] Per-cycle code review completed
-   - [x] Pre-PR review completed
+   ### 책임과 경계
+   - [ ] [모듈/컴포넌트의 책임 범위가 적절한지 검토 항목]
+
+   ### 장기 변경 비용
+   - [ ] [현재 구조가 향후 요구사항 변경에 유연한지 검토 항목]
+
+   ### 추상화 수준
+   - [ ] [과도하거나 부족한 추상화가 없는지 검토 항목]
+
+   ### 비즈니스 맥락
+   - [ ] [도메인 관점에서 UX 흐름이 자연스러운지 검토 항목]
+
+   ## 이전 사이클 수정 사항
+   [이전 사이클에서 발견된 이슈를 현재 사이클에서 Fix Forward한 경우 기록]
+   - 해당 없으면 "없음" 으로 표기
+
+   ## TODO (다음 사이클에서 검토)
+   [현재 사이클에 영향 없지만 추후 검토가 필요한 사항 메모]
+   - 해당 없으면 "없음" 으로 표기
+
+   ## 테스트 계획
+   - [ ] 단위 테스트 통과
+   - [ ] 통합 테스트 통과
+   - [ ] 수동 테스트 완료
+
+   ## 코드 리뷰
+   - [x] 사이클 코드 리뷰 완료
+   - [ ] PR 리뷰 완료
 
    Generated with [Claude Code](https://claude.ai/code) using SpecKit workflow
    EOF
    )"
    ```
 
-e. **Post review summary** (optional):
-   ```bash
-   gh pr comment [PR_NUMBER] --body "[Review summary]"
-   ```
+e. **Run PR review AFTER PR creation**:
+   PR 리뷰 도구가 있으면 사용하고, 없으면 직접 PR diff를 분석하여 리뷰를 수행한다.
+   - Display PR review results to user (same format as Step 7c)
 
-f. **Report cycle completion**:
+f. **Fix Critical/High issues** from PR review:
+   - Commit fixes → push → update PR checkbox "PR 리뷰 완료"
+   - If no issues found, update checkbox automatically
+
+g. **Report cycle completion**:
    - Display PR URL
    - Show remaining cycles status
 
@@ -238,11 +336,11 @@ b. **If all cycles complete**:
    All implementation cycles complete!
 
    PR Status:
-   - base (Phase 1+2): PR #N → spec/#ticket-feature
-   - us1 (Phase 3): PR #N → feature/#ticket-base-feature
-   - us2 (Phase 4): PR #N → feature/#ticket-us1-feature
+   - usN: PR #N → feature/#ticket-us(N-1)-feature
+   - us1: PR #N → feature/#ticket-base-feature
+   - base: PR #N → spec/#ticket-feature
 
-   Next: Merge PRs in order (base → us1 → us2).
+   Next: Merge PRs top-down (usN → ... → us1 → base → spec → develop)
    ```
 
 ---
