@@ -1,0 +1,1 @@
+export { recipeDeleteFeatureHandler } from './Handler';

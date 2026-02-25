@@ -213,7 +213,49 @@ Given that feature description, do this:
 
    d. **Update Checklist**: After each validation iteration, update the checklist file with current pass/fail status
 
-7. Report completion with branch name, spec file path, checklist results, and readiness for the next phase (`/speckit.clarify` or `/speckit.plan`).
+7. **Ask user about push and Draft PR creation**:
+
+   After committing the spec, ask the user using `AskUserQuestion`:
+   - Question: "spec 브랜치를 push하고 Draft PR을 생성할까요?"
+   - Options:
+     - "Push + Draft PR 생성" (Recommended) — push 후 develop 대상 Draft PR 생성
+     - "Push만" — push만 하고 PR은 나중에
+     - "건너뛰기" — 로컬에서만 작업 유지
+
+   a. If **Push + Draft PR**: Push the spec branch and create a Draft PR:
+      ```bash
+      git push -u origin $(git branch --show-current)
+      gh pr create --draft --base develop --title "spec(<feature-name>): <한국어 feature 설명>" --body "$(cat <<'PREOF'
+      ## Specification Phase
+
+      **Feature**: [FEATURE NAME]
+      **Branch**: `spec/#ticket-feature-name`
+      **Status**: Draft
+
+      ### Progress
+      - [x] `speckit.specify` — Feature specification created
+      - [ ] `speckit.clarify` — Ambiguities resolved
+      - [ ] `speckit.plan` — Implementation plan created
+      - [ ] `speckit.tasks` — Task breakdown generated
+      - [ ] `speckit.implement` — Implementation complete
+
+      ### Artifacts
+      - `spec.md` — Feature specification
+      - `checklists/requirements.md` — Quality validation checklist
+
+      ---
+      *This PR tracks the full spec-to-implementation lifecycle. It will be marked Ready for Review after `speckit.tasks` is complete.*
+
+      Generated with [Claude Code](https://claude.ai/code) using SpecKit workflow
+      PREOF
+      )"
+      ```
+
+   b. If **Push만**: Push only, skip PR creation.
+
+   c. If **건너뛰기**: Skip both, inform user they can push later.
+
+8. Report completion with branch name, spec file path, checklist results, PR URL (if created), and readiness for the next phase (`/speckit.clarify` or `/speckit.plan`).
 
 **NOTE:** The script creates and checks out the new branch and initializes the spec file before writing.
 
