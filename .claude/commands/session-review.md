@@ -109,18 +109,13 @@ Co-Authored-By: Claude Opus 4 <noreply@anthropic.com>
 
 ## Agent Invocation
 
-```yaml
-# Phase 1 - Parallel execution
-Task (subagent_type: general-purpose):
-  - prompt: "Read .claude/agents/pattern-automator.md and analyze this session..."
-  - prompt: "Read .claude/agents/learn.md and analyze this session..."
-  - prompt: "Read .claude/agents/followup.md and analyze this session..."
-  - prompt: "Read .claude/agents/spec-kit-updater.md and analyze this session..."
+Phase 1의 4개 에이전트를 **가능하면 병렬**로 실행합니다. 각 에이전트의 프롬프트 파일을 읽고 현재 세션을 분석합니다:
+- `.claude/agents/pattern-automator.md`
+- `.claude/agents/learn.md`
+- `.claude/agents/followup.md`
+- `.claude/agents/spec-kit-updater.md`
 
-# Phase 2 - Sequential (needs Phase 1 results)
-Task (subagent_type: general-purpose):
-  - prompt: "Read .claude/agents/duplicate-checker.md and verify these suggestions..."
-```
+Phase 2는 Phase 1 결과를 모아서 `.claude/agents/duplicate-checker.md` 에이전트로 중복 검증합니다.
 
 ## Notes
 

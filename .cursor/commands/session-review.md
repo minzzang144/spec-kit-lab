@@ -93,7 +93,7 @@ AskUserQuestion으로 사용자에게 액션 선택 요청:
 |------|----------|------------|
 | 학습 내용 | `.cursor/memory/session-learnings.local/` | `YYYY-MM-DD-category.md` |
 | 리뷰 리포트 | `.cursor/memory/session-reviews.local/` 또는 `.cursor/memory/session-reviews/` | `YYYY-MM-DD-review.md` |
-| 새 자동화 | `.cursor/commands/` 또는 `.cursor/rules/` 등 | 타입별 적절한 위치 |
+| 새 자동화 | `.claude/commands/` 또는 `.claude/rules/` 등 | 타입별 적절한 위치 |
 
 ## Commit Message Format
 
@@ -109,18 +109,13 @@ Co-Authored-By: Claude Opus 4 <noreply@anthropic.com>
 
 ## Agent Invocation
 
-```yaml
-# Phase 1 - Parallel execution
-Task (subagent_type: general-purpose):
-  - prompt: "Read .cursor/agents/pattern-automator.md and analyze this session..."
-  - prompt: "Read .cursor/agents/learn.md and analyze this session..."
-  - prompt: "Read .cursor/agents/followup.md and analyze this session..."
-  - prompt: "Read .cursor/agents/spec-kit-updater.md and analyze this session..."
+Phase 1의 4개 에이전트를 **가능하면 병렬**로 실행합니다. 각 에이전트의 프롬프트 파일을 읽고 현재 세션을 분석합니다:
+- `.cursor/agents/pattern-automator.md`
+- `.cursor/agents/learn.md`
+- `.cursor/agents/followup.md`
+- `.cursor/agents/spec-kit-updater.md`
 
-# Phase 2 - Sequential (needs Phase 1 results)
-Task (subagent_type: general-purpose):
-  - prompt: "Read .cursor/agents/duplicate-checker.md and verify these suggestions..."
-```
+Phase 2는 Phase 1 결과를 모아서 `.cursor/agents/duplicate-checker.md` 에이전트로 중복 검증합니다.
 
 ## Notes
 

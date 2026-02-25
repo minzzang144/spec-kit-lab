@@ -193,13 +193,8 @@ After completing all tasks for the current cycle:
 
 a. **Announce**: "[cycle] 사이클 구현이 완료되었습니다. 코드 리뷰를 진행합니다."
 
-b. **Run code review**: Execute `/everything-claude-code:code-review` skill
+b. **Run code review**: 코드 리뷰 에이전트가 있으면 사용하고, 없으면 직접 코드 리뷰를 수행한다.
    - **NEVER skip code review** — 테스트 코드, E2E, 설정 파일도 리뷰 대상이다. "변경이 적다"는 이유로 생략하지 않는다.
-   - If unavailable, inform user with installation instructions:
-     ```
-     code-review 스킬을 사용할 수 없습니다.
-     설치: claude mcp add everything-claude-code -- npx -y @anthropic-ai/claude-code-mcp@latest
-     ```
 
 c. **Display review summary to user** (MANDATORY):
    Show a concise table of findings so user can see what was reviewed:
@@ -317,8 +312,7 @@ d. **Create PR with Stacked PR pattern** (한국어 본문):
    ```
 
 e. **Run PR review AFTER PR creation**:
-   Execute `/pr-review-toolkit:review-pr` skill with the created PR number
-   - If unavailable, use `/everything-claude-code:code-review` as fallback
+   PR 리뷰 도구가 있으면 사용하고, 없으면 직접 PR diff를 분석하여 리뷰를 수행한다.
    - Display PR review results to user (same format as Step 7c)
 
 f. **Fix Critical/High issues** from PR review:
