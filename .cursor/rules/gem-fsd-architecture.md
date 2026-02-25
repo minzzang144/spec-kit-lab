@@ -221,11 +221,31 @@ Domain 레이어 슬라이스 내 세그먼트 종류:
 | `__Mock__`   | MSW 핸들러, 시드 데이터, in-memory DB (Section 12 참조)        |
 | `Api`        | HTTP 호출 함수, Key factory, TanStack Query/Mutation 옵션 팩토리 |
 | `Config`     | 상수 모음                                                     |
-| `Model`      | hook, util, lib, 비즈니스 로직(상태관리, 소켓 등), Zustand store/logic |
+| `Model`      | hook, util, lib, 비즈니스 로직(소켓 등) — **Zustand 배치는 아래 레이어 제한표 참조** |
 | `Type`       | TypeScript 타입/인터페이스 (목적별 그룹 구조, 아래 참조)        |
 | `Ui`         | React 컴포넌트 (레이어별 Ui 규칙 참조)                         |
 
 **확장**: 팀 논의를 통해 세그먼트를 추가할 수 있다. 모든 슬라이스에 모든 세그먼트가 필수는 아니며, 필요한 세그먼트만 생성한다.
+
+### Model 세그먼트 Zustand 그룹 레이어 제한 (CRITICAL)
+
+Model 세그먼트의 `Store/`와 `Logic/` 그룹은 **특정 레이어에서만** 생성 가능하다:
+
+| Model 그룹 | 허용 레이어 | 금지 레이어 | 설명 |
+|-----------|-----------|-----------|------|
+| `Store/` | **Entities만** | Features, Widgets, Pages | 상태 정의는 반드시 Entity에서 (Section 9) |
+| `Logic/` | **Features만** | Entities, Widgets, Pages | 상태 업데이트 로직은 Feature에서 (Section 9) |
+| `Hook/` | 모든 Domain 레이어 | - | 레이어 제한 없음 |
+| `Util/`, `Lib/` | 모든 Domain 레이어 | - | 레이어 제한 없음 |
+| `Socket/` | Features | - | 소켓 핸들러는 Feature에서 |
+
+```
+❌ Features/CategoryFilter/Model/Store/   ← Store는 Entities에만
+✅ Entities/Category/Model/Store/         ← 올바른 위치
+
+❌ Entities/Chat/Model/Logic/             ← Logic은 Features에만
+✅ Features/ChatWrite/Model/Logic/        ← 올바른 위치
+```
 
 ### Type 세그먼트 그룹 구조
 
@@ -384,7 +404,7 @@ Q: 컴포넌트가 children을 외부에서 받아 래핑?
 
 | 세그먼트    | 그룹 예시                                          |
 |-----------|---------------------------------------------------|
-| Model     | `Hook/`, `Store/`, `Logic/`, `Util/`, `Lib/` (Mapper 등), `Socket/` |
+| Model     | `Hook/`, `Store/` (**Entities만**), `Logic/` (**Features만**), `Util/`, `Lib/` (Mapper 등), `Socket/` |
 | Type      | `Domain/`, `Dto/`, `Query/`, `Param/`, `Message/` (Section 4 참조) |
 | Api       | 파일 레벨 (그룹핑 불필요: `Get.ts`, `Key.ts`, `Query.ts` 등) |
 | Ui        | 컴포넌트 폴더들 (각 컴포넌트가 그룹)                    |
@@ -738,7 +758,9 @@ Feature의 mutation hook에서 Entity의 query key를 import하여 **invalidate*
 
 ## 9. Zustand State Management
 
-### 상태 정의: Entities/{Domain}/Model/Store/
+> **CRITICAL**: Store는 반드시 **Entities** 레이어에서만 선언한다. Features, Widgets, Pages에서 Store를 생성하는 것은 **절대 금지**이다. Section 4의 레이어 제한표를 반드시 참조한다.
+
+### 상태 정의: Entities/{Domain}/Model/Store/ (Entities만 허용)
 
 Zustand **slices pattern**을 사용하여 도메인별 슬라이스 파일을 분리한다:
 
@@ -796,8 +818,7 @@ Features/ChatWrite/Model/Logic/
 import { useChatStore } from '#/Entities/Chat';
 
 export function useMessageLogic() {
-  const setMessages = useChatStore((s) => s.setMessages);
-
+  // Store의 상태를 직접 업데이트 — setter는 Logic에서만
   function addMessage(message: ChatMessage) {
     useChatStore.setState((state) => ({
       messages: [...state.messages, message],
@@ -807,6 +828,10 @@ export function useMessageLogic() {
   return { addMessage };
 }
 ```
+
+**핵심 원칙**:
+- **Entity Slice**: 순수 상태(데이터)만 정의. `StateCreator`의 `set` 인자를 사용하여 setter 액션을 만들지 **않는다**.
+- **Feature Logic**: `useDomainStore.setState()`를 사용하여 상태 업데이트. 모든 쓰기 로직은 여기에 집중.
 
 ### 사용 패턴
 
@@ -1565,6 +1590,17 @@ BEFORE creating/modifying a file:
       SUGGEST: "use{Domain}Store.ts 형식 사용 (예: useCategoryFilterStore.ts)"
       NOTE: "슬라이스 경로에 이미 도메인이 있어도 파일명에 반드시 포함해야 합니다"
             "이유: 파일명만 보고 어느 도메인 store인지 알 수 있어야 합니다"
+
+  IF file_path contains '/Model/Store/' AND layer != 'Entities':
+    STOP
+    EXPLAIN: "Store 그룹은 Entities 레이어에서만 생성 가능합니다 (Section 9)"
+    SUGGEST: "Entities/{Domain}/Model/Store/로 이동하세요"
+    NOTE: "Features에서는 Logic/ 그룹만 허용됩니다 (상태 업데이트 로직)"
+
+  IF file_path contains '/Model/Logic/' AND layer != 'Features':
+    STOP
+    EXPLAIN: "Logic 그룹은 Features 레이어에서만 생성 가능합니다 (Section 9)"
+    SUGGEST: "Features/{Domain}/Model/Logic/로 이동하세요"
 ```
 
 ### Check 2: Import 방향
@@ -1877,7 +1913,7 @@ Q: 테스트 전용 목 데이터 / MSW?
 
 ```
 Q: 2개 이상 Widget에서 같은 상태를 공유?
-  → YES → Zustand (Entities/{Domain}/Model/Store/)
+  → YES → Zustand
 
 Q: 페이지 전체에 걸친 UI 상태?
   → YES → Zustand
@@ -1887,6 +1923,12 @@ Q: API에서 가져온 서버 데이터?
 
 Q: 단일 컴포넌트 내부 상태?
   → NO → useState/useReducer 사용
+
+CRITICAL — Zustand 배치 규칙:
+  Store 정의 → 반드시 Entities/{Domain}/Model/Store/ (Features 금지!)
+  Logic 정의 → 반드시 Features/{Domain}/Model/Logic/ (Entities 금지!)
+  읽기 → useDomainStore (Entity에서 import)
+  쓰기 → useDomainLogic (Feature에서 import)
 ```
 
 ### Type 그룹 선택 치트시트
@@ -1986,10 +2028,10 @@ FSD 미준수 영역을 **"추후 리팩토링 작업"**으로 목록화:
 
 | Rule 파일                    | 관계                                                |
 |-----------------------------|-----------------------------------------------------|
-| `speckit-workflow-rules.md` | 워크플로우 규칙 → implement 단계에서 이 FSD 규칙 강제 |
+| `speckit-workflow.md` | 워크플로우 규칙 → implement 단계에서 이 FSD 규칙 강제 |
 | `naming-no-plurals.md`     | 네이밍 규칙 → 슬라이스/세그먼트/파일/함수 이름에 적용  |
 
-코드 품질, TypeScript/JavaScript 패턴, 프론트엔드 설계 원칙은 `everything-claude-code` 플러그인의 `coding-standards`, `frontend-patterns` 스킬로 대체되었다.
+코드 품질, TypeScript/JavaScript 패턴, 프론트엔드 설계 원칙은 AI 모델의 기본 역량으로 충분히 커버된다. 별도 rule이 필요하면 프로젝트에 추가한다.
 
 ### 적용 범위
 
@@ -1999,7 +2041,7 @@ IF 새로운 앱 코드 작성:
   APPLY naming-no-plurals.md        (네이밍)
 
 IF speckit.implement 단계:
-  APPLY speckit-workflow-rules.md   (워크플로우)
+  APPLY speckit-workflow.md   (워크플로우)
   APPLY gem-fsd-architecture.md  (구조)
 ```
 

@@ -101,27 +101,27 @@
 
 ### Implementation for User Story 1
 
-- [ ] T032 [US1] Create `src/Features/CategoryFilter/Type/CategoryFilter.ts` (CategoryFilterState — FE-only, flat, not in Dto/) with segment barrel
-- [ ] T033 [US1] Create `src/Features/CategoryFilter/Model/Store/useCategoryFilterStore.ts` (Zustand store: selectedCategoryId, setSelectedCategoryId) with group barrel and segment barrel
-- [ ] T034 [US1] Create `src/Features/CategoryFilter/Model/Hook/useCategoryFilter.ts` (derived state: isAllSelected) with group barrel (update segment barrel)
-- [ ] T035 [US1] Create `src/Features/CategoryFilter/Ui/CategoryFilterBar/CategoryFilterBar.tsx` (filter bar with category chips, uses useCategoryList + useCategoryFilter) with component barrel and segment barrel
-- [ ] T036 [US1] Create `src/Features/CategoryFilter/index.ts` slice barrel
+- [x] T032 [US1] Create `src/Features/CategoryFilter/Type/CategoryFilter.ts` (CategoryFilterState — FE-only, flat, not in Dto/) with segment barrel
+- [x] T033 [US1] ~~Create `src/Features/CategoryFilter/Model/Store/useCategoryFilterStore.ts`~~ → **수정됨**: `src/Entities/Category/Model/Store/FilterSlice.ts` + `useCategoryStore.ts`에 배치 (gem-fsd-architecture §9: Store는 Entities에만)
+- [x] T034 [US1] Create `src/Features/CategoryFilter/Model/Hook/useCategoryFilter.ts` (derived state: isAllSelected) with group barrel (update segment barrel)
+- [x] T035 [US1] Create `src/Features/CategoryFilter/Ui/CategoryFilterBar/CategoryFilterBar.tsx` (filter bar with category chips, uses useCategoryList + useCategoryFilter) with component barrel and segment barrel
+- [x] T036 [US1] Create `src/Features/CategoryFilter/index.ts` slice barrel
 
-- [ ] T037 [P] [US1] Create `src/Entities/Recipe/Ui/RecipeDifficulty/RecipeDifficulty.tsx` (difficulty badge — single domain info), `src/Entities/Recipe/Ui/RecipeCookingTime/RecipeCookingTime.tsx` (formatted time — single domain info), `src/Entities/Recipe/Ui/EmptyRecipeState/EmptyRecipeState.tsx` (empty message) — each with component barrel, plus segment barrel. Update slice barrel.
+- [x] T037 [P] [US1] Create `src/Entities/Recipe/Ui/RecipeDifficulty/RecipeDifficulty.tsx` (difficulty badge — single domain info), `src/Entities/Recipe/Ui/RecipeCookingTime/RecipeCookingTime.tsx` (formatted time — single domain info), `src/Entities/Recipe/Ui/EmptyRecipeState/EmptyRecipeState.tsx` (empty message) — each with component barrel, plus segment barrel. Update slice barrel.
 
-- [ ] T038 [US1] Create `src/Widgets/RecipeList/Ui/RecipeListCard/RecipeListCard.tsx` (multi-domain: Recipe info + CategoryBadge from Entities/Category) with component barrel
-- [ ] T039 [US1] Create `src/Widgets/RecipeList/Ui/RecipeListEmpty/RecipeListEmpty.tsx` (empty state with Link to create page — separate folder: has routing) with component barrel
-- [ ] T040 [US1] Create `src/Widgets/RecipeList/Ui/RecipeList/RecipeList.tsx` (data fetch via useRecipeList + filter via useCategoryFilter, loading/error/empty states) and `RecipeList.loading.tsx` (skeleton sibling) with component barrel and segment barrel
-- [ ] T041 [US1] Create `src/Widgets/RecipeList/index.ts` slice barrel
+- [x] T038 [US1] Create `src/Widgets/RecipeList/Ui/RecipeListCard/RecipeListCard.tsx` (multi-domain: Recipe info + CategoryBadge from Entities/Category) with component barrel
+- [x] T039 [US1] Create `src/Widgets/RecipeList/Ui/RecipeListEmpty/RecipeListEmpty.tsx` (empty state with Link to create page — separate folder: has routing) with component barrel
+- [x] T040 [US1] Create `src/Widgets/RecipeList/Ui/RecipeList/RecipeList.tsx` (data fetch via useRecipeList + filter via useCategoryFilter, loading/error/empty states) and `RecipeList.loading.tsx` (skeleton sibling) with component barrel and segment barrel
+- [x] T041 [US1] Create `src/Widgets/RecipeList/index.ts` slice barrel
 
-- [ ] T042 [US1] Create `src/Pages/RecipeList/Ui/RecipeListPage/RecipeListPage.tsx` (compose CategoryFilterBar + RecipeList widget) with component barrel, segment barrel, and slice barrel
-- [ ] T043 [US1] Update `src/App/Router/AppRouter.tsx` to wire RecipeListPage to `/` and `/recipes` routes
+- [x] T042 [US1] Create `src/Pages/RecipeList/Ui/RecipeListPage/RecipeListPage.tsx` (compose CategoryFilterBar + RecipeList widget) with component barrel, segment barrel, and slice barrel
+- [x] T043 [US1] Update `src/App/Router/AppRouter.tsx` to wire RecipeListPage to `/` and `/recipes` routes
 
 ### Tests for User Story 1
 
-- [ ] T044 [P] [US1] Write test `src/Features/CategoryFilter/Model/Store/useCategoryFilterStore.test.ts` for store state management
-- [ ] T045 [P] [US1] Write test `src/Widgets/RecipeList/Ui/RecipeList/RecipeList.test.tsx` for list rendering, loading state, and empty state
-- [ ] T046 [P] [US1] Write test `src/Entities/Category/Ui/CategoryBadge/CategoryBadge.test.tsx` for badge rendering with name and color
+- [x] T044 [P] [US1] ~~Write test `src/Features/CategoryFilter/Model/Store/useCategoryFilterStore.test.ts`~~ → **수정됨**: `src/Entities/Category/Model/Store/useCategoryStore.test.ts`로 이동
+- [x] T045 [P] [US1] Write test `src/Widgets/RecipeList/Ui/RecipeList/RecipeList.test.tsx` for list rendering, loading state, and empty state
+- [x] T046 [P] [US1] Write test `src/Entities/Category/Ui/CategoryBadge/CategoryBadge.test.tsx` for badge rendering with name and color
 
 **Checkpoint**: User Story 1 fully functional — recipe list with category filtering works independently.
 
@@ -135,17 +135,17 @@
 
 ### Implementation for User Story 2
 
-- [ ] T047 [US2] Create `src/Widgets/RecipeDetail/Ui/RecipeIngredientList/RecipeIngredientList.tsx` (ingredient list display: name, amount, unit) with component barrel
-- [ ] T048 [US2] Create `src/Widgets/RecipeDetail/Ui/RecipeDetail/RecipeDetail.tsx` (detail composition: title, description, CategoryBadge, RecipeCookingTime, RecipeDifficulty, RecipeIngredientList, edit/delete action slots) and `RecipeDetail.loading.tsx` (skeleton sibling) with component barrel and segment barrel
-- [ ] T049 [US2] Create `src/Widgets/RecipeDetail/index.ts` slice barrel
+- [x] T047 [US2] Create `src/Widgets/RecipeDetail/Ui/RecipeIngredientList/RecipeIngredientList.tsx` (ingredient list display: name, amount, unit) with component barrel
+- [x] T048 [US2] Create `src/Widgets/RecipeDetail/Ui/RecipeDetail/RecipeDetail.tsx` (detail composition: title, description, CategoryBadge, RecipeCookingTime, RecipeDifficulty, RecipeIngredientList, edit/delete action slots) and `RecipeDetail.loading.tsx` (skeleton sibling) with component barrel and segment barrel
+- [x] T049 [US2] Create `src/Widgets/RecipeDetail/index.ts` slice barrel
 
-- [ ] T050 [US2] Create `src/Pages/RecipeDetail/Ui/RecipeDetailPage/RecipeDetailPage.tsx` (useParams for :id, useRecipe hook, loading/error/notFound states) with component barrel, segment barrel, and slice barrel
-- [ ] T051 [US2] Update `src/App/Router/AppRouter.tsx` to wire RecipeDetailPage to `/recipes/:id` route
+- [x] T050 [US2] Create `src/Pages/RecipeDetail/Ui/RecipeDetailPage/RecipeDetailPage.tsx` (useParams for :id, useRecipe hook, loading/error/notFound states) with component barrel, segment barrel, and slice barrel
+- [x] T051 [US2] Update `src/App/Router/AppRouter.tsx` to wire RecipeDetailPage to `/recipes/:id` route
 
 ### Tests for User Story 2
 
-- [ ] T052 [P] [US2] Write test `src/Widgets/RecipeDetail/Ui/RecipeDetail/RecipeDetail.test.tsx` for detail rendering with all fields and ingredients
-- [ ] T053 [P] [US2] Write test `src/Pages/RecipeDetail/Ui/RecipeDetailPage/RecipeDetailPage.test.tsx` for not-found handling and loading state
+- [x] T052 [P] [US2] Write test `src/Widgets/RecipeDetail/Ui/RecipeDetail/RecipeDetail.test.tsx` for detail rendering with all fields and ingredients
+- [x] T053 [P] [US2] Write test `src/Pages/RecipeDetail/Ui/RecipeDetailPage/RecipeDetailPage.test.tsx` for not-found handling and loading state
 
 **Checkpoint**: User Stories 1 AND 2 work independently — browse list and view details.
 
@@ -159,23 +159,23 @@
 
 ### Implementation for User Story 3
 
-- [ ] T054 [US3] Create `src/Features/RecipeWrite/Type/Dto/RecipeWriteRequestDto.ts` (CreateRecipeRequestDto, UpdateRecipeRequestDto) with group barrel and segment barrel
-- [ ] T055 [US3] Create `src/Features/RecipeWrite/Api/Post.ts` (postRecipe), `Put.ts` (putRecipe), `Key.ts` (recipeWriteMutationKey), `Mutation.ts` (recipeWriteMutationOption) with segment barrel
-- [ ] T056 [US3] Create `src/Features/RecipeWrite/__Mock__/Handler.ts` (POST, PUT handlers using Recipe Db) with __Mock__ barrel. Update `src/App/Mock/browser.ts` to include RecipeWrite handlers.
-- [ ] T057 [US3] Create `src/Features/RecipeWrite/Model/Hook/useCreateRecipe.ts` and `useUpdateRecipe.ts` (useMutation with onSuccess invalidation of recipeQueryKey) with group barrel and segment barrel
-- [ ] T058 [US3] Create `src/Features/RecipeWrite/index.ts` slice barrel
+- [x] T054 [US3] Create `src/Features/RecipeWrite/Type/Dto/RecipeWriteRequestDto.ts` (CreateRecipeRequestDto, UpdateRecipeRequestDto) with group barrel and segment barrel
+- [x] T055 [US3] Create `src/Features/RecipeWrite/Api/Post.ts` (postRecipe), `Put.ts` (putRecipe), `Key.ts` (recipeWriteMutationKey), `Mutation.ts` (recipeWriteMutationOption) with segment barrel
+- [x] T056 [US3] Create `src/Features/RecipeWrite/__Mock__/Handler.ts` (POST, PUT handlers using Recipe Db) with __Mock__ barrel. Update `src/App/Mock/browser.ts` to include RecipeWrite handlers.
+- [x] T057 [US3] Create `src/Features/RecipeWrite/Model/Hook/useCreateRecipe.ts` and `useUpdateRecipe.ts` (useMutation with onSuccess invalidation of recipeQueryKey) with group barrel and segment barrel
+- [x] T058 [US3] Create `src/Features/RecipeWrite/index.ts` slice barrel
 
-- [ ] T059 [US3] Create `src/Widgets/RecipeWrite/Ui/IngredientFieldList/IngredientFieldList.tsx` (React Hook Form useFieldArray for dynamic ingredient rows: add/remove) with component barrel
-- [ ] T060 [US3] Create `src/Widgets/RecipeWrite/Ui/RecipeWriteForm/RecipeWriteForm.tsx` (RHF + Zod schema validation, all fields, IngredientFieldList, submit handler) and `RecipeWriteForm.hook.ts` (form logic separation) with component barrel and segment barrel
-- [ ] T061 [US3] Create `src/Widgets/RecipeWrite/index.ts` slice barrel
+- [x] T059 [US3] Create `src/Widgets/RecipeWrite/Ui/IngredientFieldList/IngredientFieldList.tsx` (React Hook Form useFieldArray for dynamic ingredient rows: add/remove) with component barrel
+- [x] T060 [US3] Create `src/Widgets/RecipeWrite/Ui/RecipeWriteForm/RecipeWriteForm.tsx` (RHF + Zod schema validation, all fields, IngredientFieldList, submit handler) and `RecipeWriteForm.hook.ts` (form logic separation) with component barrel and segment barrel
+- [x] T061 [US3] Create `src/Widgets/RecipeWrite/index.ts` slice barrel
 
-- [ ] T062 [US3] Create `src/Pages/RecipeWrite/Ui/RecipeWritePage/RecipeWritePage.tsx` (create vs edit mode from route, pre-fill on edit via useRecipe, redirect to detail on success) with component barrel, segment barrel, and slice barrel
-- [ ] T063 [US3] Update `src/App/Router/AppRouter.tsx` to wire RecipeWritePage to `/recipes/new` and `/recipes/:id/edit` routes
+- [x] T062 [US3] Create `src/Pages/RecipeWrite/Ui/RecipeWritePage/RecipeWritePage.tsx` (create vs edit mode from route, pre-fill on edit via useRecipe, redirect to detail on success) with component barrel, segment barrel, and slice barrel
+- [x] T063 [US3] Update `src/App/Router/AppRouter.tsx` to wire RecipeWritePage to `/recipes/new` and `/recipes/:id/edit` routes
 
 ### Tests for User Story 3
 
-- [ ] T064 [P] [US3] Write test `src/Features/RecipeWrite/Api/Post.test.ts` for postRecipe HTTP call with MSW
-- [ ] T065 [P] [US3] Write test `src/Widgets/RecipeWrite/Ui/RecipeWriteForm/RecipeWriteForm.test.tsx` for form validation (required fields, character limits, ingredient min/max)
+- [x] T064 [P] [US3] Write test `src/Features/RecipeWrite/Api/Post.test.ts` for postRecipe HTTP call with MSW
+- [x] T065 [P] [US3] Write test `src/Widgets/RecipeWrite/Ui/RecipeWriteForm/RecipeWriteForm.test.tsx` for form validation (required fields, character limits, ingredient min/max)
 
 **Checkpoint**: User Stories 1, 2, AND 3 work — browse, view detail, create, and edit recipes.
 
@@ -189,16 +189,16 @@
 
 ### Implementation for User Story 4
 
-- [ ] T066 [US4] Create `src/Features/RecipeDelete/Api/Delete.ts` (deleteRecipe), `Key.ts` (recipeDeleteMutationKey), `Mutation.ts` (recipeDeleteMutationOption) with segment barrel
-- [ ] T067 [US4] Create `src/Features/RecipeDelete/__Mock__/Handler.ts` (DELETE handler using Recipe Db) with __Mock__ barrel. Update `src/App/Mock/browser.ts` to include RecipeDelete handler.
-- [ ] T068 [US4] Create `src/Features/RecipeDelete/Model/Hook/useDeleteRecipe.ts` (useMutation with onSuccess invalidation + navigation to list) with group barrel and segment barrel
-- [ ] T069 [US4] Create `src/Features/RecipeDelete/Ui/DeleteRecipeAction/DeleteRecipeAction.tsx` (button + Shadcn Dialog confirmation — single concern Feature Ui with Action suffix) with component barrel and segment barrel
-- [ ] T070 [US4] Create `src/Features/RecipeDelete/index.ts` slice barrel
-- [ ] T071 [US4] Integrate DeleteRecipeAction into `src/Widgets/RecipeDetail/Ui/RecipeDetail/RecipeDetail.tsx` (add delete action slot)
+- [x] T066 [US4] Create `src/Features/RecipeDelete/Api/Delete.ts` (deleteRecipe), `Key.ts` (recipeDeleteMutationKey), `Mutation.ts` (recipeDeleteMutationOption) with segment barrel
+- [x] T067 [US4] Create `src/Features/RecipeDelete/__Mock__/Handler.ts` (DELETE handler using Recipe Db) with __Mock__ barrel. Update `src/App/Mock/browser.ts` to include RecipeDelete handler.
+- [x] T068 [US4] Create `src/Features/RecipeDelete/Model/Hook/useDeleteRecipe.ts` (useMutation with onSuccess invalidation + navigation to list) with group barrel and segment barrel
+- [x] T069 [US4] Create `src/Features/RecipeDelete/Ui/DeleteRecipeAction/DeleteRecipeAction.tsx` (button + Shadcn Dialog confirmation — single concern Feature Ui with Action suffix) with component barrel and segment barrel
+- [x] T070 [US4] Create `src/Features/RecipeDelete/index.ts` slice barrel
+- [x] T071 [US4] Integrate DeleteRecipeAction into `src/Widgets/RecipeDetail/Ui/RecipeDetail/RecipeDetail.tsx` (add delete action slot)
 
 ### Tests for User Story 4
 
-- [ ] T072 [P] [US4] Write test `src/Features/RecipeDelete/Ui/DeleteRecipeAction/DeleteRecipeAction.test.tsx` for dialog open/close and delete confirmation flow
+- [x] T072 [P] [US4] Write test `src/Features/RecipeDelete/Ui/DeleteRecipeAction/DeleteRecipeAction.test.tsx` for dialog open/close and delete confirmation flow
 
 **Checkpoint**: All 4 user stories functional — full CRUD cycle complete.
 
@@ -212,19 +212,19 @@
 
 ### E2E Setup
 
-- [ ] T073 Configure Playwright (playwright.config.ts) with webServer settings and add test:e2e scripts to package.json
+- [x] T073 Configure Playwright (playwright.config.ts) with webServer settings and add test:e2e scripts to package.json
 
 ### E2E Tests per User Story
 
-- [ ] T074 [P] [US1] E2E test `e2e/recipe-list.spec.ts` — recipe list display, category filtering, empty state
-- [ ] T075 [P] [US2] E2E test `e2e/recipe-detail.spec.ts` — detail view, ingredient list, back navigation, 404 handling
-- [ ] T076 [P] [US3] E2E test `e2e/recipe-write.spec.ts` — create form, validation errors, ingredient add/remove, edit pre-fill
-- [ ] T077 [P] [US4] E2E test `e2e/recipe-delete.spec.ts` — delete confirmation dialog, cancel, confirm deletion
+- [x] T074 [P] [US1] E2E test `e2e/recipe-list.spec.ts` — recipe list display, category filtering, empty state
+- [x] T075 [P] [US2] E2E test `e2e/recipe-detail.spec.ts` — detail view, ingredient list, back navigation, 404 handling
+- [x] T076 [P] [US3] E2E test `e2e/recipe-write.spec.ts` — create form, validation errors, ingredient add/remove, edit pre-fill
+- [x] T077 [P] [US4] E2E test `e2e/recipe-delete.spec.ts` — delete confirmation dialog, cancel, confirm deletion
 
 ### Cross-Story E2E Tests
 
-- [ ] T078 E2E test `e2e/recipe-lifecycle.spec.ts` — full CRUD: create → list → detail → edit → verify → delete → verify removal
-- [ ] T079 E2E test `e2e/filter-persistence.spec.ts` — filter by category → open detail → back → filter preserved → create recipe → back → appears in filter
+- [x] T078 E2E test `e2e/recipe-lifecycle.spec.ts` — full CRUD: create → list → detail → edit → verify → delete → verify removal
+- [x] T079 E2E test `e2e/filter-persistence.spec.ts` — filter by category → open detail → back → filter preserved → create recipe → back → appears in filter
 
 **Checkpoint**: All E2E tests pass — feature is production-ready.
 
@@ -234,10 +234,10 @@
 
 **Purpose**: Quality improvements across all user stories
 
-- [ ] T080 Accessibility audit for all pages (keyboard navigation, ARIA labels, color contrast WCAG 2.1 AA)
-- [ ] T081 [P] Review and refine loading/skeleton states across all widgets
-- [ ] T082 Run full verification suite (type-check, lint, test, build) and fix any issues
-- [ ] T083 Final code review: FSD architecture compliance, barrel exports, import rules, naming conventions
+- [x] T080 Accessibility audit for all pages (keyboard navigation, ARIA labels, color contrast WCAG 2.1 AA)
+- [x] T081 [P] Review and refine loading/skeleton states across all widgets
+- [x] T082 Run full verification suite (type-check, lint, test, build) and fix any issues
+- [x] T083 Final code review: FSD architecture compliance, barrel exports, import rules, naming conventions
 
 ---
 
@@ -338,20 +338,20 @@ feature/#13403104-us3-fsd-recipe-app (Phase 7+8: E2E + Polish)
 
 Each task should be validated against these gem-fsd-architecture rules:
 
-- [ ] Layer hierarchy: App > Pages > Widgets > Features > Entities > Shared
-- [ ] Import direction: higher layers import lower layers only
-- [ ] Same slice: relative path + barrel
-- [ ] Different slice: `#/Layer/Slice` absolute path (2-depth)
-- [ ] Named exports only (no `export *`)
-- [ ] __Mock__ barrel NOT re-exported from slice barrel
-- [ ] Entity Ui: single domain, single info only
-- [ ] Feature Ui: single business concern, self-contained
-- [ ] Widget Ui: multi-domain composition
-- [ ] PascalCase directories (except __Mock__)
-- [ ] camelCase for hook/store files (use prefix)
-- [ ] No plurals in naming (List suffix, not plural -s)
-- [ ] Type/Domain/ for FE domain models, Type/Dto/ for transfer objects
-- [ ] Cross-entity `import type` only via index.ts
+- [x] Layer hierarchy: App > Pages > Widgets > Features > Entities > Shared
+- [x] Import direction: higher layers import lower layers only
+- [x] Same slice: relative path + barrel
+- [x] Different slice: `#/Layer/Slice` absolute path (2-depth)
+- [x] Named exports only (no `export *`)
+- [x] __Mock__ barrel NOT re-exported from slice barrel
+- [x] Entity Ui: single domain, single info only
+- [x] Feature Ui: single business concern, self-contained
+- [x] Widget Ui: multi-domain composition
+- [x] PascalCase directories (except __Mock__)
+- [x] camelCase for hook/store files (use prefix)
+- [x] No plurals in naming (List suffix, not plural -s)
+- [x] Type/Domain/ for FE domain models, Type/Dto/ for transfer objects
+- [x] Cross-entity `import type` only via index.ts
 
 ---
 

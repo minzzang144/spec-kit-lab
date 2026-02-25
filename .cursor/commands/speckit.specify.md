@@ -225,7 +225,7 @@ Given that feature description, do this:
    a. If **Push + Draft PR**: Push the spec branch and create a Draft PR:
       ```bash
       git push -u origin $(git branch --show-current)
-      gh pr create --draft --base develop --title "spec: [FEATURE NAME] (#TICKET_ID)" --body "$(cat <<'PREOF'
+      gh pr create --draft --base develop --title "spec(<feature-name>): <한국어 feature 설명>" --body "$(cat <<'PREOF'
       ## Specification Phase
 
       **Feature**: [FEATURE NAME]

@@ -195,6 +195,6 @@ Recipe ──── many-to-one ────► Category
 | Recipe list | Server state | TanStack Query via `Entities/Recipe/Api/Query.ts` | API data |
 | Recipe detail | Server state | TanStack Query via `Entities/Recipe/Api/Query.ts` | API data |
 | Category list | Server state | TanStack Query via `Entities/Category/Api/Query.ts` | API data |
-| Category filter selection | Client state (shared) | Zustand via `Features/CategoryFilter/Model/Store/` | 2+ Widgets share filter state |
+| Category filter selection | Client state (shared) | Zustand via `Entities/Category/Model/Store/FilterSlice` | 2+ Widgets share filter state (Store는 Entities에 정의, Feature에서 파생 상태 hook 제공) |
 | Form state | Form state | React Hook Form in `Widgets/RecipeWrite/` | Local form management |
 | Dialog open/close | Local UI state | `useState` in Feature Ui component | Single component |
